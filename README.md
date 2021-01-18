@@ -51,3 +51,4 @@ print("The sum of all coordinates is: " + pos.getSum());
 - Pointers and references
 - New class object type
 - New enum object type
+- Method inlining
