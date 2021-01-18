@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValLang", "ValLang.csproj", "{B774C717-0E16-4C28-9C73-9320AC75F71D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B774C717-0E16-4C28-9C73-9320AC75F71D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B774C717-0E16-4C28-9C73-9320AC75F71D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B774C717-0E16-4C28-9C73-9320AC75F71D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6270A355-A2DF-4FED-9B03-1085F8C52E6B}
+	EndGlobalSection
+EndGlobal
