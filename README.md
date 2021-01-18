@@ -17,12 +17,12 @@ import("console");
 
 struct Position
 {
-	var x, y, z;
+    var x, y, z;
 	
-	fun getSum()
-	{
-		return x + y + z;
-	}
+    fun getSum()
+    {
+        return x + y + z;
+    }
 }
 
 var pos = Position; // Create a new istance of Position structure.
