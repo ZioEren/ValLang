@@ -19,7 +19,7 @@ public class Parser
 
         if (res.error == null && this.current_tok.type != "EOF")
         {
-            return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '+', '-', '*' or '/'"));
+            return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Token cannot appear after previous tokens"));
         }
 
         return res;

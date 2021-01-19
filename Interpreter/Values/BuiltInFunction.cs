@@ -252,17 +252,13 @@ public class BuiltInFunction
     {
         int number = 0;
 
-        while (true)
+        try
         {
-            try
-            {
-                number = int.Parse(Console.ReadLine());
-                break;
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("The value must be an integer. Try again!");
-            }
+            number = int.Parse(Console.ReadLine());
+        }
+        catch (Exception)
+        {
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value cannot be parsed to int.", exec_ctx));
         }
 
         return new RuntimeResult().success(new NumberValue(number));
@@ -576,6 +572,60 @@ public class BuiltInFunction
     }
 
     public List<string> get_clear_ram()
+    {
+        List<string> arg_names = new List<string>();
+        return arg_names;
+    }
+
+    public RuntimeResult execute_input_float(Context exec_ctx)
+    {
+        float number = 0.0F;
+
+        while (true)
+        {
+            try
+            {
+                number = float.Parse(Console.ReadLine().Replace(".", ","));
+                break;
+            }
+            catch (Exception)
+            {
+                return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value cannot be parsed to float.", exec_ctx));
+            }
+        }
+
+        return new RuntimeResult().success(new NumberValue(number));
+    }
+    public List<string> get_input_float()
+    {
+        List<string> arg_names = new List<string>();
+        return arg_names;
+    }
+
+    public RuntimeResult execute_input_num(Context exec_ctx)
+    {
+        try
+        {
+            string text = Console.ReadLine();
+
+            if (text.Contains(".") || text.Contains(","))
+            {
+                text = text.Replace(".", ",");
+
+                return new RuntimeResult().success(new NumberValue(float.Parse(text)));
+            }
+            else
+            {
+                return new RuntimeResult().success(new NumberValue(int.Parse(text)));
+            }
+        }
+        catch (Exception)
+        {
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value cannot be parsed to float.", exec_ctx));
+        }
+    }
+
+    public List<string> get_input_num()
     {
         List<string> arg_names = new List<string>();
         return arg_names;

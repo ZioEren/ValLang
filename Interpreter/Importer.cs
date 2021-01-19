@@ -1,5 +1,9 @@
-﻿public static class Importer
+﻿using System.Collections.Generic;
+
+public static class Importer
 {
+    public static List<string> imported = new List<string>();
+
     public static RuntimeResult import(string fn, string ftxt, Context ctx, bool found)
     {
         ctx = ctx.parent;
@@ -11,6 +15,8 @@
             ctx.symbol_table.set("input", BuiltInFunctions.input);
             ctx.symbol_table.set("input_int", BuiltInFunctions.input_int);
             ctx.symbol_table.set("clear", BuiltInFunctions.clear);
+            ctx.symbol_table.set("input_float", BuiltInFunctions.input_float);
+            ctx.symbol_table.set("input_num", BuiltInFunctions.input_num);
         }
         else if (fn == "lists")
         {
@@ -30,6 +36,8 @@
                 return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, fn, ftxt), new Position(0, 0, 0, fn, ftxt), "Could not find the specified file", ctx));
             }
         }
+
+        imported.Add(fn);
 
         return new RuntimeResult().success(Values.NULL);
     }

@@ -158,7 +158,10 @@ public class Interpreter
 
         if (value.GetType() == typeof(StructValue))
         {
-            value = new StructValue(((StructValue)value).name, ((StructValue)value).statements).set_context(context).set_pos(node.pos_start, node.pos_end).declare(this);
+            if (!((StructValue) value).already_declared)
+            {
+                value = new StructValue(((StructValue)value).name, ((StructValue)value).statements).set_context(context).set_pos(node.pos_start, node.pos_end).declare(this);
+            }
         }
 
         if (context.symbol_table.can_be_rewrite(var_name))

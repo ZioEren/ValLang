@@ -72,7 +72,28 @@ public class SymbolTable
 
     public void set(object name, object value, bool rewritten = true)
     {
-        this.symbols[name] = new Tuple<object, bool>(value, rewritten);
+        try
+        {
+            bool present = false;
+
+            try
+            {
+                present = this.symbols.ContainsKey(name);
+            }
+            catch (System.Exception ex)
+            {
+            }
+
+            this.symbols[name] = new Tuple<object, bool>(value, rewritten);
+
+            if (this.parent != null && !present)
+            {
+                this.parent.symbols[name] = new Tuple<object, bool>(value, rewritten);
+            }
+        }
+        catch (Exception)
+        {
+        }
     }
 
     public void remove(object name)
@@ -88,7 +109,7 @@ public class SymbolTable
         {
             present = this.symbols.ContainsKey(name);
         }
-        catch (System.Exception ex)
+        catch (System.Exception)
         {
         }
 
@@ -103,7 +124,7 @@ public class SymbolTable
         {
             present = this.parent.present(name);
         }
-        catch (System.Exception ex)
+        catch (System.Exception)
         {
         }
 
