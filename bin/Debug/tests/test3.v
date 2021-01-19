@@ -5,7 +5,7 @@ fun repeat_50_times()
 {
 	for (i = 0 to 50)
 	{
-		print("This is the " + (i + 1) + " time.");
+		println("This is the " + (i + 1) + " time.");
 	}
 }
 
@@ -13,7 +13,7 @@ var answer = "";
 
 do
 {
-	print("Do you want to start repeating 50 times (y/n) ?");
+	println("Do you want to start repeating 50 times (y/n) ?");
 	answer = input();
 }
 while (answer != 'y' && answer != 'n');
@@ -33,7 +33,7 @@ del repeat_50_times; // Delete the function from the memory.
 
 do
 {
-	print("Do you want to restart repeating 50 times (y/n) ?");
+	println("Do you want to restart repeating 50 times (y/n) ?");
 	answer = input();
 }
 while (answer != 'y' && answer != 'n');

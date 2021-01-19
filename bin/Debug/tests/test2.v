@@ -4,12 +4,12 @@ import("lists");
 
 var list = [], num = 0;
 
-print("Insert the number of the numbers you want to insert:");
+println("Insert the number of the numbers you want to insert:");
 num = input_int();
 
 for (i = 0 to num)
 {
-	print("Insert the " + (i + 1) + " number:");
+	println("Insert the " + (i + 1) + " number:");
 	var element = input_int();
 	list += element;
 }
@@ -23,5 +23,5 @@ foreach (element in list)
 
 average = sum / len(list);
 
-print("The sum of all the elements of the list is: " + sum + ".");
-print("The arithmetic average of all the elements of the list is: " + average + ".");
+println("The sum of all the elements of the list is: " + sum + ".");
+println("The arithmetic average of all the elements of the list is: " + average + ".");

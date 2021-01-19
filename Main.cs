@@ -179,8 +179,6 @@ class Program
 
     public static Tuple<object, Error> run(string fn, string text)
     {
-        Stopwatch stopwatch = new Stopwatch();
-        stopwatch.Start();
         try
         {
             Tuple<List<Token>, Error> tokensError = new Lexer(fn, text).make_tokens();
@@ -204,13 +202,8 @@ class Program
             Context context = new Context(fn);
             SymbolTable global_symbol_table = new SymbolTable();
             Importer.add(global_symbol_table, 0);
-
             context.symbol_table = global_symbol_table;
-
             RuntimeResult result = interpreter.visit(ast.node, context);
-
-            stopwatch.Stop();
-            Console.WriteLine("Time elapsed: " + stopwatch.Elapsed.ToString() + " (" + stopwatch.ElapsedMilliseconds + "ms, " + stopwatch.ElapsedTicks + " ticks).");
 
             return new Tuple<object, Error>(result.value, result.error);
         }

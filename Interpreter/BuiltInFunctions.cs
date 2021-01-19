@@ -22,5 +22,6 @@
     public static BuiltInFunction clear_ram = new BuiltInFunction("clear_ram");
     public static BuiltInFunction input_float = new BuiltInFunction("input_float");
     public static BuiltInFunction input_num = new BuiltInFunction("input_num");
+    public static BuiltInFunction println = new BuiltInFunction("println");
 
 }

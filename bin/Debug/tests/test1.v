@@ -14,17 +14,17 @@ struct Position
 var pos = Position; // Create a new istance of Position structure.
 var a, b, c;
 
-print("Insert x coordinate: ");
+println("Insert x coordinate: ");
 a = input_int();
 
-print("Insert y coordinate: ");
+println("Insert y coordinate: ");
 b = input_int();
 
-print("Insert z coordinate: ");
+println("Insert z coordinate: ");
 c = input_int();
 
 pos.x = a;
 pos.y = b;
 pos.z = c;
 
-print("The sum of all coordinates is: " + pos.getSum());
+println("The sum of all coordinates is: " + pos.getSum());

@@ -2,14 +2,14 @@
 import("console");
 
 var num = 0;
-print("Please, insert a number: ");
+println("Please, insert a number: ");
 num = input_int();
 
 if (num % 2 == 0)
 {
-	print("You love me.");
+	println("You love me.");
 }
 else
 {
-	print("You don't love me.");
+	println("You don't love me.");
 }

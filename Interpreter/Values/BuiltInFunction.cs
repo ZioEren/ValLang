@@ -152,7 +152,7 @@ public class BuiltInFunction
 
     public RuntimeResult execute_print(Context exec_ctx)
     {
-        Console.WriteLine((string) exec_ctx.symbol_table.get("value").GetType().GetMethod("as_string").Invoke(exec_ctx.symbol_table.get("value"), new object[] { }));
+        Console.Write((string) exec_ctx.symbol_table.get("value").GetType().GetMethod("as_string").Invoke(exec_ctx.symbol_table.get("value"), new object[] { }));
         return new RuntimeResult().success(Values.NULL);
     }
 
@@ -580,6 +580,20 @@ public class BuiltInFunction
     {
         List<string> arg_names = new List<string>();
         arg_names.Add("value");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_println(Context exec_ctx)
+    {
+        Console.WriteLine((string)exec_ctx.symbol_table.get("value").GetType().GetMethod("as_string").Invoke(exec_ctx.symbol_table.get("value"), new object[] { }));
+        return new RuntimeResult().success(Values.NULL);
+    }
+
+    public List<string> get_println()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+
         return arg_names;
     }
 }

@@ -54,6 +54,7 @@ public static class Importer
         else if (toImport == 1)
         {
             table.set("print", BuiltInFunctions.print);
+            table.set("println", BuiltInFunctions.println);
             table.set("print_ret", BuiltInFunctions.print_ret);
             table.set("input", BuiltInFunctions.input);
             table.set("input_int", BuiltInFunctions.input_int);
