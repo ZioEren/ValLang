@@ -44,37 +44,16 @@ public class StructValue
         Context exec_ctx = new Context(this.name, this.context, pos_start);
         exec_ctx.symbol_table = new SymbolTable();
 
-        exec_ctx.symbol_table.set("null", Values.NULL);
-        exec_ctx.symbol_table.set("true", Values.TRUE);
-        exec_ctx.symbol_table.set("false", Values.FALSE);
-        exec_ctx.symbol_table.set("is_num", BuiltInFunctions.is_number);
-        exec_ctx.symbol_table.set("is_str", BuiltInFunctions.is_string);
-        exec_ctx.symbol_table.set("is_list", BuiltInFunctions.is_list);
-        exec_ctx.symbol_table.set("is_fun", BuiltInFunctions.is_function);
-        exec_ctx.symbol_table.set("run", BuiltInFunctions.run);
-        exec_ctx.symbol_table.set("import", BuiltInFunctions.import);
-        exec_ctx.symbol_table.set("exit", BuiltInFunctions.exit);
-        exec_ctx.symbol_table.set("end", BuiltInFunctions.end);
-        exec_ctx.symbol_table.set("close", BuiltInFunctions.close);
-        exec_ctx.symbol_table.set("clear_ram", BuiltInFunctions.clear_ram);
+        Importer.add(exec_ctx.symbol_table, 0);
 
         if (Importer.imported.Contains("console"))
         {
-            exec_ctx.symbol_table.set("print", BuiltInFunctions.print);
-            exec_ctx.symbol_table.set("print_ret", BuiltInFunctions.print_ret);
-            exec_ctx.symbol_table.set("input", BuiltInFunctions.input);
-            exec_ctx.symbol_table.set("input_int", BuiltInFunctions.input_int);
-            exec_ctx.symbol_table.set("clear", BuiltInFunctions.clear);
-            exec_ctx.symbol_table.set("input_float", BuiltInFunctions.input_float);
-            exec_ctx.symbol_table.set("input_num", BuiltInFunctions.input_num);
+            Importer.add(exec_ctx.symbol_table, 1);
         }
 
         if (Importer.imported.Contains("lists"))
         {
-            exec_ctx.symbol_table.set("append", BuiltInFunctions.append);
-            exec_ctx.symbol_table.set("pop", BuiltInFunctions.pop);
-            exec_ctx.symbol_table.set("extend", BuiltInFunctions.extend);
-            exec_ctx.symbol_table.set("len", BuiltInFunctions.len);
+            Importer.add(exec_ctx.symbol_table, 2);
         }
 
         this.context = exec_ctx;
@@ -101,32 +80,7 @@ public class StructValue
         return this;
     }
 
-    public Tuple<object, Error> added_to(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> subbed_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> multed_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> dived_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> powed_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> get_comparison_eq(object other)
+    public Tuple<object, Error> get_comparison_ee(object other)
     {
         return new Tuple<object, Error>(Values.FALSE, null); ;
     }
@@ -134,41 +88,6 @@ public class StructValue
     public Tuple<object, Error> get_comparison_ne(object other)
     {
         return new Tuple<object, Error>(Values.TRUE, null);
-    }
-
-    public Tuple<object, Error> get_comparison_lt(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> get_comparison_gt(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> get_comparison_lte(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> get_comparison_gte(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> anded_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> ored_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> notted()
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(null));
     }
 
     public bool is_true()

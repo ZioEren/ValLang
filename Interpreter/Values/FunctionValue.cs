@@ -70,74 +70,14 @@ public class FunctionValue
         return this;
     }
 
-    public Tuple<object, Error> added_to(object other)
+    public Tuple<object, Error> get_comparison_ee(object other)
     {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> subbed_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> multed_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> dived_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> powed_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> get_comparison_eq(object other)
-    {
-        return new Tuple<object, Error>(Values.FALSE, null); ;
+        return new Tuple<object, Error>(Values.FALSE, null);
     }
 
     public Tuple<object, Error> get_comparison_ne(object other)
     {
         return new Tuple<object, Error>(Values.TRUE, null);
-    }
-
-    public Tuple<object, Error> get_comparison_lt(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> get_comparison_gt(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> get_comparison_lte(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> get_comparison_gte(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> anded_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> ored_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> notted()
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(null));
     }
 
     public bool is_true()

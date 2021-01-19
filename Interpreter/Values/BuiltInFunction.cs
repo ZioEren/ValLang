@@ -69,32 +69,7 @@ public class BuiltInFunction
         return this;
     }
 
-    public Tuple<object, Error> added_to(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> subbed_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> multed_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> dived_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> powed_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> get_comparison_eq(object other)
+    public Tuple<object, Error> get_comparison_ee(object other)
     {
         return new Tuple<object, Error>(Values.FALSE, null);
     }
@@ -102,41 +77,6 @@ public class BuiltInFunction
     public Tuple<object, Error> get_comparison_ne(object other)
     {
         return new Tuple<object, Error>(Values.TRUE, null);
-    }
-
-    public Tuple<object, Error> get_comparison_lt(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> get_comparison_gt(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> get_comparison_lte(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> get_comparison_gte(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> anded_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> ored_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> notted()
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(null));
     }
 
     public bool is_true()
@@ -628,6 +568,18 @@ public class BuiltInFunction
     public List<string> get_input_num()
     {
         List<string> arg_names = new List<string>();
+        return arg_names;
+    }
+
+    public RuntimeResult execute_is_struct(Context exec_ctx)
+    {
+        return new RuntimeResult().success(exec_ctx.symbol_table.get("value").GetType() == typeof(NumberValue) ? Values.TRUE : Values.FALSE);
+    }
+
+    public List<string> get_is_struct()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
         return arg_names;
     }
 }

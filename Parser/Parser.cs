@@ -27,7 +27,7 @@ public class Parser
 
     public void advance()
     {
-        this.tok_idx += 1;
+        this.tok_idx++;
         this.update_current_tok();
     }
 
@@ -54,6 +54,7 @@ public class Parser
         {
             res.register_advancement();
             this.advance();
+
             return res.success(new NumberNode(tok));
         }
 
@@ -61,6 +62,7 @@ public class Parser
         {
             res.register_advancement();
             this.advance();
+
             return res.success(new StringNode(tok));
         }
 
@@ -306,7 +308,6 @@ public class Parser
 
             return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected identifier"));
         }
-
 
         return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected int, float, identifier, '+', '-', '(', '[', 'if', 'for', 'while' or 'fun'"));
     }
@@ -1369,7 +1370,7 @@ public class Parser
                 res.register_advancement();
                 this.advance();
 
-                newline_count += 1;
+                newline_count++;
             }
 
             if (newline_count == 0)

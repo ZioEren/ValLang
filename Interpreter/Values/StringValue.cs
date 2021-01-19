@@ -45,7 +45,7 @@ public class StringValue
         return this;
     }
 
-    public Tuple<object, Error> added_to(object other)
+    public Tuple<object, Error> plused_by(object other)
     {
         if (other.GetType() == typeof(StringValue))
         {
@@ -57,18 +57,13 @@ public class StringValue
         }
         else if (other.GetType() == typeof(ListValue))
         {
-            return new Tuple<object, Error>(((ListValue)other).added_to(this).Item1, null);
+            return new Tuple<object, Error>(((ListValue)other).plused_by(this).Item1, null);
         }
 
         return new Tuple<object, Error>(null, this.illegal_operation(other));
     }
 
-    public Tuple<object, Error> subbed_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> multed_by(object other)
+    public Tuple<object, Error> muled_by(object other)
     {
         if (other.GetType() == typeof(NumberValue))
         {
@@ -78,17 +73,7 @@ public class StringValue
         return new Tuple<object, Error>(null, this.illegal_operation(other));
     }
 
-    public Tuple<object, Error> dived_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> powed_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> get_comparison_eq(object other)
+    public Tuple<object, Error> get_comparison_ee(object other)
     {
         if (other.GetType() == typeof(StringValue))
         {
@@ -145,21 +130,6 @@ public class StringValue
     }
 
     public Tuple<object, Error> get_comparison_lt(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> get_comparison_gt(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> get_comparison_lte(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> get_comparison_gte(object other)
     {
         return new Tuple<object, Error>(null, this.illegal_operation(other));
     }

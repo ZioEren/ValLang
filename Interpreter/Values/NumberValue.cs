@@ -117,7 +117,7 @@ public class NumberValue
         return new Tuple<object, Error>(null, this.illegal_operation(other));
     }
 
-    public Tuple<object, Error> moduled_by(object other)
+    public Tuple<object, Error> moduloed_by(object other)
     {
         if (other.GetType() == typeof(NumberValue))
         {
@@ -132,7 +132,7 @@ public class NumberValue
         return new Tuple<object, Error>(null, this.illegal_operation(other));
     }
 
-    public Tuple<object, Error> added_to(object other)
+    public Tuple<object, Error> plused_by(object other)
     {
         if (other.GetType() == typeof(NumberValue))
         {
@@ -167,13 +167,13 @@ public class NumberValue
         }
         else if (other.GetType() == typeof(ListValue))
         {
-            return new Tuple<object, Error>(((ListValue) other).added_to(this).Item1, null);
+            return new Tuple<object, Error>(((ListValue) other).plused_by(this).Item1, null);
         }
 
         return new Tuple<object, Error>(null, this.illegal_operation(other));
     }
 
-    public Tuple<object, Error> subbed_by(object other)
+    public Tuple<object, Error> minused_by(object other)
     {
         if (other.GetType() == typeof(NumberValue))
         {
@@ -204,13 +204,13 @@ public class NumberValue
         }
         else if (other.GetType() == typeof(ListValue))
         {
-            return new Tuple<object, Error>(((ListValue)other).subbed_by(this).Item1, null);
+            return new Tuple<object, Error>(((ListValue)other).minused_by(this).Item1, null);
         }
 
         return new Tuple<object, Error>(null, this.illegal_operation(other));
     }
 
-    public Tuple<object, Error> multed_by(object other)
+    public Tuple<object, Error> muled_by(object other)
     {
         if (other.GetType() == typeof(NumberValue))
         {
@@ -241,11 +241,11 @@ public class NumberValue
         }
         else if (other.GetType() == typeof(StringValue))
         {
-            return new Tuple<object, Error>(((StringValue)other).multed_by(this).Item1, null);
+            return new Tuple<object, Error>(((StringValue)other).muled_by(this).Item1, null);
         }
         else if (other.GetType() == typeof(ListValue))
         {
-            return new Tuple<object, Error>(((ListValue)other).multed_by(this).Item1, null);
+            return new Tuple<object, Error>(((ListValue)other).muled_by(this).Item1, null);
         }
 
         return new Tuple<object, Error>(null, this.illegal_operation(other));
@@ -341,7 +341,7 @@ public class NumberValue
         return new Tuple<object, Error>(null, this.illegal_operation(other));
     }
 
-    public Tuple<object, Error> get_comparison_eq(object other)
+    public Tuple<object, Error> get_comparison_ee(object other)
     {
         if (other.GetType() == typeof(NumberValue))
         {

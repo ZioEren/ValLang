@@ -57,7 +57,23 @@ public class Lexer
             }
             else if (this.current_char == '-')
             {
-                tokens.Add(this.make_minus_or_arrow());
+                string tok_type = "MINUS";
+                Position pos_start = this.pos.copy();
+
+                this.advance();
+
+                if (this.current_char == '>')
+                {
+                    this.advance();
+                    tok_type = "ARROW";
+                }
+                else if (this.current_char == '=')
+                {
+                    this.advance();
+                    tok_type += "_EQ";
+                }
+
+                tokens.Add(new Token(tok_type, pos_start: pos_start, pos_end: this.pos));
             }
             else if (this.current_char == '*')
             {
@@ -91,7 +107,32 @@ public class Lexer
                 }
                 else if (this.current_char == '*')
                 {
-                    this.skip_multi_line_comment();
+                    this.advance();
+                    bool firstChar = false;
+
+                    while (true)
+                    {
+                        this.advance();
+
+                        if (this.current_char == '*' && !firstChar)
+                        {
+                            firstChar = true;
+                            continue;
+                        }
+                        else if (this.current_char == '*' && firstChar)
+                        {
+                            firstChar = false;
+                        }
+                        if (firstChar)
+                        {
+                            if (this.current_char == '/')
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+                    this.advance();
                     continue;
                 }
 
@@ -138,27 +179,143 @@ public class Lexer
             }
             else if ("0123456789".Contains(this.current_char.ToString()))
             {
-                tokens.Add(this.make_number());
+                string num_str = "";
+                int dot_count = 0;
+                Position pos_start = this.pos.copy();
+
+                while (this.current_char != default(char) && ("0123456789.").Contains(this.current_char.ToString()))
+                {
+                    if (this.current_char == '.')
+                    {
+                        if (dot_count == 1)
+                        {
+                            break;
+                        }
+
+                        dot_count += 1;
+                        num_str += ".";
+                    }
+                    else
+                    {
+                        num_str += this.current_char;
+                    }
+
+                    this.advance();
+                }
+
+                if (dot_count == 0)
+                {
+                    tokens.Add(new Token("INT", int.Parse(num_str), pos_start, this.pos));
+                }
+                else
+                {
+                    tokens.Add(new Token("FLOAT", float.Parse(num_str.Replace(".", ",")), pos_start, this.pos));
+                }
             }
             else if ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".Contains(this.current_char.ToString()))
             {
-                tokens.Add(this.make_identifier());
+                string id_str = "";
+                Position pos_start = this.pos.copy();
+
+                while (this.current_char != default(char) && ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_").Contains(this.current_char.ToString()))
+                {
+                    id_str += this.current_char;
+                    this.advance();
+                }
+
+                string tok_type = "IDENTIFIER";
+
+                foreach (string keyword in new string[] { "var", "and", "or", "not", "if", "then", "elif", "else", "for", "to", "step", "while", "fun", "end", "return", "continue", "break", "del", "do", "foreach", "in", "switch", "case", "default", "const", "struct" })
+                {
+                    if (id_str == keyword)
+                    {
+                        tok_type = "KEYWORD";
+                        break;
+                    }
+                }
+
+                tokens.Add(new Token(tok_type, id_str, pos_start, this.pos));
             }
             else if (this.current_char == '!')
             {
-                tokens.Add(this.make_not_or_not_equals());
+                Position pos_start = this.pos.copy();
+                this.advance();
+
+                if (this.current_char == '=')
+                {
+                    this.advance();
+
+                    tokens.Add(new Token("NE", pos_start: pos_start, pos_end: this.pos));
+                }
+
+                tokens.Add(new Token("KEYWORD", "not", pos_start, this.pos));
             }
             else if (this.current_char == '=')
             {
-                tokens.Add(this.make_equals());
+                string tok_type = "EQ";
+                Position pos_start = this.pos.copy();
+
+                this.advance();
+
+                if (this.current_char == '=')
+                {
+                    this.advance();
+                    tok_type = "EE";
+                }
+
+                tokens.Add(new Token(tok_type, pos_start: pos_start, pos_end: this.pos));
             }
             else if (this.current_char == '<')
             {
-                tokens.Add(this.make_less_than());
+                string tok_type = "LT";
+                Position pos_start = this.pos.copy();
+
+                this.advance();
+
+                if (this.current_char == '=')
+                {
+                    this.advance();
+                    tok_type += "E";
+                }
+                else if (this.current_char == '<')
+                {
+                    this.advance();
+                    tok_type = "LEFT_SHIFT";
+
+                    if (this.current_char == '=')
+                    {
+                        this.advance();
+                        tok_type += "_EQ";
+                    }
+                }
+
+                tokens.Add(new Token(tok_type, pos_start: pos_start, pos_end: this.pos));
             }
             else if (this.current_char == '>')
             {
-                tokens.Add(this.make_greater_than());
+                string tok_type = "GT";
+                Position pos_start = this.pos.copy();
+
+                this.advance();
+
+                if (this.current_char == '=')
+                {
+                    this.advance();
+                    tok_type += "E";
+                }
+                else if (this.current_char == '>')
+                {
+                    this.advance();
+                    tok_type = "RIGHT_SHIFT";
+
+                    if (this.current_char == '=')
+                    {
+                        this.advance();
+                        tok_type += "_EQ";
+                    }
+                }
+
+                tokens.Add(new Token(tok_type, pos_start: pos_start, pos_end: this.pos));
             }
             else if (this.current_char == ',')
             {
@@ -175,25 +332,43 @@ public class Lexer
             }
             else if (this.current_char == '&')
             {
-                Tuple<Token, Error> result = this.make_and();
+                Position pos_start = this.pos.copy();
+                this.advance();
 
-                if (result.Item2 != null)
+                if (this.current_char == '&')
                 {
-                    return new Tuple<List<Token>, Error>(null, result.Item2);
+                    this.advance();
+                    tokens.Add(new Token("KEYWORD", "and", pos_start, this.pos));
                 }
-
-                tokens.Add(result.Item1);
+                else if (this.current_char == '=')
+                {
+                    this.advance();
+                    tokens.Add(new Token("LOGIC_AND_EQ", pos_start: pos_start, pos_end: this.pos));
+                }
+                else
+                {
+                    tokens.Add(new Token("LOGIC_AND", pos_start: pos_start, pos_end: this.pos));
+                }
             }
             else if (this.current_char == '|')
             {
-                Tuple<Token, Error> result = this.make_or();
+                Position pos_start = this.pos.copy();
+                this.advance();
 
-                if (result.Item2 != null)
+                if (this.current_char == '|')
                 {
-                    return new Tuple<List<Token>, Error>(null, result.Item2);
+                    this.advance();
+                    tokens.Add(new Token("KEYWORD", "or", pos_start, this.pos));
                 }
-
-                tokens.Add(result.Item1);
+                else if (this.current_char == '=')
+                {
+                    this.advance();
+                    tokens.Add(new Token("LOGIC_OR_EQ", pos_start: pos_start, pos_end: this.pos));
+                }
+                else
+                {
+                    tokens.Add(new Token("LOGIC_OR", pos_start: pos_start, pos_end: this.pos));
+                }
             }
             else if (this.current_char == '{')
             {
@@ -257,204 +432,6 @@ public class Lexer
         return new Tuple<List<Token>, Error>(tokens, null);
     }
 
-    public Tuple<Token, Error> make_and()
-    {
-        Position pos_start = this.pos.copy();
-        this.advance();
-
-        if (this.current_char == '&')
-        {
-            this.advance();
-            return new Tuple<Token, Error>(new Token("KEYWORD", "and", pos_start, this.pos), null);
-        }
-        else if (this.current_char == '=')
-        {
-            this.advance();
-            return new Tuple<Token, Error>(new Token("LOGIC_AND_EQ", pos_start: pos_start, pos_end: this.pos), null);
-        }
-        else
-        {
-            return new Tuple<Token, Error>(new Token("LOGIC_AND", pos_start: pos_start, pos_end: this.pos), null);
-        }
-
-        return new Tuple<Token, Error>(null, new ExpectedCharError(pos_start, this.pos, "Expected '&'"));
-    }
-
-    public Tuple<Token, Error> make_or()
-    {
-        Position pos_start = this.pos.copy();
-        this.advance();
-
-        if (this.current_char == '|')
-        {
-            this.advance();
-            return new Tuple<Token, Error>(new Token("KEYWORD", "or", pos_start, this.pos), null);
-        }
-        else if (this.current_char == '=')
-        {
-            this.advance();
-            return new Tuple<Token, Error>(new Token("LOGIC_OR_EQ", pos_start: pos_start, pos_end: this.pos), null);
-        }
-        else
-        {
-            return new Tuple<Token, Error>(new Token("LOGIC_OR", pos_start: pos_start, pos_end: this.pos), null);
-        }
-
-        return new Tuple<Token, Error>(null, new ExpectedCharError(pos_start, this.pos, "Expected '|'"));
-    }
-
-    public Token make_number()
-    {
-        string num_str = "";
-        int dot_count = 0;
-        Position pos_start = this.pos.copy();
-
-        while (this.current_char != default(char) && ("0123456789.").Contains(this.current_char.ToString()))
-        {
-            if (this.current_char == '.')
-            {
-                if (dot_count == 1)
-                {
-                    break;
-                }
-
-                dot_count += 1;
-                num_str += ".";
-            }
-            else
-            {
-                num_str += this.current_char;
-            }
-
-            this.advance();
-        }
-
-        if (dot_count == 0)
-        {
-            return new Token("INT", int.Parse(num_str), pos_start, this.pos);
-        }
-        else
-        {
-            return new Token("FLOAT", float.Parse(num_str.Replace(".", ",")), pos_start, this.pos);
-        }
-    }
-
-    public Token make_identifier()
-    {
-        string id_str = "";
-        Position pos_start = this.pos.copy();
-
-        while (this.current_char != default(char) && ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_").Contains(this.current_char.ToString()))
-        {
-            id_str += this.current_char;
-            this.advance();
-        }
-
-        string tok_type = "IDENTIFIER";
-
-        foreach (string keyword in new string[] { "var", "and", "or", "not", "if", "then", "elif", "else", "for", "to", "step", "while", "fun", "end", "return", "continue", "break", "del", "do", "foreach", "in", "switch", "case", "default", "const", "struct" })
-        {
-            if (id_str == keyword)
-            {
-                tok_type = "KEYWORD";
-                break;
-            }
-        }
-
-        return new Token(tok_type, id_str, pos_start, this.pos);
-    }
-
-    public Token make_equals()
-    {
-        string tok_type = "EQ";
-        Position pos_start = this.pos.copy();
-
-        this.advance();
-
-        if (this.current_char == '=')
-        {
-            this.advance();
-            tok_type = "EE";
-        }
-
-        return new Token(tok_type, pos_start: pos_start, pos_end: this.pos);
-    }
-
-    public Token make_less_than()
-    {
-        string tok_type = "LT";
-        Position pos_start = this.pos.copy();
-
-        this.advance();
-
-        if (this.current_char == '=')
-        {
-            this.advance();
-            tok_type += "E";
-        }
-        else if (this.current_char == '<')
-        {
-            this.advance();
-            tok_type = "LEFT_SHIFT";
-
-            if (this.current_char == '=')
-            {
-                this.advance();
-                tok_type += "_EQ";
-            }
-        }
-
-        return new Token(tok_type, pos_start: pos_start, pos_end: this.pos);
-    }
-
-    public Token make_greater_than()
-    {
-        string tok_type = "GT";
-        Position pos_start = this.pos.copy();
-
-        this.advance();
-
-        if (this.current_char == '=')
-        {
-            this.advance();
-            tok_type += "E";
-        }
-        else if (this.current_char == '>')
-        {
-            this.advance();
-            tok_type = "RIGHT_SHIFT";
-
-            if (this.current_char == '=')
-            {
-                this.advance();
-                tok_type += "_EQ";
-            }
-        }
-
-        return new Token(tok_type, pos_start: pos_start, pos_end: this.pos);
-    }
-
-    public Token make_minus_or_arrow()
-    {
-        string tok_type = "MINUS";
-        Position pos_start = this.pos.copy();
-
-        this.advance();
-
-        if (this.current_char == '>')
-        {
-            this.advance();
-            tok_type = "ARROW";
-        }
-        else if (this.current_char == '=')
-        {
-            this.advance();
-            tok_type += "_EQ";
-        }
-
-        return new Token(tok_type, pos_start: pos_start, pos_end: this.pos);
-    }
-
     public Token make_string(char conclude_char)
     {
         string str = "";
@@ -510,50 +487,5 @@ public class Lexer
         }
 
         this.advance();
-    }
-
-    public void skip_multi_line_comment()
-    {
-        this.advance();
-        bool firstChar = false;
-
-        while (true)
-        {
-            this.advance();
-
-            if (this.current_char == '*' && !firstChar)
-            {
-                firstChar = true;
-                continue;
-            }
-            else if (this.current_char == '*' && firstChar)
-            {
-                firstChar = false;
-            }
-            if (firstChar)
-            {
-                if (this.current_char == '/')
-                {
-                    break;
-                }
-            }
-        }
-
-        this.advance();
-    }
-
-    public Token make_not_or_not_equals()
-    {
-        Position pos_start = this.pos.copy();
-        this.advance();
-
-        if (this.current_char == '=')
-        {
-            this.advance();
-
-            return new Token("NE", pos_start: pos_start, pos_end: this.pos);
-        }
-
-        return new Token("KEYWORD", "not", pos_start, this.pos);
     }
 }

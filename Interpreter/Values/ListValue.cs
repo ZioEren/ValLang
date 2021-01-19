@@ -44,14 +44,14 @@ public class ListValue
         return this;
     }
 
-    public Tuple<object, Error> added_to(object other)
+    public Tuple<object, Error> plused_by(object other)
     {
         ListValue new_list = this.copy();
         new_list.elements.Add(other);
         return new Tuple<object, Error>(new_list, null);
     }
 
-    public Tuple<object, Error> subbed_by(object other)
+    public Tuple<object, Error> minused_by(object other)
     {
         if (other.GetType() == typeof(NumberValue))
         {
@@ -71,7 +71,7 @@ public class ListValue
         return new Tuple<object, Error>(null, this.illegal_operation(other));
     }
 
-    public Tuple<object, Error> multed_by(object other)
+    public Tuple<object, Error> muled_by(object other)
     {
         if (other.GetType() == typeof(ListValue))
         {
@@ -101,12 +101,8 @@ public class ListValue
         return new Tuple<object, Error>(null, this.illegal_operation(other));
     }
 
-    public Tuple<object, Error> powed_by(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
 
-    public Tuple<object, Error> get_comparison_eq(object other)
+    public Tuple<object, Error> get_comparison_ee(object other)
     {
         if (other.GetType() == typeof(ListValue))
         {
@@ -140,26 +136,6 @@ public class ListValue
         }
 
         return new Tuple<object, Error>(Values.TRUE, null);
-    }
-
-    public Tuple<object, Error> get_comparison_lt(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> get_comparison_gt(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> get_comparison_lte(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
-    }
-
-    public Tuple<object, Error> get_comparison_gte(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
     }
 
     public Tuple<object, Error> anded_by(object other)

@@ -32,44 +32,17 @@ public class Interpreter
 
         Tuple<object, Error> result = null;
 
-        if (node.op_tok.type == "PLUS")
+        if (node.op_tok.type == "KEYWORD")
         {
-            result = (Tuple<object, Error>) left.GetType().GetMethod("added_to").Invoke(left, new object[] { right });
+            result = (Tuple<object, Error>)left.GetType().GetMethod(node.op_tok.value.ToString().ToLower() + "ed_by").Invoke(left, new object[] { right });
         }
-        else if (node.op_tok.type == "MINUS")
+        else if (left.GetType().GetMethod("get_comparison_" + node.op_tok.type.ToLower()) != null)
         {
-            result = (Tuple<object, Error>)left.GetType().GetMethod("subbed_by").Invoke(left, new object[] { right });
-        }
-        else if (node.op_tok.type == "MUL")
-        {
-            result = (Tuple<object, Error>)left.GetType().GetMethod("multed_by").Invoke(left, new object[] { right });
-        }
-        else if (node.op_tok.type == "MODULO")
-        {
-            result = (Tuple<object, Error>)left.GetType().GetMethod("moduled_by").Invoke(left, new object[] { right });
-        }
-        else if (node.op_tok.type == "EE")
-        {
-            result = (Tuple<object, Error>)left.GetType().GetMethod("get_comparison_eq").Invoke(left, new object[] { right });
-        }
-        else if (node.op_tok.type == "KEYWORD" && node.op_tok.value.ToString() == "and")
-        {
-            result = (Tuple<object, Error>)left.GetType().GetMethod("anded_by").Invoke(left, new object[] { right });
-        }
-        else if (node.op_tok.type == "KEYWORD" && node.op_tok.value.ToString() == "or")
-        {
-            result = (Tuple<object, Error>)left.GetType().GetMethod("ored_by").Invoke(left, new object[] { right });
+            result = (Tuple<object, Error>)left.GetType().GetMethod("get_comparison_" + node.op_tok.type.ToLower()).Invoke(left, new object[] { right });
         }
         else
         {
-            if (left.GetType().GetMethod("get_comparison_" + node.op_tok.type.ToLower()) != null)
-            {
-                result = (Tuple<object, Error>)left.GetType().GetMethod("get_comparison_" + node.op_tok.type.ToLower()).Invoke(left, new object[] { right });
-            }
-            else
-            {
-                result = (Tuple<object, Error>)left.GetType().GetMethod(node.op_tok.type.ToLower() + "ed_by").Invoke(left, new object[] { right });
-            }
+            result = (Tuple<object, Error>)left.GetType().GetMethod(node.op_tok.type.ToLower() + "ed_by").Invoke(left, new object[] { right });
         }
 
         if (result.Item2 != null)
@@ -98,12 +71,12 @@ public class Interpreter
 
         if (node.op_tok.type == "MINUS")
         {
-            number = (Tuple<object, Error>) number.GetType().GetMethod("multed_by").Invoke(number, new object[] { new NumberValue(-1) });
+            number = (Tuple<object, Error>) number.GetType().GetMethod("muled_by").Invoke(number, new object[] { new NumberValue(-1) });
             error = (Error) number.GetType().GetProperty("Item2").GetValue(number);
         }
         else if (node.op_tok.type == "PLUS")
         {
-            number = (Tuple<object, Error>)number.GetType().GetMethod("multed_by").Invoke(number, new object[] { new NumberValue(1) });
+            number = (Tuple<object, Error>)number.GetType().GetMethod("muled_by").Invoke(number, new object[] { new NumberValue(1) });
             error = (Error)number.GetType().GetProperty("Item2").GetValue(number);
         }
         else if (node.op_tok.type == "KEYWORD" && node.op_tok.value.ToString() == "not")
@@ -209,36 +182,6 @@ public class Interpreter
             {
                 context.symbol_table.set(var_name, value);
             }
-            else if (node.op_tok.type == "PLUS_EQ")
-            {
-                Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod("added_to").Invoke(actualValue, new object[] { value });
-                value = result.Item1;
-                context.symbol_table.set(var_name, value);
-            }
-            else if (node.op_tok.type == "MINUS_EQ")
-            {
-                Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod("subbed_by").Invoke(actualValue, new object[] { value });
-                value = result.Item1;
-                context.symbol_table.set(var_name, value);
-            }
-            else if (node.op_tok.type == "MUL_EQ")
-            {
-                Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod("multed_by").Invoke(actualValue, new object[] { value });
-                value = result.Item1;
-                context.symbol_table.set(var_name, value);
-            }
-            else if (node.op_tok.type == "LOGIC_NOT_EQ")
-            {
-                Tuple<object, Error> result = (Tuple<object, Error>)value.GetType().GetMethod("logic_notted").Invoke(value, new object[] { });
-                value = result.Item1;
-                context.symbol_table.set(var_name, value);
-            }
-            else if (node.op_tok.type == "MODULO_EQ")
-            {
-                Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod("moduled_by").Invoke(actualValue, new object[] { value });
-                value = result.Item1;
-                context.symbol_table.set(var_name, value);
-            }
             else
             {
                 Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.type.ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
@@ -275,10 +218,7 @@ public class Interpreter
 
         foreach (Tuple<object, object, bool> conditionExpr in node.cases)
         {
-            object condition = conditionExpr.Item1;
-            object expr = conditionExpr.Item2;
-            bool should_return_null = conditionExpr.Item3;
-            object condition_value = res.register(this.visit(condition, context));
+            object condition_value = res.register(this.visit(conditionExpr.Item1, context));
 
             if (res.should_return())
             {
@@ -287,31 +227,28 @@ public class Interpreter
 
             if ((bool)condition_value.GetType().GetMethod("is_true").Invoke(condition_value, new object[] { }) == true)
             {
-                object expr_value = res.register(this.visit(expr, context));
+                object expr_value = res.register(this.visit(conditionExpr.Item2, context));
 
                 if (res.should_return())
                 {
                     return res;
                 }
 
-                return res.success(should_return_null ? Values.NULL : expr_value);
+                return res.success(conditionExpr.Item3 ? Values.NULL : expr_value);
             }
         }
 
         if (node.else_case != null)
         {
             Tuple<object, bool> allElse = node.else_case;
-
-            object expr = allElse.Item1;
-            bool should_return_null = allElse.Item2;
-            object else_value = res.register(this.visit(expr, context));
+            object else_value = res.register(this.visit(allElse.Item1, context));
 
             if (res.should_return())
             {
                 return res;
             }
 
-            return res.success(should_return_null ? Values.NULL : else_value);
+            return res.success(allElse.Item2 ? Values.NULL : else_value);
         }
 
         return res.success(Values.NULL);
@@ -628,16 +565,12 @@ public class Interpreter
     {
         RuntimeResult res = new RuntimeResult();
 
-        Token element_var_name = node.element_var_name;
-        Token list_var_name = node.list_var_name;
-        object body_node = node.body_node;
-
-        if (!context.symbol_table.present(list_var_name.value.ToString()))
+        if (!context.symbol_table.present(node.list_var_name.value.ToString()))
         {
             return res.failure(new RuntimeError(node.pos_start, node.pos_end, "List not present", context));
         }
 
-        ListValue theList = (ListValue)context.symbol_table.get(list_var_name.value);
+        ListValue theList = (ListValue)context.symbol_table.get(node.list_var_name.value);
 
         foreach (object element in theList.elements)
         {
@@ -651,8 +584,8 @@ public class Interpreter
                 break;
             }
 
-            context.symbol_table.set(element_var_name.value, element);
-            res.register(this.visit(body_node, context));
+            context.symbol_table.set(node.element_var_name.value, element);
+            res.register(this.visit(node.body_node, context));
 
             if (res.should_return())
             {
@@ -677,14 +610,9 @@ public class Interpreter
     public RuntimeResult visit_SwitchNode(SwitchNode node, Context context)
     {
         RuntimeResult res = new RuntimeResult();
-
-        Token var_name_tok = node.var_name_tok;
-        List<Tuple<object, object>> cases = node.cases;
-        object default_case = node.default_case;
-
         bool broken = false;
 
-        foreach (Tuple<object, object> element in cases)
+        foreach (Tuple<object, object> element in node.cases)
         {
             if (res.loop_should_break)
             {
@@ -699,12 +627,11 @@ public class Interpreter
                 return res;
             }
 
-            object body_node = element.Item2;
-            object variable = context.symbol_table.get(var_name_tok.value);
+            object variable = context.symbol_table.get(node.var_name_tok.value);
 
             if ((string) (variable.GetType().GetMethod("as_string").Invoke(variable, new object[] { })) == (string) (expr.GetType().GetMethod("as_string").Invoke(expr, new object[] { })))
             {
-                res.register(this.visit(body_node, context));
+                res.register(this.visit(element.Item2, context));
 
                 if (res.should_return())
                 {
@@ -719,9 +646,9 @@ public class Interpreter
             }
         }
 
-        if (!broken && default_case != null)
+        if (!broken && node.default_case != null)
         {
-            res.register(this.visit(default_case, context));
+            res.register(this.visit(node.default_case, context));
 
             if (res.should_return())
             {
@@ -735,14 +662,10 @@ public class Interpreter
     public RuntimeResult visit_StructDefNode(StructDefNode node, Context context)
     {
         RuntimeResult res = new RuntimeResult();
-
-        Token var_name_tok = node.var_name_tok;
-        object statements = node.statements_node;
-
-        StructValue value = new StructValue((string)var_name_tok.value, statements);
+        StructValue value = new StructValue((string)node.var_name_tok.value, node.statements_node);
 
         value.set_context(context).set_pos(node.pos_start, node.pos_end);
-        context.symbol_table.set(var_name_tok.value, value);
+        context.symbol_table.set(node.var_name_tok.value, value);
 
         return res.success(value);
     }
@@ -751,22 +674,19 @@ public class Interpreter
     {
         RuntimeResult res = new RuntimeResult();
 
-        Token var_name_tok = node.var_name_tok;
-        Token access_var_name_tok = node.access_var_name_tok;
-
-        if (!context.symbol_table.present(var_name_tok.value))
+        if (!context.symbol_table.present(node.var_name_tok.value))
         {
             return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this struct", context));
         }
 
-        StructValue theStruct = (StructValue) context.symbol_table.get(var_name_tok.value);
+        StructValue theStruct = (StructValue) context.symbol_table.get(node.var_name_tok.value);
 
-        if (!theStruct.context.symbol_table.present(access_var_name_tok.value))
+        if (!theStruct.context.symbol_table.present(node.access_var_name_tok.value))
         {
             return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this variable", context));
         }
 
-        object value = theStruct.context.symbol_table.get(access_var_name_tok.value);
+        object value = theStruct.context.symbol_table.get(node.access_var_name_tok.value);
 
         return res.success(value);
     }
@@ -781,8 +701,6 @@ public class Interpreter
         }
 
         StructValue theStruct = (StructValue)context.symbol_table.get(node.var_name_tok.value);
-
-        object var_name = node.access_var_name_tok.value;
         object value = null;
 
         if (node.node != null)
@@ -795,54 +713,24 @@ public class Interpreter
             }
         }
 
-        if (theStruct.context.symbol_table.present(var_name))
+        if (theStruct.context.symbol_table.present(node.access_var_name_tok.value))
         {
-            if (!theStruct.context.symbol_table.can_be_rewrite(var_name))
+            if (!theStruct.context.symbol_table.can_be_rewrite(node.access_var_name_tok.value))
             {
                 return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Can not access to constants variables", context));
             }
 
-            object actualValue = theStruct.context.symbol_table.get(var_name);
+            object actualValue = theStruct.context.symbol_table.get(node.access_var_name_tok.value);
 
             if (node.op_tok.type == "EQ")
             {
-                theStruct.context.symbol_table.set(var_name, value);
-            }
-            else if (node.op_tok.type == "PLUS_EQ")
-            {
-                Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod("added_to").Invoke(actualValue, new object[] { value });
-                value = result.Item1;
-                theStruct.context.symbol_table.set(var_name, value);
-            }
-            else if (node.op_tok.type == "MINUS_EQ")
-            {
-                Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod("subbed_by").Invoke(actualValue, new object[] { value });
-                value = result.Item1;
-                context.symbol_table.set(var_name, value);
-            }
-            else if (node.op_tok.type == "MUL_EQ")
-            {
-                Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod("multed_by").Invoke(actualValue, new object[] { value });
-                value = result.Item1;
-                theStruct.context.symbol_table.set(var_name, value);
-            }
-            else if (node.op_tok.type == "LOGIC_NOT_EQ")
-            {
-                Tuple<object, Error> result = (Tuple<object, Error>)value.GetType().GetMethod("logic_notted").Invoke(value, new object[] { });
-                value = result.Item1;
-                theStruct.context.symbol_table.set(var_name, value);
-            }
-            else if (node.op_tok.type == "MODULO_EQ")
-            {
-                Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod("moduled_by").Invoke(actualValue, new object[] { value });
-                value = result.Item1;
-                theStruct.context.symbol_table.set(var_name, value);
+                theStruct.context.symbol_table.set(node.access_var_name_tok.value, value);
             }
             else
             {
                 Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.type.ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
                 value = result.Item1;
-                theStruct.context.symbol_table.set(var_name, value);
+                theStruct.context.symbol_table.set(node.access_var_name_tok.value, value);
             }
 
             value = value.GetType().GetMethod("copy").Invoke(value, new object[] { });
@@ -858,25 +746,22 @@ public class Interpreter
     {
         RuntimeResult res = new RuntimeResult();
 
-        Token struct_var_name_tok = node.struct_var_name_tok;
-        Token access_var_name_tok = node.access_var_name_tok;
-
         List<object> arg_nodes = node.arg_nodes;
         List<object> args = new List<object>();
 
-        if (!context.symbol_table.present(struct_var_name_tok.value))
+        if (!context.symbol_table.present(node.struct_var_name_tok.value))
         {
             return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this struct", context));
         }
 
-        StructValue theStruct = (StructValue)context.symbol_table.get(struct_var_name_tok.value);
+        StructValue theStruct = (StructValue)context.symbol_table.get(node.struct_var_name_tok.value);
 
-        if (!theStruct.context.symbol_table.present(access_var_name_tok.value))
+        if (!theStruct.context.symbol_table.present(node.access_var_name_tok.value))
         {
             return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this variable", context));
         }
 
-        object value_to_call = theStruct.context.symbol_table.get(access_var_name_tok.value);
+        object value_to_call = theStruct.context.symbol_table.get(node.access_var_name_tok.value);
 
         if (value_to_call.GetType() == typeof(FunctionValue))
         {

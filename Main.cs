@@ -21,6 +21,7 @@ class Program
     {
         System.Diagnostics.Process.GetCurrentProcess().PriorityClass = System.Diagnostics.ProcessPriorityClass.RealTime;
         new Thread(clearRam).Start();
+
         string text = "", allString = "";
 
         foreach (string arg in args)
@@ -178,6 +179,8 @@ class Program
 
     public static Tuple<object, Error> run(string fn, string text)
     {
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
         try
         {
             Tuple<List<Token>, Error> tokensError = new Lexer(fn, text).make_tokens();
@@ -200,24 +203,14 @@ class Program
             Interpreter interpreter = new Interpreter();
             Context context = new Context(fn);
             SymbolTable global_symbol_table = new SymbolTable();
-
-            global_symbol_table.set("null", Values.NULL);
-            global_symbol_table.set("true", Values.TRUE);
-            global_symbol_table.set("false", Values.FALSE);
-            global_symbol_table.set("is_num", BuiltInFunctions.is_number);
-            global_symbol_table.set("is_str", BuiltInFunctions.is_string);
-            global_symbol_table.set("is_list", BuiltInFunctions.is_list);
-            global_symbol_table.set("is_fun", BuiltInFunctions.is_function);
-            global_symbol_table.set("run", BuiltInFunctions.run);
-            global_symbol_table.set("import", BuiltInFunctions.import);
-            global_symbol_table.set("exit", BuiltInFunctions.exit);
-            global_symbol_table.set("end", BuiltInFunctions.end);
-            global_symbol_table.set("close", BuiltInFunctions.close);
-            global_symbol_table.set("clear_ram", BuiltInFunctions.clear_ram);
+            Importer.add(global_symbol_table, 0);
 
             context.symbol_table = global_symbol_table;
 
             RuntimeResult result = interpreter.visit(ast.node, context);
+
+            stopwatch.Stop();
+            Console.WriteLine("Time elapsed: " + stopwatch.Elapsed.ToString() + " (" + stopwatch.ElapsedMilliseconds + "ms, " + stopwatch.ElapsedTicks + " ticks).");
 
             return new Tuple<object, Error>(result.value, result.error);
         }

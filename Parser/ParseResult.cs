@@ -6,7 +6,7 @@
 
     public void register_advancement()
     {
-        this.advance_count += 1;
+        this.advance_count++;
     }
 
     public object register(ParseResult res)

@@ -9,6 +9,7 @@
     public static BuiltInFunction is_string = new BuiltInFunction("is_string");
     public static BuiltInFunction is_list = new BuiltInFunction("is_list");
     public static BuiltInFunction is_function = new BuiltInFunction("is_function");
+    public static BuiltInFunction is_struct = new BuiltInFunction("is_struct");
     public static BuiltInFunction append = new BuiltInFunction("append");
     public static BuiltInFunction pop = new BuiltInFunction("pop");
     public static BuiltInFunction extend = new BuiltInFunction("extend");
@@ -21,4 +22,5 @@
     public static BuiltInFunction clear_ram = new BuiltInFunction("clear_ram");
     public static BuiltInFunction input_float = new BuiltInFunction("input_float");
     public static BuiltInFunction input_num = new BuiltInFunction("input_num");
+
 }

@@ -15,12 +15,10 @@ public class SymbolTable
     public void clear()
     {
         symbols.Clear();
-        SymbolTable theParent = parent;
 
-        while (theParent != null)
+        if (this.parent != null)
         {
-            theParent.clear();
-            theParent = theParent.parent;
+            this.parent.clear();
         }
     }
 
