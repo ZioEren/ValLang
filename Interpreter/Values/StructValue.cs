@@ -28,11 +28,6 @@ public class StructValue
         return this;
     }
 
-    public RuntimeResult execute(List<object> args)
-    {
-        return new RuntimeResult().failure(this.illegal_operation(args));
-    }
-
     public StructValue declare(Interpreter interpreter)
     {
         if (already_declared)

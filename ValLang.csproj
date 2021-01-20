@@ -45,13 +45,16 @@
     <Compile Include="Errors\Errors\InvalidSyntaxError.cs" />
     <Compile Include="Errors\Errors\RuntimeError.cs" />
     <Compile Include="Interpreter\BuiltInFunctions.cs" />
+    <Compile Include="Interpreter\BuiltInStructs.cs" />
     <Compile Include="Interpreter\Context.cs" />
+    <Compile Include="Interpreter\Custom Structs\StructMath.cs" />
     <Compile Include="Interpreter\Importer.cs" />
     <Compile Include="Interpreter\Interpreter.cs" />
     <Compile Include="Interpreter\RuntimeResult.cs" />
     <Compile Include="Interpreter\SymbolTable.cs" />
     <Compile Include="Interpreter\Values.cs" />
     <Compile Include="Interpreter\Values\BuiltInFunction.cs" />
+    <Compile Include="Interpreter\Values\BuiltInStruct.cs" />
     <Compile Include="Interpreter\Values\FunctionValue.cs" />
     <Compile Include="Interpreter\Values\ListValue.cs" />
     <Compile Include="Interpreter\Values\NumberValue.cs" />
@@ -98,5 +101,6 @@
   <ItemGroup>
     <Content Include="favicon.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

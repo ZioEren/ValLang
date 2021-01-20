@@ -136,6 +136,13 @@ public class Interpreter
                 value = new StructValue(((StructValue)value).name, ((StructValue)value).statements).set_context(context).set_pos(node.pos_start, node.pos_end).declare(this);
             }
         }
+        else if (value.GetType() == typeof(BuiltInStruct))
+        {
+            if (!((BuiltInStruct)value).already_declared)
+            {
+                value = new BuiltInStruct(((BuiltInStruct)value).name).set_context(context).set_pos(node.pos_start, node.pos_end).declare(false);
+            }
+        }
 
         if (context.symbol_table.can_be_rewrite(var_name))
         {
@@ -679,16 +686,34 @@ public class Interpreter
             return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this struct", context));
         }
 
-        StructValue theStruct = (StructValue) context.symbol_table.get(node.var_name_tok.value);
-
-        if (!theStruct.context.symbol_table.present(node.access_var_name_tok.value))
+        try
         {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this variable", context));
+            StructValue theStruct = (StructValue)context.symbol_table.get(node.var_name_tok.value);
+
+            if (!theStruct.context.symbol_table.present(node.access_var_name_tok.value))
+            {
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this variable", context));
+            }
+
+            object value = theStruct.context.symbol_table.get(node.access_var_name_tok.value);
+
+            return res.success(value);
+        }
+        catch (Exception)
+        {
+            BuiltInStruct theStruct = (BuiltInStruct)context.symbol_table.get(node.var_name_tok.value);
+
+            if (!theStruct.context.symbol_table.present(node.access_var_name_tok.value))
+            {
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this variable", context));
+            }
+
+            object value = theStruct.context.symbol_table.get(node.access_var_name_tok.value);
+
+            return res.success(value);
         }
 
-        object value = theStruct.context.symbol_table.get(node.access_var_name_tok.value);
-
-        return res.success(value);
+        return res.success(Values.NULL);
     }
 
     public RuntimeResult visit_StructReAssignNode(StructReAssignNode node, Context context)
@@ -754,68 +779,104 @@ public class Interpreter
             return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this struct", context));
         }
 
-        StructValue theStruct = (StructValue)context.symbol_table.get(node.struct_var_name_tok.value);
-
-        if (!theStruct.context.symbol_table.present(node.access_var_name_tok.value))
+        try
         {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this variable", context));
-        }
+            StructValue theStruct = (StructValue)context.symbol_table.get(node.struct_var_name_tok.value);
 
-        object value_to_call = theStruct.context.symbol_table.get(node.access_var_name_tok.value);
-
-        if (value_to_call.GetType() == typeof(FunctionValue))
-        {
-            value_to_call = ((FunctionValue)value_to_call).copy().set_pos(node.pos_start, node.pos_end).set_context(theStruct.context);
-
-            foreach (object arg_node in node.arg_nodes)
+            if (!theStruct.context.symbol_table.present(node.access_var_name_tok.value))
             {
-                args.Add(res.register(this.visit(arg_node, context)));
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this variable", context));
+            }
+
+            object value_to_call = theStruct.context.symbol_table.get(node.access_var_name_tok.value);
+
+            if (value_to_call.GetType() == typeof(FunctionValue))
+            {
+                value_to_call = ((FunctionValue)value_to_call).copy().set_pos(node.pos_start, node.pos_end).set_context(theStruct.context);
+
+                foreach (object arg_node in node.arg_nodes)
+                {
+                    args.Add(res.register(this.visit(arg_node, context)));
+
+                    if (res.should_return())
+                    {
+                        return res;
+                    }
+                }
+
+                object return_value = res.register(((FunctionValue)value_to_call).execute(args));
 
                 if (res.should_return())
                 {
                     return res;
                 }
+
+                return_value = return_value.GetType().GetMethod("copy").Invoke(return_value, new object[] { });
+                return_value = return_value.GetType().GetMethod("set_pos").Invoke(return_value, new object[] { node.pos_start, node.pos_end });
+                return_value = return_value.GetType().GetMethod("set_context").Invoke(return_value, new object[] { theStruct.context });
+
+                return res.success(return_value);
             }
-
-            object return_value = res.register(((FunctionValue)value_to_call).execute(args));
-
-            if (res.should_return())
+            else
             {
-                return res;
-            }
+                value_to_call = ((BuiltInFunction)value_to_call).copy().set_pos(node.pos_start, node.pos_end).set_context(theStruct.context);
 
-            return_value = return_value.GetType().GetMethod("copy").Invoke(return_value, new object[] { });
-            return_value = return_value.GetType().GetMethod("set_pos").Invoke(return_value, new object[] { node.pos_start, node.pos_end });
-            return_value = return_value.GetType().GetMethod("set_context").Invoke(return_value, new object[] { theStruct.context });
+                foreach (object arg_node in node.arg_nodes)
+                {
+                    args.Add(res.register(this.visit(arg_node, context)));
 
-            return res.success(return_value);
-        }
-        else
-        {
-            value_to_call = ((BuiltInFunction)value_to_call).copy().set_pos(node.pos_start, node.pos_end).set_context(theStruct.context);
+                    if (res.should_return())
+                    {
+                        return res;
+                    }
+                }
 
-            foreach (object arg_node in node.arg_nodes)
-            {
-                args.Add(res.register(this.visit(arg_node, context)));
+                object return_value = res.register(((BuiltInFunction)value_to_call).execute(args));
 
                 if (res.should_return())
                 {
                     return res;
                 }
+
+                return_value = return_value.GetType().GetMethod("copy").Invoke(return_value, new object[] { });
+                return_value = return_value.GetType().GetMethod("set_pos").Invoke(return_value, new object[] { node.pos_start, node.pos_end });
+                return_value = return_value.GetType().GetMethod("set_context").Invoke(return_value, new object[] { theStruct.context });
+
+                return res.success(return_value);
             }
+        }
+        catch (Exception)
+        {
+            BuiltInStruct theStruct = (BuiltInStruct)context.symbol_table.get(node.struct_var_name_tok.value);
 
-            object return_value = res.register(((BuiltInFunction)value_to_call).execute(args));
-
-            if (res.should_return())
+            if (!theStruct.context.symbol_table.present(node.access_var_name_tok.value))
             {
-                return res;
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this variable", context));
             }
 
-            return_value = return_value.GetType().GetMethod("copy").Invoke(return_value, new object[] { });
-            return_value = return_value.GetType().GetMethod("set_pos").Invoke(return_value, new object[] { node.pos_start, node.pos_end });
-            return_value = return_value.GetType().GetMethod("set_context").Invoke(return_value, new object[] { theStruct.context });
+            object value_to_call = theStruct.context.symbol_table.get(node.access_var_name_tok.value);
 
-            return res.success(return_value);
+            if (value_to_call.GetType() == typeof(bool))
+            {
+                foreach (object arg_node in node.arg_nodes)
+                {
+                    args.Add(res.register(this.visit(arg_node, context)));
+
+                    if (res.should_return())
+                    {
+                        return res;
+                    }
+                }
+
+                object return_value = res.register(theStruct.exec_func(node.access_var_name_tok.value.ToString(), args));
+
+                if (res.should_return())
+                {
+                    return res;
+                }
+
+                return res.success(return_value);
+            }
         }
 
         return res.success(Values.NULL);
