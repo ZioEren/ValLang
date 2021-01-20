@@ -164,7 +164,7 @@ public class NumberValue
         }
         else if (other.GetType() == typeof(StringValue))
         {
-            return new Tuple<object, Error>(new StringValue(new StringBuilder(this.as_string()).Append(((StringValue)other).value).ToString()), null);
+            return new Tuple<object, Error>(new StringValue(this.value + ((StringValue)other).value), null);
         }
         else if (other.GetType() == typeof(ListValue))
         {
@@ -658,11 +658,6 @@ public class NumberValue
         }
 
         return new RuntimeError(this.pos_start, (Position)other.GetType().GetField("pos_end").GetValue(other), "Illegal operation", this.context);
-    }
-
-    public RuntimeResult execute(List<object> args)
-    {
-        return new RuntimeResult().failure(this.illegal_operation(null));
     }
 
     public string as_string()

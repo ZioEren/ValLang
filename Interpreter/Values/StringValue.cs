@@ -50,11 +50,11 @@ public class StringValue
     {
         if (other.GetType() == typeof(StringValue))
         {
-            return new Tuple<object, Error>(new StringValue(new StringBuilder(this.value).Append(((StringValue)other).value).ToString()), null);
+            return new Tuple<object, Error>(new StringValue(this.value + ((StringValue)other).value), null);
         }
         else if (other.GetType() == typeof(NumberValue))
         {
-            return new Tuple<object, Error>(new StringValue(new StringBuilder(this.value).Append(((NumberValue)other).as_string()).ToString()), null);
+            return new Tuple<object, Error>(new StringValue(this.value + ((NumberValue)other).as_string()), null);
         }
         else if (other.GetType() == typeof(ListValue))
         {
@@ -128,11 +128,6 @@ public class StringValue
         }
 
         return new Tuple<object, Error>(Values.TRUE, null);
-    }
-
-    public Tuple<object, Error> get_comparison_lt(object other)
-    {
-        return new Tuple<object, Error>(null, this.illegal_operation(other));
     }
 
     public Tuple<object, Error> anded_by(object other)

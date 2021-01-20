@@ -104,7 +104,7 @@ public class BuiltInStruct
 
     public Tuple<object, Error> get_comparison_ee(object other)
     {
-        return new Tuple<object, Error>(Values.FALSE, null); ;
+        return new Tuple<object, Error>(Values.FALSE, null);
     }
 
     public Tuple<object, Error> get_comparison_ne(object other)

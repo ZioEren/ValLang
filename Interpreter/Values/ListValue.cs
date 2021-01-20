@@ -23,11 +23,6 @@ public class ListValue
         return this;
     }
 
-    public RuntimeResult execute(List<object> args)
-    {
-        return new RuntimeResult().failure(this.illegal_operation(args));
-    }
-
     public ListValue copy()
     {
         ListValue copy = new ListValue(this.elements);
