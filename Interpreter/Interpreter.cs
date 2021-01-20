@@ -725,43 +725,87 @@ public class Interpreter
             return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this struct", context));
         }
 
-        StructValue theStruct = (StructValue)context.symbol_table.get(node.var_name_tok.value);
-        object value = null;
-
-        if (node.node != null)
+        try
         {
-            value = res.register(this.visit(node.node, context));
+            StructValue theStruct = (StructValue)context.symbol_table.get(node.var_name_tok.value);
+            object value = null;
 
-            if (res.should_return())
+            if (node.node != null)
             {
-                return res;
+                value = res.register(this.visit(node.node, context));
+
+                if (res.should_return())
+                {
+                    return res;
+                }
+            }
+
+            if (theStruct.context.symbol_table.present(node.access_var_name_tok.value))
+            {
+                if (!theStruct.context.symbol_table.can_be_rewrite(node.access_var_name_tok.value))
+                {
+                    return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Can not access to constants variables", context));
+                }
+
+                object actualValue = theStruct.context.symbol_table.get(node.access_var_name_tok.value);
+
+                if (node.op_tok.type == "EQ")
+                {
+                    theStruct.context.symbol_table.set(node.access_var_name_tok.value, value);
+                }
+                else
+                {
+                    Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.type.ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
+                    value = result.Item1;
+                    theStruct.context.symbol_table.set(node.access_var_name_tok.value, value);
+                }
+
+                value = value.GetType().GetMethod("copy").Invoke(value, new object[] { });
+                value.GetType().GetMethod("set_pos").Invoke(value, new object[] { node.pos_start, node.pos_end });
+
+                return res.success(value);
             }
         }
-
-        if (theStruct.context.symbol_table.present(node.access_var_name_tok.value))
+        catch (Exception)
         {
-            if (!theStruct.context.symbol_table.can_be_rewrite(node.access_var_name_tok.value))
+            BuiltInStruct theStruct = (BuiltInStruct)context.symbol_table.get(node.var_name_tok.value);
+            object value = null;
+
+            if (node.node != null)
             {
-                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Can not access to constants variables", context));
+                value = res.register(this.visit(node.node, context));
+
+                if (res.should_return())
+                {
+                    return res;
+                }
             }
 
-            object actualValue = theStruct.context.symbol_table.get(node.access_var_name_tok.value);
-
-            if (node.op_tok.type == "EQ")
+            if (theStruct.context.symbol_table.present(node.access_var_name_tok.value))
             {
-                theStruct.context.symbol_table.set(node.access_var_name_tok.value, value);
-            }
-            else
-            {
-                Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.type.ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
-                value = result.Item1;
-                theStruct.context.symbol_table.set(node.access_var_name_tok.value, value);
-            }
+                if (!theStruct.context.symbol_table.can_be_rewrite(node.access_var_name_tok.value))
+                {
+                    return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Can not access to constants variables", context));
+                }
 
-            value = value.GetType().GetMethod("copy").Invoke(value, new object[] { });
-            value.GetType().GetMethod("set_pos").Invoke(value, new object[] { node.pos_start, node.pos_end });
+                object actualValue = theStruct.context.symbol_table.get(node.access_var_name_tok.value);
 
-            return res.success(value);
+                if (node.op_tok.type == "EQ")
+                {
+                    theStruct.context.symbol_table.set(node.access_var_name_tok.value, value);
+                }
+                else
+                {
+                    Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.type.ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
+                    value = result.Item1;
+                    theStruct.context.symbol_table.set(node.access_var_name_tok.value, value);
+                }
+
+                value = value.GetType().GetMethod("copy").Invoke(value, new object[] { });
+                value.GetType().GetMethod("set_pos").Invoke(value, new object[] { node.pos_start, node.pos_end });
+
+                return res.success(value);
+            }
         }
 
         return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Variable is not created", context));
@@ -938,23 +982,41 @@ public class Interpreter
 
     public RuntimeResult visit_NamespaceAccessNode(NamespaceAccessNode node, Context context)
     {
-         RuntimeResult res = new RuntimeResult();
+        RuntimeResult res = new RuntimeResult();
 
-         if (!context.symbol_table.present(node.var_name_tok.value))
-         {
-             return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this namespace", context));
-         }
+        if (!context.symbol_table.present(node.var_name_tok.value))
+        {
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this namespace", context));
+        }
 
-         NamespaceValue theNamespace = (NamespaceValue)context.symbol_table.get(node.var_name_tok.value);
+        try
+        {
+            NamespaceValue theNamespace = (NamespaceValue)context.symbol_table.get(node.var_name_tok.value);
 
-         if (!theNamespace.context.symbol_table.present(node.access_var_name_tok.value))
-         {
-             return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this variable", context));
-         }
+            if (!theNamespace.context.symbol_table.present(node.access_var_name_tok.value))
+            {
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this variable", context));
+            }
 
-         object value = theNamespace.context.symbol_table.get(node.access_var_name_tok.value);
+            object value = theNamespace.context.symbol_table.get(node.access_var_name_tok.value);
 
-         return res.success(value);
+            return res.success(value);
+        }
+        catch (Exception)
+        {
+            BuiltInNamespace theNamespace = (BuiltInNamespace)context.symbol_table.get(node.var_name_tok.value);
+
+            if (!theNamespace.context.symbol_table.present(node.access_var_name_tok.value))
+            {
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this variable", context));
+            }
+
+            object value = theNamespace.context.symbol_table.get(node.access_var_name_tok.value);
+
+            return res.success(value);
+        }
+
+        return res.success(Values.NULL);
     }
 
     public RuntimeResult visit_NamespaceReAssignNode(NamespaceReAssignNode node, Context context)
@@ -966,43 +1028,87 @@ public class Interpreter
             return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this namespace", context));
         }
 
-        NamespaceValue theNamespace = (NamespaceValue)context.symbol_table.get(node.var_name_tok.value);
-        object value = null;
-
-        if (node.node != null)
+        try
         {
-            value = res.register(this.visit(node.node, context));
+            NamespaceValue theNamespace = (NamespaceValue)context.symbol_table.get(node.var_name_tok.value);
+            object value = null;
 
-            if (res.should_return())
+            if (node.node != null)
             {
-                return res;
+                value = res.register(this.visit(node.node, context));
+
+                if (res.should_return())
+                {
+                    return res;
+                }
+            }
+
+            if (theNamespace.context.symbol_table.present(node.access_var_name_tok.value))
+            {
+                if (!theNamespace.context.symbol_table.can_be_rewrite(node.access_var_name_tok.value))
+                {
+                    return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Can not access to constants variables", context));
+                }
+
+                object actualValue = theNamespace.context.symbol_table.get(node.access_var_name_tok.value);
+
+                if (node.op_tok.type == "EQ")
+                {
+                    theNamespace.context.symbol_table.set(node.access_var_name_tok.value, value);
+                }
+                else
+                {
+                    Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.type.ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
+                    value = result.Item1;
+                    theNamespace.context.symbol_table.set(node.access_var_name_tok.value, value);
+                }
+
+                value = value.GetType().GetMethod("copy").Invoke(value, new object[] { });
+                value.GetType().GetMethod("set_pos").Invoke(value, new object[] { node.pos_start, node.pos_end });
+
+                return res.success(value);
             }
         }
-
-        if (theNamespace.context.symbol_table.present(node.access_var_name_tok.value))
+        catch (Exception)
         {
-            if (!theNamespace.context.symbol_table.can_be_rewrite(node.access_var_name_tok.value))
+            BuiltInNamespace theNamespace = (BuiltInNamespace)context.symbol_table.get(node.var_name_tok.value);
+            object value = null;
+
+            if (node.node != null)
             {
-                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Can not access to constants variables", context));
+                value = res.register(this.visit(node.node, context));
+
+                if (res.should_return())
+                {
+                    return res;
+                }
             }
 
-            object actualValue = theNamespace.context.symbol_table.get(node.access_var_name_tok.value);
-
-            if (node.op_tok.type == "EQ")
+            if (theNamespace.context.symbol_table.present(node.access_var_name_tok.value))
             {
-                theNamespace.context.symbol_table.set(node.access_var_name_tok.value, value);
-            }
-            else
-            {
-                Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.type.ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
-                value = result.Item1;
-                theNamespace.context.symbol_table.set(node.access_var_name_tok.value, value);
-            }
+                if (!theNamespace.context.symbol_table.can_be_rewrite(node.access_var_name_tok.value))
+                {
+                    return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Can not access to constants variables", context));
+                }
 
-            value = value.GetType().GetMethod("copy").Invoke(value, new object[] { });
-            value.GetType().GetMethod("set_pos").Invoke(value, new object[] { node.pos_start, node.pos_end });
+                object actualValue = theNamespace.context.symbol_table.get(node.access_var_name_tok.value);
 
-            return res.success(value);
+                if (node.op_tok.type == "EQ")
+                {
+                    theNamespace.context.symbol_table.set(node.access_var_name_tok.value, value);
+                }
+                else
+                {
+                    Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.type.ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
+                    value = result.Item1;
+                    theNamespace.context.symbol_table.set(node.access_var_name_tok.value, value);
+                }
+
+                value = value.GetType().GetMethod("copy").Invoke(value, new object[] { });
+                value.GetType().GetMethod("set_pos").Invoke(value, new object[] { node.pos_start, node.pos_end });
+
+                return res.success(value);
+            }
         }
 
         return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Variable is not created", context));
@@ -1020,68 +1126,104 @@ public class Interpreter
             return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this namespace", context));
         }
 
-        NamespaceValue theNamespace = (NamespaceValue)context.symbol_table.get(node.struct_var_name_tok.value);
-
-        if (!theNamespace.context.symbol_table.present(node.access_var_name_tok.value))
+        try
         {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this variable", context));
-        }
+            NamespaceValue theNamespace = (NamespaceValue)context.symbol_table.get(node.struct_var_name_tok.value);
 
-        object value_to_call = theNamespace.context.symbol_table.get(node.access_var_name_tok.value);
-
-        if (value_to_call.GetType() == typeof(FunctionValue))
-        {
-            value_to_call = ((FunctionValue)value_to_call).copy().set_pos(node.pos_start, node.pos_end).set_context(theNamespace.context);
-
-            foreach (object arg_node in node.arg_nodes)
+            if (!theNamespace.context.symbol_table.present(node.access_var_name_tok.value))
             {
-                args.Add(res.register(this.visit(arg_node, context)));
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this variable", context));
+            }
+
+            object value_to_call = theNamespace.context.symbol_table.get(node.access_var_name_tok.value);
+
+            if (value_to_call.GetType() == typeof(FunctionValue))
+            {
+                value_to_call = ((FunctionValue)value_to_call).copy().set_pos(node.pos_start, node.pos_end).set_context(theNamespace.context);
+
+                foreach (object arg_node in node.arg_nodes)
+                {
+                    args.Add(res.register(this.visit(arg_node, context)));
+
+                    if (res.should_return())
+                    {
+                        return res;
+                    }
+                }
+
+                object return_value = res.register(((FunctionValue)value_to_call).execute(args));
 
                 if (res.should_return())
                 {
                     return res;
                 }
+
+                return_value = return_value.GetType().GetMethod("copy").Invoke(return_value, new object[] { });
+                return_value = return_value.GetType().GetMethod("set_pos").Invoke(return_value, new object[] { node.pos_start, node.pos_end });
+                return_value = return_value.GetType().GetMethod("set_context").Invoke(return_value, new object[] { theNamespace.context });
+
+                return res.success(return_value);
             }
-
-            object return_value = res.register(((FunctionValue)value_to_call).execute(args));
-
-            if (res.should_return())
+            else
             {
-                return res;
-            }
+                value_to_call = ((BuiltInFunction)value_to_call).copy().set_pos(node.pos_start, node.pos_end).set_context(theNamespace.context);
 
-            return_value = return_value.GetType().GetMethod("copy").Invoke(return_value, new object[] { });
-            return_value = return_value.GetType().GetMethod("set_pos").Invoke(return_value, new object[] { node.pos_start, node.pos_end });
-            return_value = return_value.GetType().GetMethod("set_context").Invoke(return_value, new object[] { theNamespace.context });
+                foreach (object arg_node in node.arg_nodes)
+                {
+                    args.Add(res.register(this.visit(arg_node, context)));
 
-            return res.success(return_value);
-        }
-        else
-        {
-            value_to_call = ((BuiltInFunction)value_to_call).copy().set_pos(node.pos_start, node.pos_end).set_context(theNamespace.context);
+                    if (res.should_return())
+                    {
+                        return res;
+                    }
+                }
 
-            foreach (object arg_node in node.arg_nodes)
-            {
-                args.Add(res.register(this.visit(arg_node, context)));
+                object return_value = res.register(((BuiltInFunction)value_to_call).execute(args));
 
                 if (res.should_return())
                 {
                     return res;
                 }
+
+                return_value = return_value.GetType().GetMethod("copy").Invoke(return_value, new object[] { });
+                return_value = return_value.GetType().GetMethod("set_pos").Invoke(return_value, new object[] { node.pos_start, node.pos_end });
+                return_value = return_value.GetType().GetMethod("set_context").Invoke(return_value, new object[] { theNamespace.context });
+
+                return res.success(return_value);
             }
+        }
+        catch (Exception)
+        {
+            BuiltInNamespace theNamespace = (BuiltInNamespace)context.symbol_table.get(node.struct_var_name_tok.value);
 
-            object return_value = res.register(((BuiltInFunction)value_to_call).execute(args));
-
-            if (res.should_return())
+            if (!theNamespace.context.symbol_table.present(node.access_var_name_tok.value))
             {
-                return res;
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this variable", context));
             }
 
-            return_value = return_value.GetType().GetMethod("copy").Invoke(return_value, new object[] { });
-            return_value = return_value.GetType().GetMethod("set_pos").Invoke(return_value, new object[] { node.pos_start, node.pos_end });
-            return_value = return_value.GetType().GetMethod("set_context").Invoke(return_value, new object[] { theNamespace.context });
+            object value_to_call = theNamespace.context.symbol_table.get(node.access_var_name_tok.value);
 
-            return res.success(return_value);
+            if (value_to_call.GetType() == typeof(bool))
+            {
+                foreach (object arg_node in node.arg_nodes)
+                {
+                    args.Add(res.register(this.visit(arg_node, context)));
+
+                    if (res.should_return())
+                    {
+                        return res;
+                    }
+                }
+
+                object return_value = res.register(theNamespace.exec_func(node.access_var_name_tok.value.ToString(), args));
+
+                if (res.should_return())
+                {
+                    return res;
+                }
+
+                return res.success(return_value);
+            }
         }
 
         return res.success(Values.NULL);

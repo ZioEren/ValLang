@@ -39,6 +39,7 @@ public static class Importer
             table.set("null", Values.NULL);
             table.set("true", Values.TRUE);
             table.set("false", Values.FALSE);
+
             table.set("is_num", BuiltInFunctions.is_number);
             table.set("is_str", BuiltInFunctions.is_string);
             table.set("is_list", BuiltInFunctions.is_list);
@@ -50,9 +51,12 @@ public static class Importer
             table.set("end", BuiltInFunctions.end);
             table.set("close", BuiltInFunctions.close);
             table.set("clear_ram", BuiltInFunctions.clear_ram);
-            table.set("Math", BuiltInStructs.Math);
             table.set("use", BuiltInFunctions.use);
             table.set("is_namespace", BuiltInFunctions.is_namespace);
+
+            table.set("Math", BuiltInStructs.Math);
+
+            table.set("Test", BuiltInNamespaces.Test);
         }
         else if (toImport == 1)
         {
