@@ -925,4 +925,165 @@ public class Interpreter
 
         return res.success(Values.NULL);
     }
+
+    public RuntimeResult visit_NamespaceDefNode(NamespaceDefNode node, Context context)
+    {
+        RuntimeResult res = new RuntimeResult();
+        NamespaceValue value = new NamespaceValue(node.var_name_tok.value.ToString(), node.statements_node, this, node.pos_start, node.pos_end, context);
+
+        context.symbol_table.set(node.var_name_tok.value, value);
+
+        return res.success(value);
+    }
+
+    public RuntimeResult visit_NamespaceAccessNode(NamespaceAccessNode node, Context context)
+    {
+         RuntimeResult res = new RuntimeResult();
+
+         if (!context.symbol_table.present(node.var_name_tok.value))
+         {
+             return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this namespace", context));
+         }
+
+         NamespaceValue theNamespace = (NamespaceValue)context.symbol_table.get(node.var_name_tok.value);
+
+         if (!theNamespace.context.symbol_table.present(node.access_var_name_tok.value))
+         {
+             return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this variable", context));
+         }
+
+         object value = theNamespace.context.symbol_table.get(node.access_var_name_tok.value);
+
+         return res.success(value);
+    }
+
+    public RuntimeResult visit_NamespaceReAssignNode(NamespaceReAssignNode node, Context context)
+    {
+        RuntimeResult res = new RuntimeResult();
+
+        if (!context.symbol_table.present(node.var_name_tok.value))
+        {
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this namespace", context));
+        }
+
+        NamespaceValue theNamespace = (NamespaceValue)context.symbol_table.get(node.var_name_tok.value);
+        object value = null;
+
+        if (node.node != null)
+        {
+            value = res.register(this.visit(node.node, context));
+
+            if (res.should_return())
+            {
+                return res;
+            }
+        }
+
+        if (theNamespace.context.symbol_table.present(node.access_var_name_tok.value))
+        {
+            if (!theNamespace.context.symbol_table.can_be_rewrite(node.access_var_name_tok.value))
+            {
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Can not access to constants variables", context));
+            }
+
+            object actualValue = theNamespace.context.symbol_table.get(node.access_var_name_tok.value);
+
+            if (node.op_tok.type == "EQ")
+            {
+                theNamespace.context.symbol_table.set(node.access_var_name_tok.value, value);
+            }
+            else
+            {
+                Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.type.ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
+                value = result.Item1;
+                theNamespace.context.symbol_table.set(node.access_var_name_tok.value, value);
+            }
+
+            value = value.GetType().GetMethod("copy").Invoke(value, new object[] { });
+            value.GetType().GetMethod("set_pos").Invoke(value, new object[] { node.pos_start, node.pos_end });
+
+            return res.success(value);
+        }
+
+        return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Variable is not created", context));
+    }
+
+    public RuntimeResult visit_NamespaceCallNode(NamespaceCallNode node, Context context)
+    {
+        RuntimeResult res = new RuntimeResult();
+
+        List<object> arg_nodes = node.arg_nodes;
+        List<object> args = new List<object>();
+
+        if (!context.symbol_table.present(node.struct_var_name_tok.value))
+        {
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this namespace", context));
+        }
+
+        NamespaceValue theNamespace = (NamespaceValue)context.symbol_table.get(node.struct_var_name_tok.value);
+
+        if (!theNamespace.context.symbol_table.present(node.access_var_name_tok.value))
+        {
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this variable", context));
+        }
+
+        object value_to_call = theNamespace.context.symbol_table.get(node.access_var_name_tok.value);
+
+        if (value_to_call.GetType() == typeof(FunctionValue))
+        {
+            value_to_call = ((FunctionValue)value_to_call).copy().set_pos(node.pos_start, node.pos_end).set_context(theNamespace.context);
+
+            foreach (object arg_node in node.arg_nodes)
+            {
+                args.Add(res.register(this.visit(arg_node, context)));
+
+                if (res.should_return())
+                {
+                    return res;
+                }
+            }
+
+            object return_value = res.register(((FunctionValue)value_to_call).execute(args));
+
+            if (res.should_return())
+            {
+                return res;
+            }
+
+            return_value = return_value.GetType().GetMethod("copy").Invoke(return_value, new object[] { });
+            return_value = return_value.GetType().GetMethod("set_pos").Invoke(return_value, new object[] { node.pos_start, node.pos_end });
+            return_value = return_value.GetType().GetMethod("set_context").Invoke(return_value, new object[] { theNamespace.context });
+
+            return res.success(return_value);
+        }
+        else
+        {
+            value_to_call = ((BuiltInFunction)value_to_call).copy().set_pos(node.pos_start, node.pos_end).set_context(theNamespace.context);
+
+            foreach (object arg_node in node.arg_nodes)
+            {
+                args.Add(res.register(this.visit(arg_node, context)));
+
+                if (res.should_return())
+                {
+                    return res;
+                }
+            }
+
+            object return_value = res.register(((BuiltInFunction)value_to_call).execute(args));
+
+            if (res.should_return())
+            {
+                return res;
+            }
+
+            return_value = return_value.GetType().GetMethod("copy").Invoke(return_value, new object[] { });
+            return_value = return_value.GetType().GetMethod("set_pos").Invoke(return_value, new object[] { node.pos_start, node.pos_end });
+            return_value = return_value.GetType().GetMethod("set_context").Invoke(return_value, new object[] { theNamespace.context });
+
+            return res.success(return_value);
+        }
+
+        return res.success(Values.NULL);
+    }
 }

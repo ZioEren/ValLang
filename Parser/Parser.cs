@@ -148,6 +148,93 @@ public class Parser
                     return res.success(new StructReAssignNode(tok, var_name_tok, operator_token, expression));
                 }
             }
+            else if (this.current_tok.type == "COLON")
+            {
+                res.register_advancement();
+                this.advance();
+
+                if (this.current_tok.type == "COLON")
+                {
+                    res.register_advancement();
+                    this.advance();
+
+                    if (this.current_tok.type == "IDENTIFIER")
+                    {
+                        Token var_name_tok = this.current_tok;
+                        res.register_advancement();
+                        this.advance();
+
+                        if (this.current_tok.type == "LPAREN")
+                        {
+                            res.register_advancement();
+                            this.advance();
+
+                            List<object> arg_nodes = new List<object>();
+
+                            if (this.current_tok.type == "RPAREN")
+                            {
+                                res.register_advancement();
+                                this.advance();
+                            }
+                            else
+                            {
+                                arg_nodes.Add(res.register(this.expr()));
+
+                                if (res.error != null)
+                                {
+                                    return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ')', ']', 'var', 'if', 'for', 'while', 'fun', int, float, identifier, '+', '-' or '("));
+                                }
+
+                                while (this.current_tok.type == "COMMA")
+                                {
+                                    res.register_advancement();
+                                    this.advance();
+
+                                    arg_nodes.Add(res.register(this.expr()));
+
+                                    if (res.error != null)
+                                    {
+                                        return res;
+                                    }
+                                }
+
+                                if (this.current_tok.type != "RPAREN")
+                                {
+                                    return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ',', ')' or ']'"));
+                                }
+
+                                res.register_advancement();
+                                this.advance();
+                            }
+
+                            return res.success(new NamespaceCallNode(tok, var_name_tok, arg_nodes));
+                        }
+
+                        if (this.current_tok.type != "EQ" && !this.current_tok.type.EndsWith("_EQ"))
+                        {
+                            return res.success(new NamespaceAccessNode(tok, var_name_tok));
+                        }
+
+                        Token operator_token = this.current_tok;
+
+                        res.register_advancement();
+                        this.advance();
+
+                        object expression = res.register(this.expr());
+
+                        if (res.error != null)
+                        {
+                            return res;
+                        }
+
+                        return res.success(new NamespaceReAssignNode(tok, var_name_tok, operator_token, expression));
+                    }
+                }
+                else
+                {
+                    return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ':'"));
+                }
+            }
 
             if (this.current_tok.type != "EQ" && !this.current_tok.type.EndsWith("_EQ"))
             {
@@ -333,6 +420,17 @@ public class Parser
 
                 return res.success(new GotoNode(var_name_tok));
             }
+        }
+        else if (tok.type == "KEYWORD" && tok.value.ToString() == "namespace")
+        {
+            object namespace_expr = res.register(this.namespace_expr());
+
+            if (res.error != null)
+            {
+                return res;
+            }
+
+            return res.success(namespace_expr);
         }
 
         return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected int, float, identifier, '+', '-', '(', '[', 'if', 'for', 'while' or 'fun'"));
@@ -1949,5 +2047,65 @@ public class Parser
         }
 
         return res.success(new LabelNode(var_name_tok, statements));
+    }
+
+    public ParseResult namespace_expr()
+    {
+        ParseResult res = new ParseResult();
+
+        if (this.current_tok.type != "KEYWORD" && this.current_tok.value.ToString() == "namespace")
+        {
+            return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected 'namespace'"));
+        }
+
+        res.register_advancement();
+        this.advance();
+
+        if (this.current_tok.type != "IDENTIFIER")
+        {
+            return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected identifier"));
+        }
+
+        Token var_name_tok = this.current_tok;
+
+        res.register_advancement();
+        this.advance();
+
+        while (this.current_tok.type == "NEWLINE")
+        {
+            res.register_advancement();
+            this.advance();
+        }
+
+        if (this.current_tok.type != "LBRACE")
+        {
+            return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '{'"));
+        }
+
+        res.register_advancement();
+        this.advance();
+
+        object statements = res.register(this.statements());
+
+        if (res.error != null)
+        {
+            return res;
+        }
+
+        while (this.current_tok.type == "NEWLINE")
+        {
+            res.register_advancement();
+            this.advance();
+        }
+
+        if (this.current_tok.type != "RBRACE")
+        {
+            return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '}'"));
+        }
+
+        res.register_advancement();
+        this.advance();
+
+        return res.success(new NamespaceDefNode(var_name_tok, statements));
     }
 }

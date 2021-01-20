@@ -596,4 +596,48 @@ public class BuiltInFunction
 
         return arg_names;
     }
+
+    public RuntimeResult execute_is_namespace(Context exec_ctx)
+    {
+        return new RuntimeResult().success(exec_ctx.symbol_table.get("value").GetType() == typeof(NamespaceValue) ? Values.TRUE : Values.FALSE);
+    }
+
+    public List<string> get_is_namespace()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_use(Context exec_ctx)
+    {
+        object value = exec_ctx.symbol_table.get("namespace");
+
+        if (value.GetType() == typeof(NamespaceValue))
+        {
+            NamespaceValue namespaceValue = (NamespaceValue)value;
+            Context ctx = exec_ctx;
+
+            foreach (object element in namespaceValue.context.symbol_table.symbols.Keys)
+            {
+                Tuple<object, bool> other = null;
+                namespaceValue.context.symbol_table.symbols.TryGetValue(element, out other);
+                ctx.symbol_table.set(element, other.Item1, other.Item2);
+            }
+        }
+        else
+        {
+            return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a namespace", exec_ctx));
+        }
+
+        return new RuntimeResult().success(Values.NULL);
+    }
+
+    public List<string> get_use()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("namespace");
+
+        return arg_names;
+    }
 }

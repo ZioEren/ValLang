@@ -58,6 +58,7 @@
     <Compile Include="Interpreter\Values\FunctionValue.cs" />
     <Compile Include="Interpreter\Values\LabelValue.cs" />
     <Compile Include="Interpreter\Values\ListValue.cs" />
+    <Compile Include="Interpreter\Values\NamespaceValue.cs" />
     <Compile Include="Interpreter\Values\NumberValue.cs" />
     <Compile Include="Interpreter\Values\StringValue.cs" />
     <Compile Include="Interpreter\Values\StructValue.cs" />
@@ -70,6 +71,10 @@
     <Compile Include="Parser\Nodes\Iteration Nodes\ForEachNode.cs" />
     <Compile Include="Parser\Nodes\Jump Nodes\GotoNode.cs" />
     <Compile Include="Parser\Nodes\Jump Nodes\LabelNode.cs" />
+    <Compile Include="Parser\Nodes\Namespace Nodes\NamespaceAccessNode.cs" />
+    <Compile Include="Parser\Nodes\Namespace Nodes\NamespaceCallNode.cs" />
+    <Compile Include="Parser\Nodes\Namespace Nodes\NamespaceDefNode.cs" />
+    <Compile Include="Parser\Nodes\Namespace Nodes\NamespaceReAssignNode.cs" />
     <Compile Include="Parser\Nodes\Struct Nodes\StructAccessNode.cs" />
     <Compile Include="Parser\Nodes\Struct Nodes\StructCallNode.cs" />
     <Compile Include="Parser\Nodes\Struct Nodes\StructDefNode.cs" />

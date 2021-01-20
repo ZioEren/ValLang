@@ -225,7 +225,7 @@ public class Lexer
 
                 string tok_type = "IDENTIFIER";
 
-                foreach (string keyword in new string[] { "var", "and", "or", "not", "if", "then", "elif", "else", "for", "to", "step", "while", "fun", "end", "return", "continue", "break", "del", "do", "foreach", "in", "switch", "case", "default", "const", "struct", "label", "goto" })
+                foreach (string keyword in new string[] { "var", "and", "or", "not", "if", "then", "elif", "else", "for", "to", "step", "while", "fun", "end", "return", "continue", "break", "del", "do", "foreach", "in", "switch", "case", "default", "const", "struct", "label", "goto", "namespace" })
                 {
                     if (id_str == keyword)
                     {

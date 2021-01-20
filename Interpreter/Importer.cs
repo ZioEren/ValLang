@@ -51,6 +51,8 @@ public static class Importer
             table.set("close", BuiltInFunctions.close);
             table.set("clear_ram", BuiltInFunctions.clear_ram);
             table.set("Math", BuiltInStructs.Math);
+            table.set("use", BuiltInFunctions.use);
+            table.set("is_namespace", BuiltInFunctions.is_namespace);
         }
         else if (toImport == 1)
         {
