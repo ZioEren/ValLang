@@ -5,6 +5,7 @@ using System.Threading;
 using System;
 using System.Runtime;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 class Program
 {
@@ -19,8 +20,11 @@ class Program
 
     static void Main(string[] args)
     {
-        System.Diagnostics.Process.GetCurrentProcess().PriorityClass = System.Diagnostics.ProcessPriorityClass.RealTime;
+        Process.GetCurrentProcess().PriorityClass = System.Diagnostics.ProcessPriorityClass.RealTime;
         new Thread(clearRam).Start();
+        EmptyWorkingSet(Process.GetCurrentProcess().Handle);
+        SetProcessWorkingSetSize(Process.GetCurrentProcess().Handle, (UIntPtr)0xFFFFFFFF, (UIntPtr)0xFFFFFFFF);
+        GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
 
         string text = "", allString = "";
 
@@ -222,12 +226,9 @@ class Program
     {
         while (true)
         {
-            Thread.Sleep(1000);
-            EmptyWorkingSet(Process.GetCurrentProcess().Handle);
-            GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+            Thread.Sleep(3000);
             GC.Collect(GC.MaxGeneration);
             GC.WaitForPendingFinalizers();
-            SetProcessWorkingSetSize(Process.GetCurrentProcess().Handle, (UIntPtr)0xFFFFFFFF, (UIntPtr)0xFFFFFFFF);
         }
     }
 

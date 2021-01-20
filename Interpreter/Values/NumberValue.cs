@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 public class NumberValue
 {
@@ -163,7 +164,7 @@ public class NumberValue
         }
         else if (other.GetType() == typeof(StringValue))
         {
-            return new Tuple<object, Error>(new StringValue(this.as_string() + ((StringValue)other).value), null);
+            return new Tuple<object, Error>(new StringValue(new StringBuilder(this.as_string()).Append(((StringValue)other).value).ToString()), null);
         }
         else if (other.GetType() == typeof(ListValue))
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 public class StringValue
 {
@@ -49,11 +50,11 @@ public class StringValue
     {
         if (other.GetType() == typeof(StringValue))
         {
-            return new Tuple<object, Error>(new StringValue(this.value + ((StringValue) other).value), null);
+            return new Tuple<object, Error>(new StringValue(new StringBuilder(this.value).Append(((StringValue)other).value).ToString()), null);
         }
         else if (other.GetType() == typeof(NumberValue))
         {
-            return new Tuple<object, Error>(new StringValue(this.value + ((NumberValue)other).as_string()), null);
+            return new Tuple<object, Error>(new StringValue(new StringBuilder(this.value).Append(((NumberValue)other).as_string()).ToString()), null);
         }
         else if (other.GetType() == typeof(ListValue))
         {
