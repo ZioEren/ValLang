@@ -881,4 +881,48 @@ public class Interpreter
 
         return res.success(Values.NULL);
     }
+
+    public RuntimeResult visit_LabelNode(LabelNode node, Context context)
+    {
+        RuntimeResult res = new RuntimeResult();
+
+        context.symbol_table.set(node.var_name_tok.value, new LabelValue(node.var_name_tok.value.ToString(), node.statements), false);
+
+        res.register(this.visit(node.statements, context));
+
+        if (res.should_return())
+        {
+            return res;
+        }
+
+        return res.success(Values.NULL);
+    }
+    
+    public RuntimeResult visit_GotoNode(GotoNode node, Context context)
+    {
+        RuntimeResult res = new RuntimeResult();
+
+        if (!context.symbol_table.present(node.var_name_tok.value))
+        {
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Label not found", context));
+        }
+
+        object value = context.symbol_table.get(node.var_name_tok.value);
+
+        if (value.GetType() == typeof(LabelValue))
+        {
+            res.register(this.visit((((LabelValue)value)).statements, context));
+
+            if (res.should_return())
+            {
+                return res;
+            }
+        }
+        else
+        {
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "This value is not a label", context));
+        }
+
+        return res.success(Values.NULL);
+    }
 }

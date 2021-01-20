@@ -308,6 +308,32 @@ public class Parser
 
             return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected identifier"));
         }
+        else if (tok.type == "KEYWORD" && tok.value.ToString() == "label")
+        {
+            object label_expr = res.register(this.label_expr());
+
+            if (res.error != null)
+            {
+                return res;
+            }
+
+            return res.success(label_expr);
+        }
+        else if (tok.type == "KEYWORD" && tok.value.ToString() == "goto")
+        {
+            res.register_advancement();
+            this.advance();
+
+            if (this.current_tok.type == "IDENTIFIER")
+            {
+                Token var_name_tok = this.current_tok;
+
+                res.register_advancement();
+                this.advance();
+
+                return res.success(new GotoNode(var_name_tok));
+            }
+        }
 
         return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected int, float, identifier, '+', '-', '(', '[', 'if', 'for', 'while' or 'fun'"));
     }
@@ -1883,5 +1909,45 @@ public class Parser
         this.advance();
 
         return res.success(new StructDefNode(var_name_tok, statements));
+    }
+
+    public ParseResult label_expr()
+    {
+        ParseResult res = new ParseResult();
+
+        if (this.current_tok.type != "KEYWORD" && this.current_tok.value.ToString() == "label")
+        {
+            return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected 'label'"));
+        }
+
+        res.register_advancement();
+        this.advance();
+
+        if (this.current_tok.type != "IDENTIFIER")
+        {
+            return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected identifier"));
+        }
+
+        Token var_name_tok = this.current_tok;
+
+        res.register_advancement();
+        this.advance();
+
+        if (this.current_tok.type != "COLON")
+        {
+            return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ':'"));
+        }
+
+        res.register_advancement();
+        this.advance();
+
+        object statements = res.register(this.statements());
+
+        if (res.error != null)
+        {
+            return res;
+        }
+
+        return res.success(new LabelNode(var_name_tok, statements));
     }
 }
