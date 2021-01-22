@@ -1,4 +1,4 @@
 ﻿public static class BuiltInNamespaces
 {
-    public static BuiltInNamespace Test = new BuiltInNamespace("Test");
+    public static BuiltInNamespace Math = new BuiltInNamespace("Math");
 }

@@ -54,9 +54,7 @@ public static class Importer
             table.set("use", BuiltInFunctions.use);
             table.set("is_namespace", BuiltInFunctions.is_namespace);
 
-            table.set("Math", BuiltInStructs.Math);
-
-            table.set("Test", BuiltInNamespaces.Test);
+            table.set("Math", BuiltInNamespaces.Math);
         }
         else if (toImport == 1)
         {

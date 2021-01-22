@@ -19,9 +19,9 @@ public class BuiltInNamespace
 
     public void setNewNamespace()
     {
-        if (this.name == "Test")
+        if (this.name == "Math")
         {
-            this.theNewNamespace = new NamespaceTest();
+            this.theNewNamespace = new NamespaceMath();
         }
     }
 
