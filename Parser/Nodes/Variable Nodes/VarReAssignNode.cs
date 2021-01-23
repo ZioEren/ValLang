@@ -10,6 +10,14 @@
         this.op_tok = op_tok;
         this.value_node = value_node;
         this.pos_start = var_name_tok.pos_start;
-        this.pos_end = (Position)value_node.GetType().GetField("pos_end").GetValue(value_node);
+
+        if (this.value_node != null)
+        {
+            this.pos_end = (Position)value_node.GetType().GetField("pos_end").GetValue(value_node);
+        }
+        else
+        {
+            this.pos_end = this.var_name_tok.pos_end;
+        }
     }
 }

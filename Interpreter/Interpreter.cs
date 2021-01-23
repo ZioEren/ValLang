@@ -189,6 +189,12 @@ public class Interpreter
             {
                 context.symbol_table.set(var_name, value);
             }
+            else if (node.op_tok.type.StartsWith("DOUBLE"))
+            {
+                Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.type.ToLower().Replace("double_", "") + "ed_by").Invoke(actualValue, new object[] { new NumberValue(1) });
+                value = result.Item1;
+                context.symbol_table.set(var_name, value);
+            }
             else
             {
                 Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.type.ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });

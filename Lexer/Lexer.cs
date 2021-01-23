@@ -52,6 +52,11 @@ public class Lexer
                     tok_type += "_EQ";
                     this.advance();
                 }
+                else if (this.current_char == '+')
+                {
+                    tok_type = "DOUBLE_PLUS";
+                    this.advance();
+                }
 
                 tokens.Add(new Token(tok_type, pos_start: this.pos, pos_end: this.pos));
             }
@@ -71,6 +76,11 @@ public class Lexer
                 {
                     this.advance();
                     tok_type += "_EQ";
+                }
+                else if (this.current_char == '-')
+                {
+                    tok_type = "DOUBLE_MINUS";
+                    this.advance();
                 }
 
                 tokens.Add(new Token(tok_type, pos_start: pos_start, pos_end: this.pos));

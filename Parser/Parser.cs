@@ -1557,6 +1557,24 @@ public class Parser
             return res.success(new BreakNode(pos_start, this.current_tok.pos_start.copy()));
         }
 
+        if (this.current_tok.type == "IDENTIFIER")
+        {
+            if (this.tokens[this.tok_idx + 1].type == "DOUBLE_PLUS" || this.tokens[this.tok_idx + 1].type == "DOUBLE_MINUS")
+            {
+                Token var_name_tok = this.current_tok;
+
+                res.register_advancement();
+                this.advance();
+
+                Token op_tok = this.current_tok;
+
+                res.register_advancement();
+                this.advance();
+
+                return res.success(new VarReAssignNode(var_name_tok, op_tok, null));
+            }
+        }
+
         object expr = res.register(this.expr());
 
         if (res.error != null)
