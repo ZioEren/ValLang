@@ -169,7 +169,7 @@ class Program
             return;
         }
 
-        Tuple<object, Error> totalResult = run(fn, System.Text.RegularExpressions.Regex.Replace(text, @"\r\n?|\n", ";"));
+        Tuple<object, Error> totalResult = run(fn, System.Text.RegularExpressions.Regex.Replace(text, @"\r\n?|\n", "↩"));
         object result = totalResult.Item1;
         Error error = totalResult.Item2;
 

@@ -17,7 +17,7 @@
         this.idx += 1;
         this.col += 1;
 
-        if (current_char == '\n')
+        if (current_char == '\n' || current_char == '↩')
         {
             this.ln += 1;
             this.col = 0;

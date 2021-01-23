@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
+using Microsoft.VisualBasic;
 
 public class Lexer
 {
@@ -36,7 +37,7 @@ public class Lexer
             {
                 this.skip_comment();
             }
-            else if (this.current_char == '\n' || this.current_char == ';')
+            else if (this.current_char == '\n' || this.current_char == '↩' || this.current_char == ';')
             {
                 tokens.Add(new Token("NEWLINE", pos_start: this.pos));
                 this.advance();
@@ -453,6 +454,14 @@ public class Lexer
         Dictionary<char, char> escape_characters = new Dictionary<char, char>();
         escape_characters.Add('n', '\n');
         escape_characters.Add('t', '\t');
+        escape_characters.Add('r', '\r');
+        escape_characters.Add('\\', '\\');
+        escape_characters.Add('a', '\a');
+        escape_characters.Add('b', '\b');
+        escape_characters.Add('f', '\f');
+        escape_characters.Add('v', '\v');
+        escape_characters.Add('"', '\"');
+        escape_characters.Add('\'', '\'');
 
         while (this.current_char != default(char) && (this.current_char != conclude_char || escape_character))
         {
@@ -472,6 +481,8 @@ public class Lexer
                 if (this.current_char == '\\')
                 {
                     escape_character = true;
+                    this.advance();
+                    continue;
                 }
                 else
                 {
@@ -491,7 +502,7 @@ public class Lexer
     {
         this.advance();
 
-        while (this.current_char != '\n' && this.current_char != default(char) && this.current_char != ';')
+        while (this.current_char != '\n' && this.current_char != default(char) && this.current_char != '↩')
         {
             this.advance();
         }
