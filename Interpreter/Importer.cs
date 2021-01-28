@@ -16,6 +16,10 @@ public static class Importer
         {
             add(ctx.symbol_table, 2);
         }
+        else if (fn == "network")
+        {
+            add(ctx.symbol_table, 3);
+        }
         else
         {
             if (found)
@@ -73,12 +77,16 @@ public static class Importer
 
             table.set("clear", BuiltInFunctions.clear);
         }
-        else
+        else if (toImport == 2)
         {
             table.set("append", BuiltInFunctions.append);
             table.set("pop", BuiltInFunctions.pop);
             table.set("extend", BuiltInFunctions.extend);
             table.set("len", BuiltInFunctions.len);
+        }
+        else
+        {
+            table.set("HttpClient", BuiltInStructs.HttpClient);
         }
     }
 }

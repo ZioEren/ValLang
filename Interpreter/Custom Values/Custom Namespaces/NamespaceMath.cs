@@ -64,7 +64,7 @@ public class NamespaceMath
             return new RuntimeResult().success(new NumberValue(Math.Sin(double.Parse(((NumberValue)value).as_string()))));
         }
 
-        return new RuntimeResult().failure(new RuntimeError(null, null, "Angle must be a number", exec_ctx));
+        return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Angle must be a number", exec_ctx));
     }
 
     public List<string> get_sin()
@@ -84,7 +84,7 @@ public class NamespaceMath
             return new RuntimeResult().success(new NumberValue(Math.Sinh(double.Parse(((NumberValue)value).as_string()))));
         }
 
-        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+        return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
     }
 
     public List<string> get_sinh()
@@ -104,7 +104,7 @@ public class NamespaceMath
             return new RuntimeResult().success(new NumberValue(Math.Cos(double.Parse(((NumberValue)value).as_string()))));
         }
 
-        return new RuntimeResult().failure(new RuntimeError(null, null, "Angle must be a number", exec_ctx));
+        return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Angle must be a number", exec_ctx));
     }
 
     public List<string> get_cos()
@@ -124,7 +124,7 @@ public class NamespaceMath
             return new RuntimeResult().success(new NumberValue(Math.Cosh(double.Parse(((NumberValue)value).as_string()))));
         }
 
-        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+        return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
     }
 
     public List<string> get_cosh()
@@ -144,7 +144,7 @@ public class NamespaceMath
             return new RuntimeResult().success(new NumberValue(Math.Tan(double.Parse(((NumberValue)value).as_string()))));
         }
 
-        return new RuntimeResult().failure(new RuntimeError(null, null, "Angle must be a number", exec_ctx));
+        return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Angle must be a number", exec_ctx));
     }
 
     public List<string> get_tan()
@@ -164,7 +164,7 @@ public class NamespaceMath
             return new RuntimeResult().success(new NumberValue(Math.Tanh(double.Parse(((NumberValue)value).as_string()))));
         }
 
-        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+        return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
     }
 
     public List<string> get_tanh()
@@ -184,7 +184,7 @@ public class NamespaceMath
             return new RuntimeResult().success(new NumberValue(Math.Log(double.Parse(((NumberValue)value).as_string()))));
         }
 
-        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+        return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
     }
 
     public List<string> get_log()
@@ -204,7 +204,7 @@ public class NamespaceMath
             return new RuntimeResult().success(new NumberValue(Math.Log10(double.Parse(((NumberValue)value).as_string()))));
         }
 
-        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+        return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
     }
 
     public List<string> get_log10()
@@ -224,7 +224,7 @@ public class NamespaceMath
             return new RuntimeResult().success(new NumberValue(Math.Floor(double.Parse(((NumberValue)value).as_string()))));
         }
 
-        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+        return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
     }
 
     public List<string> get_floor()
@@ -244,7 +244,7 @@ public class NamespaceMath
             return new RuntimeResult().success(new NumberValue(Math.Sqrt(double.Parse(((NumberValue)value).as_string()))));
         }
 
-        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+        return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
     }
 
     public List<string> get_sqrt()
@@ -264,7 +264,7 @@ public class NamespaceMath
             return new RuntimeResult().success(new NumberValue(Math.Asin(double.Parse(((NumberValue)value).as_string()))));
         }
 
-        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+        return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
     }
 
     public List<string> get_asin()
@@ -284,7 +284,7 @@ public class NamespaceMath
             return new RuntimeResult().success(new NumberValue(Math.Acos(double.Parse(((NumberValue)value).as_string()))));
         }
 
-        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+        return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
     }
 
     public List<string> get_acos()
@@ -304,7 +304,7 @@ public class NamespaceMath
             return new RuntimeResult().success(new NumberValue(Math.Atan(double.Parse(((NumberValue)value).as_string()))));
         }
 
-        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+        return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
     }
 
     public List<string> get_atan()
@@ -324,7 +324,7 @@ public class NamespaceMath
             return new RuntimeResult().success(new NumberValue(Math.Ceiling(double.Parse(((NumberValue)value).as_string()))));
         }
 
-        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+        return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
     }
 
     public List<string> get_ceiling()
@@ -344,7 +344,7 @@ public class NamespaceMath
             return new RuntimeResult().success(new NumberValue(Math.Exp(double.Parse(((NumberValue)value).as_string()))));
         }
 
-        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+        return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
     }
 
     public List<string> get_exp()
@@ -364,7 +364,7 @@ public class NamespaceMath
             return new RuntimeResult().success(new NumberValue(Math.Round(double.Parse(((NumberValue)value).as_string()))));
         }
 
-        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+        return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
     }
 
     public List<string> get_round()
@@ -384,7 +384,7 @@ public class NamespaceMath
             return new RuntimeResult().success(new NumberValue(Math.Truncate(double.Parse(((NumberValue)value).as_string()))));
         }
 
-        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+        return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
     }
 
     public List<string> get_truncate()
@@ -404,7 +404,7 @@ public class NamespaceMath
             return new RuntimeResult().success(new NumberValue(Math.Abs (double.Parse(((NumberValue)value).as_string()))));
         }
 
-        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+        return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
     }
 
     public List<string> get_abs()
@@ -424,7 +424,7 @@ public class NamespaceMath
             return new RuntimeResult().success(new NumberValue(Math.Sign(double.Parse(((NumberValue)value).as_string()))));
         }
 
-        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+        return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
     }
 
     public List<string> get_sign()
@@ -448,12 +448,12 @@ public class NamespaceMath
             }
             else
             {
-                return new RuntimeResult().failure(new RuntimeError(null, null, "Value2 must be a number", exec_ctx));
+                return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value2 must be a number", exec_ctx));
             }
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value1 must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value1 must be a number", exec_ctx));
         }
     }
 
@@ -479,12 +479,12 @@ public class NamespaceMath
             }
             else
             {
-                return new RuntimeResult().failure(new RuntimeError(null, null, "Value2 must be a number", exec_ctx));
+                return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value2 must be a number", exec_ctx));
             }
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value1 must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value1 must be a number", exec_ctx));
         }
     }
 
@@ -510,12 +510,12 @@ public class NamespaceMath
             }
             else
             {
-                return new RuntimeResult().failure(new RuntimeError(null, null, "Value2 must be a number", exec_ctx));
+                return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value2 must be a number", exec_ctx));
             }
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value1 must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value1 must be a number", exec_ctx));
         }
     }
 
@@ -541,12 +541,12 @@ public class NamespaceMath
             }
             else
             {
-                return new RuntimeResult().failure(new RuntimeError(null, null, "Value2 must be a number", exec_ctx));
+                return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value2 must be a number", exec_ctx));
             }
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value1 must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value1 must be a number", exec_ctx));
         }
     }
 
@@ -572,12 +572,12 @@ public class NamespaceMath
             }
             else
             {
-                return new RuntimeResult().failure(new RuntimeError(null, null, "Value2 must be a number", exec_ctx));
+                return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value2 must be a number", exec_ctx));
             }
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value1 must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value1 must be a number", exec_ctx));
         }
     }
 
@@ -600,7 +600,7 @@ public class NamespaceMath
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value1 must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value1 must be a number", exec_ctx));
         }
     }
 
@@ -621,7 +621,7 @@ public class NamespaceMath
             return new RuntimeResult().success(new NumberValue(Math.Exp(double.Parse(((NumberValue)value).as_string())) - 1.0D));
         }
 
-        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+        return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
     }
 
     public List<string> get_expm1()
@@ -645,12 +645,12 @@ public class NamespaceMath
             }
             else
             {
-                return new RuntimeResult().failure(new RuntimeError(null, null, "Value2 must be a number", exec_ctx));
+                return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value2 must be a number", exec_ctx));
             }
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value1 must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value1 must be a number", exec_ctx));
         }
     }
 
@@ -676,12 +676,12 @@ public class NamespaceMath
             }
             else
             {
-                return new RuntimeResult().failure(new RuntimeError(null, null, "Value2 must be a number", exec_ctx));
+                return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value2 must be a number", exec_ctx));
             }
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value1 must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value1 must be a number", exec_ctx));
         }
     }
 
@@ -710,17 +710,17 @@ public class NamespaceMath
                 }
                 else
                 {
-                    return new RuntimeResult().failure(new RuntimeError(null, null, "z must be a number", exec_ctx));
+                    return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "z must be a number", exec_ctx));
                 }
             }
             else
             {
-                return new RuntimeResult().failure(new RuntimeError(null, null, "y must be a number", exec_ctx));
+                return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "y must be a number", exec_ctx));
             }
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "x must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "x must be a number", exec_ctx));
         }
     }
 
@@ -744,7 +744,7 @@ public class NamespaceMath
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
         }
     }
 
@@ -766,7 +766,7 @@ public class NamespaceMath
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
         }
     }
 
@@ -791,7 +791,7 @@ public class NamespaceMath
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
         }
     }
 
@@ -813,7 +813,7 @@ public class NamespaceMath
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
         }
     }
 
@@ -835,7 +835,7 @@ public class NamespaceMath
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
         }
     }
 
@@ -857,7 +857,7 @@ public class NamespaceMath
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
         }
     }
 
@@ -879,7 +879,7 @@ public class NamespaceMath
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
         }
     }
 
@@ -901,7 +901,7 @@ public class NamespaceMath
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
         }
     }
 
@@ -923,7 +923,7 @@ public class NamespaceMath
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
         }
     }
 
@@ -945,7 +945,7 @@ public class NamespaceMath
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
         }
     }
 
@@ -967,7 +967,7 @@ public class NamespaceMath
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
         }
     }
 
@@ -989,7 +989,7 @@ public class NamespaceMath
         }
         else
         {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a number", exec_ctx));
+            return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, "", ""), new Position(0, 0, 0, "", ""), "Value must be a number", exec_ctx));
         }
     }
 

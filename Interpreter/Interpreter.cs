@@ -138,9 +138,9 @@ public class Interpreter
         }
         else if (value.GetType() == typeof(BuiltInStruct))
         {
-            if (!((BuiltInStruct)value).already_declared)
+            if (!((BuiltInStruct) value).already_declared)
             {
-                value = new BuiltInStruct(((BuiltInStruct)value).name).set_context(context).set_pos(node.pos_start, node.pos_end).declare(false);
+                value = new BuiltInStruct(((BuiltInStruct)value).name).set_context(context).set_pos(node.pos_start, node.pos_end).declare();
             }
         }
 
@@ -152,9 +152,12 @@ public class Interpreter
         {
             return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Can not access to constants variables", context));
         }
-
-        value = value.GetType().GetMethod("copy").Invoke(value, new object[] { });
-        value.GetType().GetMethod("set_pos").Invoke(value, new object[] { node.pos_start, node.pos_end });
+        
+        if (value.GetType() != typeof(BuiltInStruct))
+        {
+            value = value.GetType().GetMethod("copy").Invoke(value, new object[] { });
+            value.GetType().GetMethod("set_pos").Invoke(value, new object[] { node.pos_start, node.pos_end });
+        }
 
         return res.success(value);
     }

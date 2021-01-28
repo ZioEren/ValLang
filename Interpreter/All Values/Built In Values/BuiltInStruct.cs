@@ -8,7 +8,6 @@ public class BuiltInStruct
     public string name;
     public bool already_declared;
     public object theNewStruct;
-    public bool firsted = true;
 
     public BuiltInStruct(string name)
     {
@@ -17,19 +16,14 @@ public class BuiltInStruct
             this.name = name == null || name == "" ? "<anonymous>" : name;
             this.set_pos();
             this.set_context();
-            
-            if (firsted)
-            {
-                this.declare(firsted);
-            }
         }
     }
 
     public void setNewStruct()
     {
-        if (this.name == "Math")
+        if (this.name == "HttpClient")
         {
-            this.theNewStruct = new StructMath();
+            this.theNewStruct = new StructHttpClient();
         }
     }
 
@@ -41,18 +35,14 @@ public class BuiltInStruct
         return this;
     }
 
-    public BuiltInStruct declare(bool first)
+    public BuiltInStruct declare()
     {
-        if (!first)
+        if (already_declared)
         {
-            if (already_declared)
-            {
-                return this;
-            }
-
-            already_declared = true;
+            return this;
         }
 
+        already_declared = true;
         Context exec_ctx = new Context(this.name, this.context, pos_start);
         exec_ctx.symbol_table = new SymbolTable();
 
@@ -68,18 +58,14 @@ public class BuiltInStruct
             Importer.add(exec_ctx.symbol_table, 2);
         }
 
+        if (Importer.imported.Contains("network"))
+        {
+            Importer.add(exec_ctx.symbol_table, 3);
+        }
+
         this.context = exec_ctx;
         this.setNewStruct();
-
-        if (this.firsted)
-        {
-            this.theNewStruct.GetType().GetMethod("execute_declare").Invoke(this.theNewStruct, new object[] { this.context });
-            this.firsted = false;
-        }
-        else
-        {
-            this.theNewStruct.GetType().GetMethod("execute_new_declaration").Invoke(this.theNewStruct, new object[] { this.context });
-        }
+        this.theNewStruct.GetType().GetMethod("execute_declare").Invoke(this.theNewStruct, new object[] { this.context });
 
         return this;
     }
@@ -97,7 +83,10 @@ public class BuiltInStruct
 
     public BuiltInStruct set_context(Context context = null)
     {
-        this.context = context;
+        if (!this.already_declared)
+        {
+            this.context = context;
+        }
 
         return this;
     }

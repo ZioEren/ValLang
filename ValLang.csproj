@@ -49,7 +49,7 @@
     <Compile Include="Interpreter\Custom Values\BuiltInStructs.cs" />
     <Compile Include="Interpreter\Context.cs" />
     <Compile Include="Interpreter\Custom Values\Custom Namespaces\NamespaceMath.cs" />
-    <Compile Include="Interpreter\Custom Values\Custom Structs\StructMath.cs" />
+    <Compile Include="Interpreter\Custom Values\Custom Structs\StructHttpClient.cs" />
     <Compile Include="Interpreter\Importer.cs" />
     <Compile Include="Interpreter\Interpreter.cs" />
     <Compile Include="Interpreter\RuntimeResult.cs" />
@@ -109,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="favicon.ico" />

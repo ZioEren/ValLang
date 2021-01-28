@@ -50,6 +50,11 @@ public class BuiltInNamespace
             Importer.add(exec_ctx.symbol_table, 2);
         }
 
+        if (Importer.imported.Contains("network"))
+        {
+            Importer.add(exec_ctx.symbol_table, 3);
+        }
+
         this.context = exec_ctx;
         this.setNewNamespace();
         this.theNewNamespace.GetType().GetMethod("execute_declare").Invoke(this.theNewNamespace, new object[] { this.context });
