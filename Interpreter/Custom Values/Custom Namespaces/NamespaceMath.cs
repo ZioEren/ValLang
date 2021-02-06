@@ -778,9 +778,6 @@ public class NamespaceMath
         return arg_names;
     }
 
-    ///////// NUOVE FUNZIONI
-    ///
-
     public RuntimeResult execute_sec(Context exec_ctx)
     {
         object value = exec_ctx.symbol_table.get("value");

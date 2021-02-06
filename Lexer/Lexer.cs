@@ -257,6 +257,7 @@ public class Lexer
                     this.advance();
 
                     tokens.Add(new Token("NE", pos_start: pos_start, pos_end: this.pos));
+                    continue;
                 }
 
                 tokens.Add(new Token("KEYWORD", "not", pos_start, this.pos));
@@ -440,6 +441,7 @@ public class Lexer
         }
 
         tokens.Add(new Token("EOF", pos_start: this.pos));
+
         return new Tuple<List<Token>, Error>(tokens, null);
     }
 
@@ -452,6 +454,7 @@ public class Lexer
         this.advance();
 
         Dictionary<char, char> escape_characters = new Dictionary<char, char>();
+
         escape_characters.Add('n', '\n');
         escape_characters.Add('t', '\t');
         escape_characters.Add('r', '\r');
@@ -495,6 +498,7 @@ public class Lexer
         }
 
         this.advance();
+
         return new Token("STRING", str, pos_start, this.pos);
     }
 
