@@ -217,7 +217,7 @@ class Program
             }
         }
 
-        return new Tuple<object, Error>(null, new GenericError(new Position(0, 0, 0, fn, text), new Position(0, 0, 0, fn, text), "Failed to progress the runtime"));
+        return new Tuple<object, Error>(null, new Error(new Position(0, 0, 0, fn, text), new Position(0, 0, 0, fn, text), "Generic Error", "Failed to progress the runtime"));
     }
 
     public static void clearRam()
@@ -264,6 +264,6 @@ class Program
             }
         }
 
-        return new Tuple<object, Error>(null, new GenericError(new Position(0, 0, 0, fn, text), new Position(0, 0, 0, fn, text), "Failed to progress the runtime"));
+        return new Tuple<object, Error>(null, new Error(new Position(0, 0, 0, fn, text), new Position(0, 0, 0, fn, text), "Generic Error", "Failed to progress the runtime"));
     }
 }

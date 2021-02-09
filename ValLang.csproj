@@ -39,8 +39,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Errors\Error.cs" />
-    <Compile Include="Errors\Errors\ExpectedCharError.cs" />
-    <Compile Include="Errors\Errors\GenericError.cs" />
     <Compile Include="Errors\Errors\IllegalCharError.cs" />
     <Compile Include="Errors\Errors\InvalidSyntaxError.cs" />
     <Compile Include="Errors\Errors\RuntimeError.cs" />
