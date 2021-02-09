@@ -510,6 +510,17 @@ public class Interpreter
         if (value_to_call.GetType() == typeof(FunctionValue))
         {
             FunctionValue theFunc = (FunctionValue) value_to_call;
+            int necessary = 0;
+
+            foreach (Tuple<string, object> arg in theFunc.arg_names)
+            {
+                if (arg.Item2 != null)
+                {
+                    break;
+                }
+
+                necessary++;
+            }
 
             if (node.arg_nodes.Count > theFunc.arg_names.Count)
             {
@@ -522,6 +533,42 @@ public class Interpreter
                         FunctionValue newFunc = (FunctionValue) context.symbol_table.get(theFunc.name + "$" + funcIdx);
                         
                         if (node.arg_nodes.Count > newFunc.arg_names.Count)
+                        {
+                            funcIdx++;
+                            continue;
+                        }
+
+                        value_to_call = newFunc;
+                        break;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+            else if (node.arg_nodes.Count < necessary)
+            {
+                int funcIdx = 1;
+
+                while (true)
+                {
+                    if (context.symbol_table.present(theFunc.name + "$" + funcIdx))
+                    {
+                        FunctionValue newFunc = (FunctionValue)context.symbol_table.get(theFunc.name + "$" + funcIdx);
+                        int newNecessary = 0;
+
+                        foreach (Tuple<string, object> arg in newFunc.arg_names)
+                        {
+                            if (arg.Item2 != null)
+                            {
+                                break;
+                            }
+
+                            newNecessary++;
+                        }
+
+                        if (node.arg_nodes.Count < newNecessary)
                         {
                             funcIdx++;
                             continue;
@@ -912,6 +959,17 @@ public class Interpreter
             if (value_to_call.GetType() == typeof(FunctionValue))
             {
                 FunctionValue theFunc = (FunctionValue)value_to_call;
+                int necessary = 0;
+
+                foreach (Tuple<string, object> arg in theFunc.arg_names)
+                {
+                    if (arg.Item2 != null)
+                    {
+                        break;
+                    }
+
+                    necessary++;
+                }
 
                 if (node.arg_nodes.Count > theFunc.arg_names.Count)
                 {
@@ -924,6 +982,42 @@ public class Interpreter
                             FunctionValue newFunc = (FunctionValue)theStruct.context.symbol_table.get(theFunc.name + "$" + funcIdx);
 
                             if (node.arg_nodes.Count > newFunc.arg_names.Count)
+                            {
+                                funcIdx++;
+                                continue;
+                            }
+
+                            value_to_call = newFunc;
+                            break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                else if (node.arg_nodes.Count < necessary)
+                {
+                    int funcIdx = 1;
+
+                    while (true)
+                    {
+                        if (theStruct.context.symbol_table.present(theFunc.name + "$" + funcIdx))
+                        {
+                            FunctionValue newFunc = (FunctionValue)theStruct.context.symbol_table.get(theFunc.name + "$" + funcIdx);
+                            int newNecessary = 0;
+
+                            foreach (Tuple<string, object> arg in newFunc.arg_names)
+                            {
+                                if (arg.Item2 != null)
+                                {
+                                    break;
+                                }
+
+                                newNecessary++;
+                            }
+
+                            if (node.arg_nodes.Count < newNecessary)
                             {
                                 funcIdx++;
                                 continue;
@@ -1243,6 +1337,17 @@ public class Interpreter
             if (value_to_call.GetType() == typeof(FunctionValue))
             {
                 FunctionValue theFunc = (FunctionValue)value_to_call;
+                int necessary = 0;
+
+                foreach (Tuple<string, object> arg in theFunc.arg_names)
+                {
+                    if (arg.Item2 != null)
+                    {
+                        break;
+                    }
+
+                    necessary++;
+                }
 
                 if (node.arg_nodes.Count > theFunc.arg_names.Count)
                 {
@@ -1255,6 +1360,42 @@ public class Interpreter
                             FunctionValue newFunc = (FunctionValue)theNamespace.context.symbol_table.get(theFunc.name + "$" + funcIdx);
 
                             if (node.arg_nodes.Count > newFunc.arg_names.Count)
+                            {
+                                funcIdx++;
+                                continue;
+                            }
+
+                            value_to_call = newFunc;
+                            break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                else if (node.arg_nodes.Count < necessary)
+                {
+                    int funcIdx = 1;
+
+                    while (true)
+                    {
+                        if (theNamespace.context.symbol_table.present(theFunc.name + "$" + funcIdx))
+                        {
+                            FunctionValue newFunc = (FunctionValue)theNamespace.context.symbol_table.get(theFunc.name + "$" + funcIdx);
+                            int newNecessary = 0;
+
+                            foreach (Tuple<string, object> arg in newFunc.arg_names)
+                            {
+                                if (arg.Item2 != null)
+                                {
+                                    break;
+                                }
+
+                                newNecessary++;
+                            }
+
+                            if (node.arg_nodes.Count < newNecessary)
                             {
                                 funcIdx++;
                                 continue;
