@@ -24,7 +24,7 @@ class Program
         SetProcessWorkingSetSize(Process.GetCurrentProcess().Handle, (UIntPtr)0xFFFFFFFF, (UIntPtr)0xFFFFFFFF);
         GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
 
-        string text = "", allString = "";
+        string text, allString = "";
 
         foreach (string arg in args)
         {

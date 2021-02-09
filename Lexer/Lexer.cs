@@ -37,7 +37,7 @@ public class Lexer
             {
                 this.skip_comment();
             }
-            else if (this.current_char == '\n' || this.current_char == '↩' || this.current_char == ';')
+            else if (this.current_char == '↩' || this.current_char == ';')
             {
                 tokens.Add(new Token("NEWLINE", pos_start: this.pos));
                 this.advance();

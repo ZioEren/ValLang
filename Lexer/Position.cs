@@ -14,12 +14,12 @@
 
     public Position advance(char current_char = default(char))
     {
-        this.idx += 1;
-        this.col += 1;
+        this.idx++;
+        this.col++;
 
         if (current_char == '↩')
         {
-            this.ln += 1;
+            this.ln++;
             this.col = 0;
         }
 

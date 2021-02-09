@@ -13,7 +13,5 @@ C:\Users\utente\Desktop\Computer\Developing\Progetti\Val Language\ValLang\obj\De
 C:\Users\utente\Desktop\Computer\Developing\Progetti\Val Language\ValLang\obj\Debug\ValLang.pdb
 C:\Users\utente\Desktop\Computer\Developing\Progetti\Val Language\Interpreter\ValLang\bin\Debug\ValLang.exe.config
 C:\Users\utente\Desktop\Computer\Developing\Progetti\Val Language\Interpreter\ValLang\bin\Debug\ValLang.exe
-C:\Users\utente\Desktop\Computer\Developing\Progetti\Val Language\Interpreter\ValLang\bin\Debug\ValLang.pdb
 C:\Users\utente\Desktop\Computer\Developing\Progetti\Val Language\Interpreter\ValLang\obj\Debug\ValLang.csproj.CoreCompileInputs.cache
 C:\Users\utente\Desktop\Computer\Developing\Progetti\Val Language\Interpreter\ValLang\obj\Debug\ValLang.exe
-C:\Users\utente\Desktop\Computer\Developing\Progetti\Val Language\Interpreter\ValLang\obj\Debug\ValLang.pdb

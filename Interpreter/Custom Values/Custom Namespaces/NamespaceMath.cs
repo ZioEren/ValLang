@@ -784,7 +784,7 @@ public class NamespaceMath
 
         if (value.GetType() == typeof(NumberValue))
         {
-            return new RuntimeResult().success(new NumberValue(MathHelper.Sec(double.Parse(((NumberValue) value).as_string()))));
+            return new RuntimeResult().success(new NumberValue(Sec(double.Parse(((NumberValue) value).as_string()))));
         }
         else
         {
@@ -806,7 +806,7 @@ public class NamespaceMath
 
         if (value.GetType() == typeof(NumberValue))
         {
-            return new RuntimeResult().success(new NumberValue(MathHelper.Cosec(double.Parse(((NumberValue)value).as_string()))));
+            return new RuntimeResult().success(new NumberValue(Cosec(double.Parse(((NumberValue)value).as_string()))));
         }
         else
         {
@@ -828,7 +828,7 @@ public class NamespaceMath
 
         if (value.GetType() == typeof(NumberValue))
         {
-            return new RuntimeResult().success(new NumberValue(MathHelper.Arcsec(double.Parse(((NumberValue)value).as_string()))));
+            return new RuntimeResult().success(new NumberValue(Arcsec(double.Parse(((NumberValue)value).as_string()))));
         }
         else
         {
@@ -850,7 +850,7 @@ public class NamespaceMath
 
         if (value.GetType() == typeof(NumberValue))
         {
-            return new RuntimeResult().success(new NumberValue(MathHelper.Arccosec(double.Parse(((NumberValue)value).as_string()))));
+            return new RuntimeResult().success(new NumberValue(Arccosec(double.Parse(((NumberValue)value).as_string()))));
         }
         else
         {
@@ -872,7 +872,7 @@ public class NamespaceMath
 
         if (value.GetType() == typeof(NumberValue))
         {
-            return new RuntimeResult().success(new NumberValue(MathHelper.HSec(double.Parse(((NumberValue)value).as_string()))));
+            return new RuntimeResult().success(new NumberValue(HSec(double.Parse(((NumberValue)value).as_string()))));
         }
         else
         {
@@ -894,7 +894,7 @@ public class NamespaceMath
 
         if (value.GetType() == typeof(NumberValue))
         {
-            return new RuntimeResult().success(new NumberValue(MathHelper.HCosec(double.Parse(((NumberValue)value).as_string()))));
+            return new RuntimeResult().success(new NumberValue(HCosec(double.Parse(((NumberValue)value).as_string()))));
         }
         else
         {
@@ -916,7 +916,7 @@ public class NamespaceMath
 
         if (value.GetType() == typeof(NumberValue))
         {
-            return new RuntimeResult().success(new NumberValue(MathHelper.HArcsin(double.Parse(((NumberValue)value).as_string()))));
+            return new RuntimeResult().success(new NumberValue(HArcsin(double.Parse(((NumberValue)value).as_string()))));
         }
         else
         {
@@ -938,7 +938,7 @@ public class NamespaceMath
 
         if (value.GetType() == typeof(NumberValue))
         {
-            return new RuntimeResult().success(new NumberValue(MathHelper.HArccos(double.Parse(((NumberValue)value).as_string()))));
+            return new RuntimeResult().success(new NumberValue(HArccos(double.Parse(((NumberValue)value).as_string()))));
         }
         else
         {
@@ -960,7 +960,7 @@ public class NamespaceMath
 
         if (value.GetType() == typeof(NumberValue))
         {
-            return new RuntimeResult().success(new NumberValue(MathHelper.HArcsec(double.Parse(((NumberValue)value).as_string()))));
+            return new RuntimeResult().success(new NumberValue(HArcsec(double.Parse(((NumberValue)value).as_string()))));
         }
         else
         {
@@ -982,7 +982,7 @@ public class NamespaceMath
 
         if (value.GetType() == typeof(NumberValue))
         {
-            return new RuntimeResult().success(new NumberValue(MathHelper.HArccosec(double.Parse(((NumberValue)value).as_string()))));
+            return new RuntimeResult().success(new NumberValue(HArccosec(double.Parse(((NumberValue)value).as_string()))));
         }
         else
         {
@@ -996,5 +996,55 @@ public class NamespaceMath
         arg_names.Add("value");
 
         return arg_names;
+    }
+
+    public static double Sec(double x)
+    {
+        return 1 / Math.Cos(x);
+    }
+
+    public static double Cosec(double x)
+    {
+        return 1 / Math.Sin(x);
+    }
+
+    public static double Arcsec(double x)
+    {
+        return 2 * Math.Atan(1) - Math.Atan(Math.Sign(x) / Math.Sqrt(x * x - 1));
+    }
+
+    public static double Arccosec(double x)
+    {
+        return Math.Atan(Math.Sign(x) / Math.Sqrt(x * x - 1));
+    }
+
+    public static double HSec(double x)
+    {
+        return 2 / (Math.Exp(x) + Math.Exp(-x));
+    }
+
+    public static double HCosec(double x)
+    {
+        return 2 / (Math.Exp(x) - Math.Exp(-x));
+    }
+
+    public static double HArcsin(double x)
+    {
+        return Math.Log(x + Math.Sqrt(x * x + 1));
+    }
+
+    public static double HArccos(double x)
+    {
+        return Math.Log(x + Math.Sqrt(x * x - 1));
+    }
+
+    public static double HArcsec(double x)
+    {
+        return Math.Log((Math.Sqrt(-x * x + 1) + 1) / x);
+    }
+
+    public static double HArccosec(double x)
+    {
+        return Math.Log((Math.Sign(x) * Math.Sqrt(x * x + 1) + 1) / x);
     }
 }
