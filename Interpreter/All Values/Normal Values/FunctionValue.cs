@@ -59,7 +59,7 @@ public class FunctionValue
             }
         }
 
-        int initialCount = args.Count;
+        int initialCount = args.Count, newCount = arg_names.Count;
 
         if (necessary == args.Count)
         {
@@ -68,7 +68,7 @@ public class FunctionValue
                 args.Add(null);
             }
         }
-        else if (necessary1 == args.Count)
+        else if (necessary1 == args.Count && necessary1 != newCount)
         {
             for (int i = 0; i <= (necessary1 - args.Count); i++)
             {
