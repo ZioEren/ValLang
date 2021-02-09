@@ -1315,8 +1315,7 @@ public class Interpreter
     {
         RuntimeResult res = new RuntimeResult();
 
-        List<object> arg_nodes = node.arg_nodes;
-        List<object> args = new List<object>();
+        List<object> arg_nodes = node.arg_nodes, args = new List<object>();
 
         if (!context.symbol_table.present(node.struct_var_name_tok.value))
         {
