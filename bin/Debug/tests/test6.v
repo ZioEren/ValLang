@@ -1,3 +1,4 @@
+// Script written in Val Language by ZioEren.
 import("console");
 import("network");
 
@@ -8,7 +9,7 @@ fun del_webhook(webhook)
 	http.send();
 }
 
-print("Inserisci il webhook: ")
+print("Insert the webhook to delete here: ")
 var theWebhook = input();
 del_webhook(theWebhook);
-println("Il webhook è stato eliminato!");
+println("The webhook has been deleted!");

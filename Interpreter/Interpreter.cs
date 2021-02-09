@@ -464,7 +464,33 @@ public class Interpreter
 
         if (node.var_name_tok != null && node.var_name_tok.value.ToString() != "")
         {
-            context.symbol_table.set(func_name, func_value);
+            if (context.symbol_table.present(func_name))
+            {
+                if (context.symbol_table.get(func_name).GetType() == typeof(FunctionValue))
+                {
+                    int funcIdx = 1;
+
+                    while (true)
+                    {
+                        if (context.symbol_table.present(func_name + "$" + funcIdx))
+                        {
+                            funcIdx++;
+                            continue;
+                        }
+
+                        context.symbol_table.set(func_name + "$" + funcIdx, func_value);
+                        break;
+                    }
+                }
+                else
+                {
+                    context.symbol_table.set(func_name, func_value);
+                }
+            }
+            else
+            {
+                context.symbol_table.set(func_name, func_value);
+            }
         }
 
         return res.success(func_value);
@@ -483,6 +509,34 @@ public class Interpreter
 
         if (value_to_call.GetType() == typeof(FunctionValue))
         {
+            FunctionValue theFunc = (FunctionValue) value_to_call;
+
+            if (node.arg_nodes.Count > theFunc.arg_names.Count)
+            {
+                int funcIdx = 1;
+
+                while (true)
+                {
+                    if (context.symbol_table.present(theFunc.name + "$" + funcIdx))
+                    {
+                        FunctionValue newFunc = (FunctionValue) context.symbol_table.get(theFunc.name + "$" + funcIdx);
+                        
+                        if (node.arg_nodes.Count > newFunc.arg_names.Count)
+                        {
+                            funcIdx++;
+                            continue;
+                        }
+
+                        value_to_call = newFunc;
+                        break;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
             value_to_call = ((FunctionValue)value_to_call).copy().set_pos(node.pos_start, node.pos_end).set_context(context);
 
             foreach (object arg_node in node.arg_nodes)
@@ -857,6 +911,34 @@ public class Interpreter
 
             if (value_to_call.GetType() == typeof(FunctionValue))
             {
+                FunctionValue theFunc = (FunctionValue)value_to_call;
+
+                if (node.arg_nodes.Count > theFunc.arg_names.Count)
+                {
+                    int funcIdx = 1;
+
+                    while (true)
+                    {
+                        if (theStruct.context.symbol_table.present(theFunc.name + "$" + funcIdx))
+                        {
+                            FunctionValue newFunc = (FunctionValue)theStruct.context.symbol_table.get(theFunc.name + "$" + funcIdx);
+
+                            if (node.arg_nodes.Count > newFunc.arg_names.Count)
+                            {
+                                funcIdx++;
+                                continue;
+                            }
+
+                            value_to_call = newFunc;
+                            break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+
                 value_to_call = ((FunctionValue)value_to_call).copy().set_pos(node.pos_start, node.pos_end).set_context(theStruct.context);
 
                 foreach (object arg_node in node.arg_nodes)
@@ -1160,6 +1242,34 @@ public class Interpreter
 
             if (value_to_call.GetType() == typeof(FunctionValue))
             {
+                FunctionValue theFunc = (FunctionValue)value_to_call;
+
+                if (node.arg_nodes.Count > theFunc.arg_names.Count)
+                {
+                    int funcIdx = 1;
+
+                    while (true)
+                    {
+                        if (theNamespace.context.symbol_table.present(theFunc.name + "$" + funcIdx))
+                        {
+                            FunctionValue newFunc = (FunctionValue)theNamespace.context.symbol_table.get(theFunc.name + "$" + funcIdx);
+
+                            if (node.arg_nodes.Count > newFunc.arg_names.Count)
+                            {
+                                funcIdx++;
+                                continue;
+                            }
+
+                            value_to_call = newFunc;
+                            break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+
                 value_to_call = ((FunctionValue)value_to_call).copy().set_pos(node.pos_start, node.pos_end).set_context(theNamespace.context);
 
                 foreach (object arg_node in node.arg_nodes)

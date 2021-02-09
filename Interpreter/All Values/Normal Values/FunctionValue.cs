@@ -61,33 +61,36 @@ public class FunctionValue
 
         int initialCount = args.Count, newCount = arg_names.Count;
 
-        if (necessary == args.Count)
+        if (newCount != 0)
         {
-            for (int i = 0; i <= (necessary1 - args.Count); i++)
+            if (necessary == args.Count)
             {
-                args.Add(null);
+                for (int i = 0; i <= (necessary1 - args.Count); i++)
+                {
+                    args.Add(null);
+                }
             }
-        }
-        else if (necessary1 == args.Count && necessary1 != newCount)
-        {
-            for (int i = 0; i <= (necessary1 - args.Count); i++)
+            else if (necessary1 == args.Count && necessary1 != newCount)
             {
-                args.Add(null);
+                for (int i = 0; i <= (necessary1 - args.Count); i++)
+                {
+                    args.Add(null);
+                }
             }
-        }
-        else
-        {
-            for (int i = 0; i <= (necessary - args.Count); i++)
+            else
             {
-                args.Add(null);
+                for (int i = 0; i <= (necessary - args.Count); i++)
+                {
+                    args.Add(null);
+                }
             }
-        }
 
-        if (necessary1 == initialCount)
-        {
-            for (int i = 0; i < necessary - 1; i++)
+            if (necessary1 == initialCount)
             {
-                args.Add(null);
+                for (int i = 0; i < necessary - 1; i++)
+                {
+                    args.Add(null);
+                }
             }
         }
 
