@@ -5,12 +5,12 @@ import("lists");
 var list = [], num = 0;
 
 println("Insert the number of the numbers you want to insert:");
-num = input_int();
+num = inputInteger();
 
 for (i = 0 to num)
 {
 	println("Insert the " + (i + 1) + " number:");
-	var element = input_int();
+	var element = inputInteger();
 	list += element;
 }
 

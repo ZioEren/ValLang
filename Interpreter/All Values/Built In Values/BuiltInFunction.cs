@@ -164,12 +164,12 @@ public class BuiltInFunction
         return arg_names;
     }
 
-    public RuntimeResult execute_print_ret(Context exec_ctx)
+    public RuntimeResult execute_printReturn(Context exec_ctx)
     {
         return new RuntimeResult().success(new StringValue((string) exec_ctx.symbol_table.get("value").GetType().GetMethod("as_string").Invoke(exec_ctx.symbol_table.get("value"), new object[] { })));
     }
 
-    public List<string> get_print_ret()
+    public List<string> get_printReturn()
     {
         List<string> arg_names = new List<string>();
         arg_names.Add("value");
@@ -188,7 +188,7 @@ public class BuiltInFunction
         return arg_names;
     }
 
-    public RuntimeResult execute_input_int(Context exec_ctx)
+    public RuntimeResult execute_inputInteger(Context exec_ctx)
     {
         int number = 0;
 
@@ -204,7 +204,7 @@ public class BuiltInFunction
         return new RuntimeResult().success(new NumberValue(number));
     }
 
-    public List<string> get_input_int()
+    public List<string> get_inputInteger()
     {
         List<string> arg_names = new List<string>();
         return arg_names;
@@ -222,48 +222,48 @@ public class BuiltInFunction
         return arg_names;
     }
 
-    public RuntimeResult execute_is_number(Context exec_ctx)
+    public RuntimeResult execute_isNumber(Context exec_ctx)
     {
         return new RuntimeResult().success(exec_ctx.symbol_table.get("value").GetType() == typeof(NumberValue) ? Values.TRUE : Values.FALSE);
     }
 
-    public List<string> get_is_number()
+    public List<string> get_isNumber()
     {
         List<string> arg_names = new List<string>();
         arg_names.Add("value");
         return arg_names;
     }
 
-    public RuntimeResult execute_is_string(Context exec_ctx)
+    public RuntimeResult execute_isString(Context exec_ctx)
     {
         return new RuntimeResult().success(exec_ctx.symbol_table.get("value").GetType() == typeof(StringValue) ? Values.TRUE : Values.FALSE);
     }
 
-    public List<string> get_is_string()
+    public List<string> get_isString()
     {
         List<string> arg_names = new List<string>();
         arg_names.Add("value");
         return arg_names;
     }
 
-    public RuntimeResult execute_is_list(Context exec_ctx)
+    public RuntimeResult execute_isList(Context exec_ctx)
     {
         return new RuntimeResult().success(exec_ctx.symbol_table.get("value").GetType() == typeof(ListValue) ? Values.TRUE : Values.FALSE);
     }
 
-    public List<string> get_is_list()
+    public List<string> get_isList()
     {
         List<string> arg_names = new List<string>();
         arg_names.Add("value");
         return arg_names;
     }
 
-    public RuntimeResult execute_is_function(Context exec_ctx)
+    public RuntimeResult execute_isFunction(Context exec_ctx)
     {
         return new RuntimeResult().success((exec_ctx.symbol_table.get("value").GetType() == typeof(FunctionValue) || exec_ctx.symbol_table.get("value").GetType() == typeof(BuiltInFunction) || exec_ctx.symbol_table.get("value").GetType() == typeof(BuiltInFunction)) ? Values.TRUE : Values.FALSE);
     }
 
-    public List<string> get_is_function()
+    public List<string> get_isFunction()
     {
         List<string> arg_names = new List<string>();
         arg_names.Add("value");
@@ -498,7 +498,7 @@ public class BuiltInFunction
         return arg_names;
     }
 
-    public RuntimeResult execute_clear_ram(Context exec_ctx)
+    public RuntimeResult execute_clearRam(Context exec_ctx)
     {
         Context ctx = exec_ctx;
 
@@ -511,13 +511,13 @@ public class BuiltInFunction
         return new RuntimeResult().success(Values.NULL);
     }
 
-    public List<string> get_clear_ram()
+    public List<string> get_clearRam()
     {
         List<string> arg_names = new List<string>();
         return arg_names;
     }
 
-    public RuntimeResult execute_input_float(Context exec_ctx)
+    public RuntimeResult execute_inputFloat(Context exec_ctx)
     {
         float number = 0.0F;
 
@@ -536,13 +536,13 @@ public class BuiltInFunction
 
         return new RuntimeResult().success(new NumberValue(number));
     }
-    public List<string> get_input_float()
+    public List<string> get_inputFloat()
     {
         List<string> arg_names = new List<string>();
         return arg_names;
     }
 
-    public RuntimeResult execute_input_num(Context exec_ctx)
+    public RuntimeResult execute_inputNumber(Context exec_ctx)
     {
         try
         {
@@ -565,18 +565,18 @@ public class BuiltInFunction
         }
     }
 
-    public List<string> get_input_num()
+    public List<string> get_inputNumber()
     {
         List<string> arg_names = new List<string>();
         return arg_names;
     }
 
-    public RuntimeResult execute_is_struct(Context exec_ctx)
+    public RuntimeResult execute_isStruct(Context exec_ctx)
     {
         return new RuntimeResult().success(exec_ctx.symbol_table.get("value").GetType() == typeof(NumberValue) ? Values.TRUE : Values.FALSE);
     }
 
-    public List<string> get_is_struct()
+    public List<string> get_isStruct()
     {
         List<string> arg_names = new List<string>();
         arg_names.Add("value");
@@ -597,15 +597,16 @@ public class BuiltInFunction
         return arg_names;
     }
 
-    public RuntimeResult execute_is_namespace(Context exec_ctx)
+    public RuntimeResult execute_isNamespace(Context exec_ctx)
     {
         return new RuntimeResult().success(exec_ctx.symbol_table.get("value").GetType() == typeof(NamespaceValue) ? Values.TRUE : Values.FALSE);
     }
 
-    public List<string> get_is_namespace()
+    public List<string> get_isNamespace()
     {
         List<string> arg_names = new List<string>();
         arg_names.Add("value");
+
         return arg_names;
     }
 
@@ -638,6 +639,50 @@ public class BuiltInFunction
         List<string> arg_names = new List<string>();
         arg_names.Add("namespace");
 
+        return arg_names;
+    }
+
+    public RuntimeResult execute_eval(Context exec_ctx)
+    {
+        object value = exec_ctx.symbol_table.get("code");
+
+        if (value.GetType() == typeof(StringValue))
+        {
+            StringValue code = (StringValue)value;
+            Tuple<object, Error> executed = Program.import(exec_ctx.parent_entry_pos.fn, code.as_string(), exec_ctx);
+
+            if (executed.Item2 != null)
+            {
+                return new RuntimeResult().failure(executed.Item2);
+            }
+
+            return new RuntimeResult().success(executed.Item1);
+        }
+        else
+        {
+            return new RuntimeResult().failure(new RuntimeError(null, null, "Code must be a string", exec_ctx));
+        }
+
+        return new RuntimeResult().success(Values.NULL);
+    }
+
+    public List<string> get_eval()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("code");
+
+        return arg_names;
+    }
+
+    public RuntimeResult execute_isLabel(Context exec_ctx)
+    {
+        return new RuntimeResult().success(exec_ctx.symbol_table.get("value").GetType() == typeof(LabelValue) ? Values.TRUE : Values.FALSE);
+    }
+
+    public List<string> get_isLabel()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
         return arg_names;
     }
 }

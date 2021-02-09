@@ -44,21 +44,23 @@ public static class Importer
             table.set("true", Values.TRUE);
             table.set("false", Values.FALSE);
 
-            table.set("is_num", BuiltInFunctions.is_number);
-            table.set("is_str", BuiltInFunctions.is_string);
-            table.set("is_list", BuiltInFunctions.is_list);
-            table.set("is_fun", BuiltInFunctions.is_function);
-            table.set("is_struct", BuiltInFunctions.is_struct);
-            table.set("is_namespace", BuiltInFunctions.is_namespace);
+            table.set("isNumber", BuiltInFunctions.isNumber);
+            table.set("isString", BuiltInFunctions.isString);
+            table.set("isList", BuiltInFunctions.isList);
+            table.set("isFunction", BuiltInFunctions.isFunction);
+            table.set("isStruct", BuiltInFunctions.isStruct);
+            table.set("isNamespace", BuiltInFunctions.isNamespace);
+            table.set("isLabel", BuiltInFunctions.isLabel);
 
             table.set("run", BuiltInFunctions.run);
             table.set("import", BuiltInFunctions.import);
+            table.set("eval", BuiltInFunctions.eval);
 
             table.set("exit", BuiltInFunctions.exit);
             table.set("end", BuiltInFunctions.end);
             table.set("close", BuiltInFunctions.close);
 
-            table.set("clear_ram", BuiltInFunctions.clear_ram);
+            table.set("clearRam", BuiltInFunctions.clearRam);
 
             table.set("use", BuiltInFunctions.use);
 
@@ -68,12 +70,12 @@ public static class Importer
         {
             table.set("print", BuiltInFunctions.print);
             table.set("println", BuiltInFunctions.println);
-            table.set("print_ret", BuiltInFunctions.print_ret);
+            table.set("printReturn", BuiltInFunctions.printReturn);
 
             table.set("input", BuiltInFunctions.input);
-            table.set("input_int", BuiltInFunctions.input_int);
-            table.set("input_float", BuiltInFunctions.input_float);
-            table.set("input_num", BuiltInFunctions.input_num);
+            table.set("inputInteger", BuiltInFunctions.inputInteger);
+            table.set("inputFloat", BuiltInFunctions.inputFloat);
+            table.set("inputNumber", BuiltInFunctions.inputNumber);
 
             table.set("clear", BuiltInFunctions.clear);
         }

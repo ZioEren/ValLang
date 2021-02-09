@@ -440,11 +440,23 @@ public class Interpreter
         string func_name = node.var_name_tok == null ? "" : (string)node.var_name_tok.value;
         object body_node = node.body_node;
 
-        List<string> arg_names = new List<string>();
+        List<Tuple<string, object>> arg_names = new List<Tuple<string, object>>();
 
-        foreach (Token arg_name in node.arg_name_toks)
+        foreach (Tuple<Token, object> arg in node.arg_name_toks)
         {
-            arg_names.Add((string)arg_name.value);
+            if (arg.Item2 == null)
+            {
+                arg_names.Add(new Tuple<string, object>(arg.Item1.value.ToString(), null));
+            }
+            else
+            {
+                arg_names.Add(new Tuple<string, object>(arg.Item1.value.ToString(), res.register(this.visit(arg.Item2, context))));
+
+                if (res.error != null)
+                {
+                    return res;
+                }
+            }
         }
 
         FunctionValue func_value = new FunctionValue(func_name, body_node, arg_names, node.should_auto_return);

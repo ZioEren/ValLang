@@ -15,13 +15,13 @@ var pos = Position; // Create a new istance of Position structure.
 var a, b, c;
 
 println("Insert x coordinate: ");
-a = input_int();
+a = inputInteger();
 
 println("Insert y coordinate: ");
-b = input_int();
+b = inputInteger();
 
 println("Insert z coordinate: ");
-c = input_int();
+c = inputInteger();
 
 pos.x = a;
 pos.y = b;

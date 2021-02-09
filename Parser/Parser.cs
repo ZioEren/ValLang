@@ -57,15 +57,13 @@ public class Parser
 
             return res.success(new NumberNode(tok));
         }
-
-        if (tok.type == "STRING")
+        else if (tok.type == "STRING")
         {
             res.register_advancement();
             this.advance();
 
             return res.success(new StringNode(tok));
         }
-
         else if (tok.type == "IDENTIFIER")
         {
             res.register_advancement();
@@ -575,7 +573,7 @@ public class Parser
         ParseResult res = new ParseResult();
         bool beConstant = false;
 
-        if (this.current_tok.type == "KEYWORD" &&this.current_tok.value.ToString() == "const")
+        if (this.current_tok.type == "KEYWORD" && this.current_tok.value.ToString() == "const")
         {
             beConstant = true;
             res.register_advancement();
@@ -808,6 +806,7 @@ public class Parser
 
         return res.success(left);
     }
+
     public ParseResult if_expr()
     {
         ParseResult res = new ParseResult();
@@ -823,6 +822,7 @@ public class Parser
 
         return res.success(new IfNode(cases, else_case));
     }
+
     public ParseResult if_expr_cases(string case_keyword)
     {
         ParseResult res = new ParseResult();
@@ -1275,6 +1275,7 @@ public class Parser
     public ParseResult func_def()
     {
         ParseResult res = new ParseResult();
+        bool optionalParams = false;
 
         if (this.current_tok.type != "KEYWORD" && this.current_tok.value.ToString() != "fun")
         {
@@ -1311,14 +1312,35 @@ public class Parser
         res.register_advancement();
         this.advance();
 
-        List<Token> arg_name_toks = new List<Token>();
+        List<Tuple<Token, object>> arg_name_toks = new List<Tuple<Token, object>>();
 
         if (this.current_tok.type == "IDENTIFIER")
         {
-            arg_name_toks.Add(this.current_tok);
+            Token arg_name_tok = this.current_tok;
+            object arg_value = null;
 
             res.register_advancement();
             this.advance();
+
+            if (this.current_tok.type == "EQ")
+            {
+                optionalParams = true;
+                res.register_advancement();
+                this.advance();
+
+                arg_value = res.register(this.expr());
+
+                if (res.error != null)
+                {
+                    return res;
+                }
+            }
+            else if (optionalParams)
+            {
+                return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '='"));
+            }
+
+            arg_name_toks.Add(new Tuple<Token, object>(arg_name_tok, arg_value));
 
             while (this.current_tok.type == "COMMA")
             {
@@ -1330,10 +1352,31 @@ public class Parser
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected identifier"));
                 }
 
-                arg_name_toks.Add(this.current_tok);
+                Token arg_tok = this.current_tok;
+                object arg_val = null;
 
                 res.register_advancement();
                 this.advance();
+
+                if (this.current_tok.type == "EQ")
+                {
+                    optionalParams = true;
+                    res.register_advancement();
+                    this.advance();
+
+                    arg_val = res.register(this.expr());
+
+                    if (res.error != null)
+                    {
+                        return res;
+                    }
+                }
+                else if (optionalParams)
+                {
+                    return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '='"));
+                }
+
+                arg_name_toks.Add(new Tuple<Token, object>(arg_tok, arg_val));
             }
 
             if (this.current_tok.type != "RPAREN")
@@ -1343,7 +1386,10 @@ public class Parser
         }
         else
         {
-            if (this.current_tok.type != "RPAREN") return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected identifier or ')'"));
+            if (this.current_tok.type != "RPAREN")
+            {
+                return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected identifier or ')'"));
+            }
         }
 
         res.register_advancement();

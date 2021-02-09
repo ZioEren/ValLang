@@ -3,7 +3,7 @@ import("console");
 
 var num = 0;
 println("Please, insert a number: ");
-num = input_int();
+num = inputInteger();
 
 if (num % 2 == 0)
 {
