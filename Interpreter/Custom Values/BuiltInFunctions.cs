@@ -12,6 +12,8 @@
     public static BuiltInFunction isStruct = new BuiltInFunction("isStruct");
     public static BuiltInFunction isNamespace = new BuiltInFunction("isNamespace");
     public static BuiltInFunction isLabel = new BuiltInFunction("isLabel");
+    public static BuiltInFunction isInteger = new BuiltInFunction("isInteger");
+    public static BuiltInFunction isFloat = new BuiltInFunction("isFloat");
     public static BuiltInFunction append = new BuiltInFunction("append");
     public static BuiltInFunction pop = new BuiltInFunction("pop");
     public static BuiltInFunction extend = new BuiltInFunction("extend");

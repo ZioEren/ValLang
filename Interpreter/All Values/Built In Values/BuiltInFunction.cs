@@ -685,4 +685,48 @@ public class BuiltInFunction
         arg_names.Add("value");
         return arg_names;
     }
+
+    public RuntimeResult execute_isInteger(Context exec_ctx)
+    {
+        object value = exec_ctx.symbol_table.get("value");
+
+        if (value.GetType() == typeof(NumberValue))
+        {
+            if (((NumberValue) value).value.GetType() == typeof(int))
+            {
+                return new RuntimeResult().success(Values.TRUE);
+            }
+        }
+
+        return new RuntimeResult().success(Values.FALSE);
+    }
+
+    public List<string> get_isInteger()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_isFloat(Context exec_ctx)
+    {
+        object value = exec_ctx.symbol_table.get("value");
+
+        if (value.GetType() == typeof(NumberValue))
+        {
+            if (((NumberValue)value).value.GetType() == typeof(float))
+            {
+                return new RuntimeResult().success(Values.TRUE);
+            }
+        }
+
+        return new RuntimeResult().success(Values.FALSE);
+    }
+
+    public List<string> get_isFloat()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+        return arg_names;
+    }
 }

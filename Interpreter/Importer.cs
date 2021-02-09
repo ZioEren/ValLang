@@ -51,6 +51,8 @@ public static class Importer
             table.set("isStruct", BuiltInFunctions.isStruct);
             table.set("isNamespace", BuiltInFunctions.isNamespace);
             table.set("isLabel", BuiltInFunctions.isLabel);
+            table.set("isInteger", BuiltInFunctions.isInteger);
+            table.set("isFloat", BuiltInFunctions.isFloat);
 
             table.set("run", BuiltInFunctions.run);
             table.set("import", BuiltInFunctions.import);
