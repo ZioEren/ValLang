@@ -13,6 +13,6 @@
 
     public string as_string()
     {
-        return this.error_name + ": " + this.details + "." + "\r\nFile '" + this.pos_start.fn + "', line '" + (this.pos_start.ln + 1).ToString() + "'.";
+        return this.error_name + ": " + this.details + "." + "\r\nFile '" + this.pos_start.fn + "', line '" + (this.pos_start.ln + 1).ToString();
     }
 }

@@ -21,7 +21,7 @@ foreach (element in list)
 	sum += element;
 }
 
-average = sum / len(list);
+average = sum / getListLength(list);
 
 println("The sum of all the elements of the list is: " + sum + ".");
 println("The arithmetic average of all the elements of the list is: " + average + ".");

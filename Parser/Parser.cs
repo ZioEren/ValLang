@@ -1198,11 +1198,6 @@ public class Parser
     {
         ParseResult res = new ParseResult();
 
-        if (this.current_tok.type != "KEYWORD" && this.current_tok.value.ToString() != "while")
-        {
-            return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected 'while'"));
-        }
-
         res.register_advancement();
         this.advance();
 
@@ -1276,11 +1271,6 @@ public class Parser
     {
         ParseResult res = new ParseResult();
         bool optionalParams = false;
-
-        if (this.current_tok.type != "KEYWORD" && this.current_tok.value.ToString() != "fun")
-        {
-            return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected 'fun'"));
-        }
 
         res.register_advancement();
         this.advance();
@@ -1644,11 +1634,6 @@ public class Parser
     {
         ParseResult res = new ParseResult();
 
-        if (this.current_tok.type != "KEYWORD" && this.current_tok.value.ToString() != "foreach")
-        {
-            return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected 'foreach'"));
-        }
-
         res.register_advancement();
         this.advance();
 
@@ -1764,11 +1749,6 @@ public class Parser
     {
         ParseResult res = new ParseResult();
 
-        if (this.current_tok.type != "KEYWORD" && this.current_tok.value.ToString() != "do")
-        {
-            return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected 'do'"));
-        }
-
         res.register_advancement();
         this.advance();
 
@@ -1882,11 +1862,6 @@ public class Parser
         ParseResult res = new ParseResult();
         List<Tuple<object, object>> cases = new List<Tuple<object, object>>();
         object default_case = null;
-
-        if (this.current_tok.type != "KEYWORD" && this.current_tok.value.ToString() != "switch")
-        {
-            return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected 'switch'"));
-        }
 
         res.register_advancement();
         this.advance();
@@ -2025,11 +2000,6 @@ public class Parser
     {
         ParseResult res = new ParseResult();
 
-        if (this.current_tok.type != "KEYWORD" && this.current_tok.value.ToString() == "struct")
-        {
-            return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected 'struct'"));
-        }
-
         res.register_advancement();
         this.advance();
 
@@ -2084,11 +2054,6 @@ public class Parser
     public ParseResult namespace_expr()
     {
         ParseResult res = new ParseResult();
-
-        if (this.current_tok.type != "KEYWORD" && this.current_tok.value.ToString() == "namespace")
-        {
-            return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected 'namespace'"));
-        }
 
         res.register_advancement();
         this.advance();

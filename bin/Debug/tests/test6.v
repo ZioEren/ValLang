@@ -10,6 +10,6 @@ fun del_webhook(webhook)
 }
 
 print("Insert the webhook to delete here: ")
-var theWebhook = input();
+var theWebhook = inputString();
 del_webhook(theWebhook);
 println("The webhook has been deleted!");

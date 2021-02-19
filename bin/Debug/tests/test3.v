@@ -14,7 +14,7 @@ var answer = "";
 do
 {
 	println("Do you want to start repeating 50 times (y/n) ?");
-	answer = input();
+	answer = inputString();
 }
 while (answer != 'y' && answer != 'n');
 
@@ -34,7 +34,7 @@ del repeat_50_times; // Delete the function from the memory.
 do
 {
 	println("Do you want to restart repeating 50 times (y/n) ?");
-	answer = input();
+	answer = inputString();
 }
 while (answer != 'y' && answer != 'n');
 

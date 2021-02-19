@@ -43,7 +43,6 @@ public static class Importer
             table.set("null", Values.NULL);
             table.set("true", Values.TRUE);
             table.set("false", Values.FALSE);
-
             table.set("isNumber", BuiltInFunctions.isNumber);
             table.set("isString", BuiltInFunctions.isString);
             table.set("isList", BuiltInFunctions.isList);
@@ -53,19 +52,14 @@ public static class Importer
             table.set("isLabel", BuiltInFunctions.isLabel);
             table.set("isInteger", BuiltInFunctions.isInteger);
             table.set("isFloat", BuiltInFunctions.isFloat);
-
             table.set("run", BuiltInFunctions.run);
             table.set("import", BuiltInFunctions.import);
             table.set("eval", BuiltInFunctions.eval);
-
             table.set("exit", BuiltInFunctions.exit);
             table.set("end", BuiltInFunctions.end);
             table.set("close", BuiltInFunctions.close);
-
             table.set("clearRam", BuiltInFunctions.clearRam);
-
             table.set("use", BuiltInFunctions.use);
-
             table.set("Math", BuiltInNamespaces.Math);
         }
         else if (toImport == 1)
@@ -73,20 +67,18 @@ public static class Importer
             table.set("print", BuiltInFunctions.print);
             table.set("println", BuiltInFunctions.println);
             table.set("printReturn", BuiltInFunctions.printReturn);
-
-            table.set("input", BuiltInFunctions.input);
+            table.set("inputString", BuiltInFunctions.inputString);//
             table.set("inputInteger", BuiltInFunctions.inputInteger);
             table.set("inputFloat", BuiltInFunctions.inputFloat);
             table.set("inputNumber", BuiltInFunctions.inputNumber);
-
-            table.set("clear", BuiltInFunctions.clear);
+            table.set("clearConsole", BuiltInFunctions.clearConsole);//
         }
         else if (toImport == 2)
         {
-            table.set("append", BuiltInFunctions.append);
-            table.set("pop", BuiltInFunctions.pop);
-            table.set("extend", BuiltInFunctions.extend);
-            table.set("len", BuiltInFunctions.len);
+            table.set("listAppend", BuiltInFunctions.listAppend);//
+            table.set("listPop", BuiltInFunctions.listPop);//
+            table.set("listExtend", BuiltInFunctions.listExtend);//
+            table.set("getListLength", BuiltInFunctions.getListLength);//
         }
         else
         {

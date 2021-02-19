@@ -3,7 +3,7 @@ import("console");
 
 var favourite_food;
 println("What's your favourite food?");
-favourite_food = input();
+favourite_food = inputString();
 
 switch (favourite_food)
 {

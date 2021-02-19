@@ -177,12 +177,12 @@ public class BuiltInFunction
         return arg_names;
     }
 
-    public RuntimeResult execute_input(Context exec_ctx)
+    public RuntimeResult execute_inputString(Context exec_ctx)
     {
         return new RuntimeResult().success(new StringValue(Console.ReadLine()));
     }
 
-    public List<string> get_input()
+    public List<string> get_inputString()
     {
         List<string> arg_names = new List<string>();
         return arg_names;
@@ -210,13 +210,13 @@ public class BuiltInFunction
         return arg_names;
     }
 
-    public RuntimeResult execute_clear(Context exec_ctx)
+    public RuntimeResult execute_clearConsole(Context exec_ctx)
     {
         Console.Clear();
         return new RuntimeResult().success(Values.NULL);
     }
 
-    public List<string> get_clear()
+    public List<string> get_clearConsole()
     {
         List<string> arg_names = new List<string>();
         return arg_names;
@@ -270,7 +270,7 @@ public class BuiltInFunction
         return arg_names;
     }
 
-    public RuntimeResult execute_append(Context exec_ctx)
+    public RuntimeResult execute_listAppend(Context exec_ctx)
     {
         object list = exec_ctx.symbol_table.get("list");
         object value = exec_ctx.symbol_table.get("value");
@@ -284,7 +284,7 @@ public class BuiltInFunction
         return new RuntimeResult().success(Values.NULL);
     }
 
-    public List<string> get_append()
+    public List<string> get_listAppend()
     {
         List<string> arg_names = new List<string>();
         arg_names.Add("list");
@@ -292,7 +292,7 @@ public class BuiltInFunction
         return arg_names;
     }
 
-    public RuntimeResult execute_pop(Context exec_ctx)
+    public RuntimeResult execute_listPop(Context exec_ctx)
     {
         object list = exec_ctx.symbol_table.get("list");
         object index = exec_ctx.symbol_table.get("index");
@@ -322,7 +322,7 @@ public class BuiltInFunction
         return new RuntimeResult().success(element);
     }
 
-    public List<string> get_pop()
+    public List<string> get_listPop()
     {
         List<string> arg_names = new List<string>();
         arg_names.Add("list");
@@ -330,7 +330,7 @@ public class BuiltInFunction
         return arg_names;
     }
 
-    public RuntimeResult execute_extend(Context exec_ctx)
+    public RuntimeResult execute_listExtend(Context exec_ctx)
     {
         object listA = exec_ctx.symbol_table.get("listA");
         object listB = exec_ctx.symbol_table.get("listB");
@@ -349,7 +349,7 @@ public class BuiltInFunction
         return new RuntimeResult().success(Values.NULL);
     }
 
-    public List<string> get_extend()
+    public List<string> get_listExtend()
     {
         List<string> arg_names = new List<string>();
         arg_names.Add("listA");
@@ -400,7 +400,7 @@ public class BuiltInFunction
         return arg_names;
     }
 
-    public RuntimeResult execute_len(Context exec_ctx)
+    public RuntimeResult execute_getListLength(Context exec_ctx)
     {
         object list = exec_ctx.symbol_table.get("list");
 
@@ -412,7 +412,7 @@ public class BuiltInFunction
         return new RuntimeResult().success(new NumberValue(((ListValue)list).elements.Count));
     }
 
-    public List<string> get_len()
+    public List<string> get_getListLength()
     {
         List<string> arg_names = new List<string>();
         arg_names.Add("list");
