@@ -29,13 +29,13 @@ var pos = Position; // Create a new istance of Position structure.
 var a, b, c;
 
 println("Insert x coordinate: ");
-a = input_int();
+a = inputNumber();
 
 println("Insert y coordinate: ");
-b = input_int();
+b = inputNumber();
 
 println("Insert z coordinate: ");
-c = input_int();
+c = inputNumber();
 
 pos.x = a;
 pos.y = b;
@@ -43,12 +43,3 @@ pos.z = c;
 
 println("The sum of all coordinates is: " + pos.getSum());
 ```
-
-# TODO
-
-- Labels and "goto" keyword
-- "this" keyword
-- Pointers and references
-- New class object type
-- New enum object type
-- Method inlining
