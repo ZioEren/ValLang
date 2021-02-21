@@ -101,15 +101,24 @@ class Program
                 }
                 else if (text.StartsWith("--run "))
                 {
+                    Stopwatch stopwatch = new Stopwatch();
+                    stopwatch.Start();
+
                     string thePath = text.Substring(6, text.Length - 6);
 
                     if (System.IO.File.Exists(thePath))
                     {
                         completeRun(System.IO.Path.GetFileNameWithoutExtension(thePath), System.IO.File.ReadAllText(thePath));
+
+                        stopwatch.Stop();
+                        Console.WriteLine("Succesfully executed in " + stopwatch.Elapsed.ToString() + " (" + stopwatch.ElapsedMilliseconds + "ms | " + stopwatch.ElapsedTicks + " ticks).");
                     }
                     else if (System.IO.File.Exists(thePath + ".v"))
                     {
                         completeRun(System.IO.Path.GetFileNameWithoutExtension(thePath + ".v"), System.IO.File.ReadAllText(thePath + ".v"));
+
+                        stopwatch.Stop();
+                        Console.WriteLine("Succesfully executed in " + stopwatch.Elapsed.ToString() + " (" + stopwatch.ElapsedMilliseconds + "ms | " + stopwatch.ElapsedTicks + " ticks).");
                     }
                     else
                     {
