@@ -729,4 +729,103 @@ public class BuiltInFunction
         arg_names.Add("value");
         return arg_names;
     }
+
+    public RuntimeResult execute_listClear(Context exec_ctx)
+    {
+        object list = exec_ctx.symbol_table.get("list");
+
+        if (list.GetType() == typeof(ListValue))
+        {
+            ((ListValue)list).elements.Clear();
+            return new RuntimeResult().success(Values.TRUE);
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a list", exec_ctx));
+    }
+
+    public List<string> get_listClear()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("list");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_listSort(Context exec_ctx)
+    {
+        object list = exec_ctx.symbol_table.get("list");
+
+        if (list.GetType() == typeof(ListValue))
+        {
+            ((ListValue)list).elements.Sort();
+            return new RuntimeResult().success(Values.TRUE);
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a list", exec_ctx));
+    }
+
+    public List<string> get_listSort()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("list");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_listReverse(Context exec_ctx)
+    {
+        object list = exec_ctx.symbol_table.get("list");
+
+        if (list.GetType() == typeof(ListValue))
+        {
+            ((ListValue)list).elements.Reverse();
+            return new RuntimeResult().success(Values.TRUE);
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a list", exec_ctx));
+    }
+
+    public List<string> get_listReverse()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("list");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_listContains(Context exec_ctx)
+    {
+        object list = exec_ctx.symbol_table.get("list");
+        object value = exec_ctx.symbol_table.get("value");
+
+        if (list.GetType() == typeof(ListValue))
+        {
+            foreach (object element in ((ListValue) list).elements)
+            {
+                if (element.GetType() == typeof(NumberValue) && value.GetType() == typeof(NumberValue))
+                {
+                    if (((NumberValue) element).value.Equals(((NumberValue) value).value))
+                    {
+                        return new RuntimeResult().success(Values.TRUE);
+                    }
+                }
+                else if (element.GetType() == typeof(StringValue) && value.GetType() == typeof(StringValue))
+                {
+                    if (((StringValue)element).value.Equals(((StringValue)value).value))
+                    {
+                        return new RuntimeResult().success(Values.TRUE);
+                    }
+                }
+            }
+
+            return new RuntimeResult().success(Values.FALSE);
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a list", exec_ctx));
+    }
+
+    public List<string> get_listContains()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("list");
+        arg_names.Add("value");
+        return arg_names;
+    }
 }

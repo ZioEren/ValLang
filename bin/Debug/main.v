@@ -1,6 +1,20 @@
 import("console");
+import("lists");
 
-while (true)
+var list = [5, 3, 2, "ciao a tutti!", 44];
+
+println("\r\nCHE DIREBBI: \r\n");
+
+foreach (elemento in list)
 {
-	println("Hello, World!");
+	println(elemento);
+}
+
+println("\r\nLOL: \r\n");
+
+listReverse(list);
+
+foreach (elemento in list)
+{
+	println(elemento);
 }

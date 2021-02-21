@@ -67,18 +67,22 @@ public static class Importer
             table.set("print", BuiltInFunctions.print);
             table.set("println", BuiltInFunctions.println);
             table.set("printReturn", BuiltInFunctions.printReturn);
-            table.set("inputString", BuiltInFunctions.inputString);//
+            table.set("inputString", BuiltInFunctions.inputString);
             table.set("inputInteger", BuiltInFunctions.inputInteger);
             table.set("inputFloat", BuiltInFunctions.inputFloat);
             table.set("inputNumber", BuiltInFunctions.inputNumber);
-            table.set("clearConsole", BuiltInFunctions.clearConsole);//
+            table.set("clearConsole", BuiltInFunctions.clearConsole);
         }
         else if (toImport == 2)
         {
-            table.set("listAppend", BuiltInFunctions.listAppend);//
-            table.set("listPop", BuiltInFunctions.listPop);//
-            table.set("listExtend", BuiltInFunctions.listExtend);//
-            table.set("getListLength", BuiltInFunctions.getListLength);//
+            table.set("listAppend", BuiltInFunctions.listAppend);
+            table.set("listPop", BuiltInFunctions.listPop);
+            table.set("listExtend", BuiltInFunctions.listExtend);
+            table.set("getListLength", BuiltInFunctions.getListLength);
+            table.set("listClear", BuiltInFunctions.listClear);
+            table.set("listSort", BuiltInFunctions.listSort);
+            table.set("listReverse", BuiltInFunctions.listReverse);
+            table.set("listContains", BuiltInFunctions.listContains);
         }
         else
         {

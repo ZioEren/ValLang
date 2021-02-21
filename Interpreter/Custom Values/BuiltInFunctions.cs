@@ -17,6 +17,10 @@
     public static BuiltInFunction listAppend = new BuiltInFunction("listAppend");
     public static BuiltInFunction listPop = new BuiltInFunction("listPop");
     public static BuiltInFunction listExtend = new BuiltInFunction("listExtend");
+    public static BuiltInFunction listReverse = new BuiltInFunction("listReverse");
+    public static BuiltInFunction listClear = new BuiltInFunction("listClear");
+    public static BuiltInFunction listSort = new BuiltInFunction("listSort");
+    public static BuiltInFunction listContains = new BuiltInFunction("listContains");
     public static BuiltInFunction run = new BuiltInFunction("run");
     public static BuiltInFunction getListLength = new BuiltInFunction("getListLength");
     public static BuiltInFunction import = new BuiltInFunction("import");
