@@ -866,15 +866,12 @@ public class Parser
                 res.register_advancement();
                 this.advance();
 
-                if (this.current_tok.type != "IDENTIFIER")
+                object expr = res.register(this.expr());
+
+                if (res.error != null)
                 {
-                    return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected identifier"));
+                    return res;
                 }
-
-                Token list_var_name = this.current_tok;
-
-                res.register_advancement();
-                this.advance();
 
                 for (int i = 0; i < lparens; i++)
                 {
@@ -928,7 +925,7 @@ public class Parser
                     res.register_advancement();
                     this.advance();
 
-                    return res.success(new ForEachNode(element_var_name, list_var_name, new_body, true));
+                    return res.success(new ForEachNode(element_var_name, expr, new_body, true));
                 }
 
                 if (real_separator.type != "COLON")
@@ -943,7 +940,7 @@ public class Parser
                     return res;
                 }
 
-                return res.success(new ForEachNode(element_var_name, list_var_name, body, false));
+                return res.success(new ForEachNode(element_var_name, expr, body, false));
             }
             else if (tok.value.ToString() == "switch")
             {
@@ -1020,6 +1017,7 @@ public class Parser
                         {
                             return res;
                         }
+
                         if (this.current_tok.type != "COLON")
                         {
                             return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ':'"));

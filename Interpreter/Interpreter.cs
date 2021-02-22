@@ -683,12 +683,14 @@ public class Interpreter
     {
         RuntimeResult res = new RuntimeResult();
 
-        if (!context.symbol_table.present(node.list_var_name.value.ToString()))
+        object toVisit = res.register(this.visit(node.list_node, context));
+
+        if (res.should_return())
         {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "List not present", context));
+            return res;
         }
 
-        ListValue theList = (ListValue)context.symbol_table.get(node.list_var_name.value);
+        ListValue theList = (ListValue)toVisit;
 
         foreach (object element in theList.elements)
         {
