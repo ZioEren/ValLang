@@ -49,12 +49,8 @@ public class Interpreter
         {
             return res.failure(result.Item2);
         }
-        else
-        {
-            object realResult = result.Item1;
-            realResult.GetType().GetMethod("set_pos").Invoke(realResult, new object[] { node.pos_start, node.pos_end });
-            return res.success(realResult);
-        }
+
+        return res.success(result.Item1.GetType().GetMethod("set_pos").Invoke(result.Item1, new object[] { node.pos_start, node.pos_end }));
     }
 
     public RuntimeResult visit_UnaryOpNode(UnaryOpNode node, Context context)
@@ -72,49 +68,41 @@ public class Interpreter
         if (node.op_tok.type == "MINUS")
         {
             number = (Tuple<object, Error>) number.GetType().GetMethod("muled_by").Invoke(number, new object[] { new NumberValue(-1) });
-            error = (Error) number.GetType().GetProperty("Item2").GetValue(number);
         }
         else if (node.op_tok.type == "PLUS")
         {
             number = (Tuple<object, Error>)number.GetType().GetMethod("muled_by").Invoke(number, new object[] { new NumberValue(1) });
-            error = (Error)number.GetType().GetProperty("Item2").GetValue(number);
         }
         else if (node.op_tok.type == "KEYWORD" && node.op_tok.value.ToString() == "not")
         {
             number = (Tuple<object, Error>)number.GetType().GetMethod("notted").Invoke(number, new object[] { });
-            error = (Error)number.GetType().GetProperty("Item2").GetValue(number);
         }
         else if (node.op_tok.type == "LOGIC_NOT")
         {
             number = (Tuple<object, Error>)number.GetType().GetMethod("logic_notted").Invoke(number, new object[] { });
-            error = (Error)number.GetType().GetProperty("Item2").GetValue(number);
         }
+
+        error = (Error)number.GetType().GetProperty("Item2").GetValue(number);
 
         if (error != null)
         {
             return res.failure(error);
         }
-        else
-        {
-            object realNumber = number.GetType().GetProperty("Item1").GetValue(number);
-            realNumber.GetType().GetMethod("set_pos").Invoke(realNumber, new object[] { node.pos_start, node.pos_end });
-            return res.success(realNumber);
-        }
+
+        object realNumber = number.GetType().GetProperty("Item1").GetValue(number);
+        return res.success(realNumber.GetType().GetMethod("set_pos").Invoke(realNumber, new object[] { node.pos_start, node.pos_end }));
     }
 
     public RuntimeResult visit_VarAccessNode(VarAccessNode node, Context context)
     {
         RuntimeResult res = new RuntimeResult();
 
-        object var_name = node.var_name_tok.value;
-        object value = context.symbol_table.get(var_name);
-
-        if (value == null)
+        if (context.symbol_table.get(node.var_name_tok.value) == null)
         {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "'" + var_name.ToString() + "' is not defined", context));
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "'" + node.var_name_tok.value.ToString() + "' is not defined", context));
         }
 
-        return res.success(value);
+        return res.success(context.symbol_table.get(node.var_name_tok.value));
     }
 
     public RuntimeResult visit_VarAssignNode(VarAssignNode node, Context context)
@@ -207,6 +195,7 @@ public class Interpreter
 
             value = value.GetType().GetMethod("copy").Invoke(value, new object[] { });
             value.GetType().GetMethod("set_pos").Invoke(value, new object[] { node.pos_start, node.pos_end });
+
             return res.success(value);
         }
 
@@ -241,7 +230,7 @@ public class Interpreter
                 return res;
             }
 
-            if ((bool)condition_value.GetType().GetMethod("is_true").Invoke(condition_value, new object[] { }) == true)
+            if ((bool)condition_value.GetType().GetMethod("is_true").Invoke(condition_value, new object[] { }))
             {
                 object expr_value = res.register(this.visit(conditionExpr.Item2, context));
 
@@ -256,15 +245,14 @@ public class Interpreter
 
         if (node.else_case != null)
         {
-            Tuple<object, bool> allElse = node.else_case;
-            object else_value = res.register(this.visit(allElse.Item1, context));
+            object else_value = res.register(this.visit(node.else_case.Item1, context));
 
             if (res.should_return())
             {
                 return res;
             }
 
-            return res.success(allElse.Item2 ? Values.NULL : else_value);
+            return res.success(node.else_case.Item2 ? Values.NULL : else_value);
         }
 
         return res.success(Values.NULL);
@@ -372,6 +360,7 @@ public class Interpreter
             {
                 return res;
             }
+
             if (res.loop_should_continue)
             {
                 continue;
@@ -746,6 +735,7 @@ public class Interpreter
             if (res.loop_should_break)
             {
                 broken = true;
+
                 break;
             }
 
@@ -771,6 +761,7 @@ public class Interpreter
             if (res.loop_should_break)
             {
                 broken = true;
+
                 break;
             }
         }

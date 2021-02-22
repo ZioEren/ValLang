@@ -1,3 +1,3 @@
 import("console");
 
-println("Hello, World!");
+println(5+5);
