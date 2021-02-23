@@ -15,4 +15,3 @@ C:\Users\utente\Desktop\Computer\Developing\Progetti\Val Language\Interpreter\Va
 C:\Users\utente\Desktop\Computer\Developing\Progetti\Val Language\Interpreter\ValLang\bin\Debug\ValLang.exe
 C:\Users\utente\Desktop\Computer\Developing\Progetti\Val Language\Interpreter\ValLang\obj\Debug\ValLang.csproj.CoreCompileInputs.cache
 C:\Users\utente\Desktop\Computer\Developing\Progetti\Val Language\Interpreter\ValLang\obj\Debug\ValLang.exe
-C:\Users\utente\Desktop\Computer\Developing\Progetti\Val Language\Interpreter\ValLang\obj\Debug\ValLang.csprojAssemblyReference.cache

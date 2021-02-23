@@ -3,17 +3,17 @@ using System;
 
 public class SwitchNode
 {
-    public Token var_name_tok;
+    public object comparisonExpr;
     public List<Tuple<object, object>> cases = new List<Tuple<object, object>>();
     public object default_case;
     public Position pos_start, pos_end;
 
-    public SwitchNode(Token var_name_tok, List<Tuple<object, object>> cases, object default_case)
+    public SwitchNode(object comparisonExpr, List<Tuple<object, object>> cases, object default_case)
     {
-        this.var_name_tok = var_name_tok;
+        this.comparisonExpr = comparisonExpr;
         this.cases = cases;
         this.default_case = default_case;
-        this.pos_start = this.var_name_tok.pos_start.copy();
+        this.pos_start = new Position(0, 0, 0, "", "");
 
         if (this.default_case != null)
         {

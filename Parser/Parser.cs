@@ -960,15 +960,12 @@ public class Parser
                     this.advance();
                 }
 
-                if (this.current_tok.type != "IDENTIFIER")
+                object comparisonExpr = res.register(this.expr());
+
+                if (res.error != null)
                 {
-                    return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected identifier"));
+                    return res;
                 }
-
-                Token var_name = this.current_tok;
-
-                res.register_advancement();
-                this.advance();
 
                 for (int i = 0; i < lparens; i++)
                 {
@@ -1078,7 +1075,7 @@ public class Parser
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected new line"));
                 }
 
-                return res.success(new SwitchNode(var_name, cases, default_case));
+                return res.success(new SwitchNode(comparisonExpr, cases, default_case));
             }
             else if (tok.value.ToString() == "struct")
             {

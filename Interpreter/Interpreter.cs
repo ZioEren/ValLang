@@ -748,7 +748,12 @@ public class Interpreter
                 return res;
             }
 
-            object variable = context.symbol_table.get(node.var_name_tok.value);
+            object variable = res.register(this.visit(node.comparisonExpr, context));
+
+            if (res.should_return())
+            {
+                return res;
+            }
 
             if ((string) (variable.GetType().GetMethod("as_string").Invoke(variable, new object[] { })) == (string) (expr.GetType().GetMethod("as_string").Invoke(expr, new object[] { })))
             {
