@@ -1497,4 +1497,43 @@ public class Interpreter
 
         return res.success(Values.NULL);
     }
+
+    public RuntimeResult visit_VarListAccessNode(VarListAccessNode node, Context context)
+    {
+        RuntimeResult res = new RuntimeResult();
+
+        if (!context.symbol_table.present(node.var_name_tok.value))
+        {
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "This list is not present in the memory", context));
+        }
+
+        if (context.symbol_table.get(node.var_name_tok.value).GetType() != typeof(ListValue))
+        {
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "The specified variable is not a list", context));
+        }
+
+        object indexValue = res.register(this.visit(node.access_node, context));
+
+        if (res.should_return())
+        {
+            return res;
+        }
+
+        if (indexValue.GetType() != typeof(NumberValue))
+        {
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Index value needs to be a number", context));
+        }
+
+        if ((int) ((NumberValue) indexValue).value < 0)
+        {
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Index value needs to be greater than zero", context));
+        }
+
+        if ((int)((NumberValue)indexValue).value >= ((ListValue)context.symbol_table.get(node.var_name_tok.value)).elements.Count)
+        {
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Index value can not be greater than the number of the elements of the list", context));
+        }
+
+        return res.success(((ListValue)context.symbol_table.get(node.var_name_tok.value)).elements[(int)((NumberValue)indexValue).value]);
+    }
 }

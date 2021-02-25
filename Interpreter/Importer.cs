@@ -20,6 +20,10 @@ public static class Importer
         {
             add(ctx.symbol_table, 3);
         }
+        else if (fn == "strings")
+        {
+            add(ctx.symbol_table, 4);
+        }
         else
         {
             if (found)
@@ -61,6 +65,7 @@ public static class Importer
             table.set("clearRam", BuiltInFunctions.clearRam);
             table.set("use", BuiltInFunctions.use);
             table.set("Math", BuiltInNamespaces.Math);
+            table.set("equals", BuiltInFunctions.equals);
         }
         else if (toImport == 1)
         {
@@ -84,9 +89,33 @@ public static class Importer
             table.set("listReverse", BuiltInFunctions.listReverse);
             table.set("listContains", BuiltInFunctions.listContains);
         }
-        else
+        else if (toImport == 3)
         {
             table.set("HttpClient", BuiltInStructs.HttpClient);
+        }
+        else
+        {
+            table.set("stringStartsWith", BuiltInFunctions.stringStartsWith);
+            table.set("stringEndsWith", BuiltInFunctions.stringEndsWith);
+            table.set("stringToUpper", BuiltInFunctions.stringToUpper);
+            table.set("stringToLower", BuiltInFunctions.stringToLower);
+            table.set("stringTrim", BuiltInFunctions.stringTrim);
+            table.set("stringLength", BuiltInFunctions.stringLength);
+            table.set("stringReplace", BuiltInFunctions.stringReplace);
+            table.set("stringContains", BuiltInFunctions.stringContains);
+            table.set("stringToUpperInvariant", BuiltInFunctions.stringToUpperInvariant);
+            table.set("stringToLowerInvariant", BuiltInFunctions.stringToLowerInvariant);
+            table.set("stringPadLeft", BuiltInFunctions.stringPadLeft);
+            table.set("stringPadRight", BuiltInFunctions.stringPadRight);
+            table.set("stringToList", BuiltInFunctions.stringToList);
+            table.set("stringReverse", BuiltInFunctions.stringReverse);
+            table.set("stringSplit", BuiltInFunctions.stringSplit);
+            table.set("stringSpace", BuiltInFunctions.stringSpace);
+            table.set("stringToBase64", BuiltInFunctions.stringToBase64);
+            table.set("stringFromBase64", BuiltInFunctions.stringFromBase64);
+            table.set("getStringLength", BuiltInFunctions.getStringLength);
+            table.set("stringSubstring", BuiltInFunctions.stringSubstring);
+            table.set("stringGetChar", BuiltInFunctions.stringGetChar);
         }
     }
 }

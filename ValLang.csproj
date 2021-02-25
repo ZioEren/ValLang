@@ -95,6 +95,7 @@
     <Compile Include="Parser\Nodes\Operation Nodes\UnaryOpNode.cs" />
     <Compile Include="Parser\Nodes\Variable Nodes\VarAccessNode.cs" />
     <Compile Include="Parser\Nodes\Variable Nodes\VarAssignNode.cs" />
+    <Compile Include="Parser\Nodes\Variable Nodes\VarListAccessNode.cs" />
     <Compile Include="Parser\Nodes\Variable Nodes\VarReAssignNode.cs" />
     <Compile Include="Parser\Nodes\Iteration Nodes\WhileNode.cs" />
     <Compile Include="Parser\Parser.cs" />

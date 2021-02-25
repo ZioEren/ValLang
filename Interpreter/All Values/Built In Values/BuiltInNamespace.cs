@@ -55,6 +55,11 @@ public class BuiltInNamespace
             Importer.add(exec_ctx.symbol_table, 3);
         }
 
+        if (Importer.imported.Contains("strings"))
+        {
+            Importer.add(exec_ctx.symbol_table, 4);
+        }
+
         this.context = exec_ctx;
         this.setNewNamespace();
         this.theNewNamespace.GetType().GetMethod("execute_declare").Invoke(this.theNewNamespace, new object[] { this.context });

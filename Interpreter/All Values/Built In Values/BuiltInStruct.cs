@@ -63,6 +63,11 @@ public class BuiltInStruct
             Importer.add(exec_ctx.symbol_table, 3);
         }
 
+        if (Importer.imported.Contains("strings"))
+        {
+            Importer.add(exec_ctx.symbol_table, 4);
+        }
+
         this.context = exec_ctx;
         this.setNewStruct();
         this.theNewStruct.GetType().GetMethod("execute_declare").Invoke(this.theNewStruct, new object[] { this.context });

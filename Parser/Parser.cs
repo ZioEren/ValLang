@@ -146,6 +146,28 @@ public class Parser
                     return res.success(new StructReAssignNode(tok, var_name_tok, operator_token, expression));
                 }
             }
+            else if (this.current_tok.type == "LSQUARE")
+            {
+                res.register_advancement();
+                this.advance();
+
+                object accessExpr = res.register(this.expr());
+
+                if (res.error != null)
+                {
+                    return res;
+                }
+
+                if (this.current_tok.type != "RSQUARE")
+                {
+                    return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ']'"));
+                }
+
+                res.register_advancement();
+                this.advance();
+
+                return res.success(new VarListAccessNode(tok, accessExpr));
+            }
             else if (this.current_tok.type == "COLON")
             {
                 res.register_advancement();

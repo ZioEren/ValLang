@@ -799,19 +799,9 @@ public class BuiltInFunction
         {
             foreach (object element in ((ListValue) list).elements)
             {
-                if (element.GetType() == typeof(NumberValue) && value.GetType() == typeof(NumberValue))
+                if ((string)element.GetType().GetMethod("as_string").Invoke(element, new object[] { }) == (string) (value.GetType().GetMethod("as_string").Invoke(value, new object[] { })) && element.GetType() == value.GetType())
                 {
-                    if (((NumberValue) element).value.Equals(((NumberValue) value).value))
-                    {
-                        return new RuntimeResult().success(Values.TRUE);
-                    }
-                }
-                else if (element.GetType() == typeof(StringValue) && value.GetType() == typeof(StringValue))
-                {
-                    if (((StringValue)element).value.Equals(((StringValue)value).value))
-                    {
-                        return new RuntimeResult().success(Values.TRUE);
-                    }
+                    return new RuntimeResult().success(Values.TRUE);
                 }
             }
 
@@ -826,6 +816,578 @@ public class BuiltInFunction
         List<string> arg_names = new List<string>();
         arg_names.Add("list");
         arg_names.Add("value");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_equals(Context exec_ctx)
+    {
+        object firstValue = exec_ctx.symbol_table.get("firstValue");
+        object secondValue = exec_ctx.symbol_table.get("secondValue");
+
+        if ((string)firstValue.GetType().GetMethod("as_string").Invoke(firstValue, new object[] { }) == (string)(secondValue.GetType().GetMethod("as_string").Invoke(secondValue, new object[] { })) && firstValue.GetType() == secondValue.GetType())
+        {
+            return new RuntimeResult().success(Values.TRUE);
+        }
+
+        return new RuntimeResult().success(Values.FALSE);
+    }
+
+    public List<string> get_equals()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("firstValue");
+        arg_names.Add("secondValue");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_stringStartsWith(Context exec_ctx)
+    {
+        object firstValue = exec_ctx.symbol_table.get("firstValue");
+        object secondValue = exec_ctx.symbol_table.get("secondValue");
+
+        if (firstValue.GetType() == typeof(StringValue))
+        {
+            if (secondValue.GetType() == typeof(StringValue))
+            {
+                if (((StringValue)firstValue).value.StartsWith(((StringValue)secondValue).value))
+                {
+                    return new RuntimeResult().success(Values.TRUE);
+                }
+            }
+            else
+            {
+                return new RuntimeResult().failure(new RuntimeError(null, null, "Second value must be a string", exec_ctx));
+            }
+        }
+        else
+        {
+            return new RuntimeResult().failure(new RuntimeError(null, null, "First value must be a string", exec_ctx));
+        }
+
+        return new RuntimeResult().success(Values.FALSE);
+    }
+
+    public List<string> get_stringStartsWith()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("firstValue");
+        arg_names.Add("secondValue");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_stringEndsWith(Context exec_ctx)
+    {
+        object firstValue = exec_ctx.symbol_table.get("firstValue");
+        object secondValue = exec_ctx.symbol_table.get("secondValue");
+
+        if (firstValue.GetType() == typeof(StringValue))
+        {
+            if (secondValue.GetType() == typeof(StringValue))
+            {
+                if (((StringValue)firstValue).value.EndsWith(((StringValue)secondValue).value))
+                {
+                    return new RuntimeResult().success(Values.TRUE);
+                }
+            }
+            else
+            {
+                return new RuntimeResult().failure(new RuntimeError(null, null, "Second value must be a string", exec_ctx));
+            }
+        }
+        else
+        {
+            return new RuntimeResult().failure(new RuntimeError(null, null, "First value must be a string", exec_ctx));
+        }
+
+        return new RuntimeResult().success(Values.FALSE);
+    }
+
+    public List<string> get_stringEndsWith()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("firstValue");
+        arg_names.Add("secondValue");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_stringContains(Context exec_ctx)
+    {
+        object firstValue = exec_ctx.symbol_table.get("firstValue");
+        object secondValue = exec_ctx.symbol_table.get("secondValue");
+
+        if (firstValue.GetType() == typeof(StringValue))
+        {
+            if (secondValue.GetType() == typeof(StringValue))
+            {
+                if (((StringValue) firstValue).value.Contains(((StringValue)secondValue).value))
+                {
+                    return new RuntimeResult().success(Values.TRUE);
+                }
+            }
+            else
+            {
+                return new RuntimeResult().failure(new RuntimeError(null, null, "Second value must be a string", exec_ctx));
+            }
+        }
+        else
+        {
+            return new RuntimeResult().failure(new RuntimeError(null, null, "First value must be a string", exec_ctx));
+        }
+
+        return new RuntimeResult().success(Values.FALSE);
+    }
+
+    public List<string> get_stringContains()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("firstValue");
+        arg_names.Add("secondValue");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_stringToUpper(Context exec_ctx)
+    {
+        object value = exec_ctx.symbol_table.get("value");
+
+        if (value.GetType() == typeof(StringValue))
+        {
+            return new RuntimeResult().success(new StringValue(((StringValue)value).value.ToUpper()));
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a string", exec_ctx));
+    }
+
+    public List<string> get_stringToUpper()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_stringToLower(Context exec_ctx)
+    {
+        object value = exec_ctx.symbol_table.get("value");
+
+        if (value.GetType() == typeof(StringValue))
+        {
+            return new RuntimeResult().success(new StringValue(((StringValue)value).value.ToLower()));
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a string", exec_ctx));
+    }
+
+    public List<string> get_stringToLower()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_stringTrim(Context exec_ctx)
+    {
+        object value = exec_ctx.symbol_table.get("value");
+
+        if (value.GetType() == typeof(StringValue))
+        {
+            return new RuntimeResult().success(new StringValue(((StringValue)value).value.Trim()));
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a string", exec_ctx));
+    }
+
+    public List<string> get_stringTrim()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_stringToUpperInvariant(Context exec_ctx)
+    {
+        object value = exec_ctx.symbol_table.get("value");
+
+        if (value.GetType() == typeof(StringValue))
+        {
+            return new RuntimeResult().success(new StringValue(((StringValue)value).value.ToUpperInvariant()));
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a string", exec_ctx));
+    }
+
+    public List<string> get_stringToUpperInvariant()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_stringToLowerInvariant(Context exec_ctx)
+    {
+        object value = exec_ctx.symbol_table.get("value");
+
+        if (value.GetType() == typeof(StringValue))
+        {
+            return new RuntimeResult().success(new StringValue(((StringValue)value).value.ToLowerInvariant()));
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a string", exec_ctx));
+    }
+
+    public List<string> get_stringToLowerInvariant()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+        return arg_names;
+    }
+
+    public static string Reverse(string s)
+    {
+        char[] charArray = s.ToCharArray();
+        Array.Reverse(charArray);
+        return new string(charArray);
+    }
+
+    public RuntimeResult execute_stringReverse(Context exec_ctx)
+    {
+        object value = exec_ctx.symbol_table.get("value");
+
+        if (value.GetType() == typeof(StringValue))
+        {
+            return new RuntimeResult().success(new StringValue(Reverse(((StringValue)value).value)));
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a string", exec_ctx));
+    }
+
+    public List<string> get_stringReverse()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_stringReplace(Context exec_ctx)
+    {
+        object value = exec_ctx.symbol_table.get("value");
+        object toReplace = exec_ctx.symbol_table.get("toReplace");
+        object replaceWith = exec_ctx.symbol_table.get("replaceWith");
+
+        if (value.GetType() == typeof(StringValue))
+        {
+            if (toReplace.GetType() == typeof(StringValue))
+            {
+                if (replaceWith.GetType() == typeof(StringValue))
+                {
+                    return new RuntimeResult().success(new StringValue(((StringValue)value).value.Replace(((StringValue)toReplace).value, ((StringValue)replaceWith).value)));
+                }
+                else
+                {
+                    return new RuntimeResult().failure(new RuntimeError(null, null, "Replace with string must be a string", exec_ctx));
+                }
+            }
+            else
+            {
+                return new RuntimeResult().failure(new RuntimeError(null, null, "String to replace must be a string", exec_ctx));
+            }
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a string", exec_ctx));
+    }
+
+    public List<string> get_stringReplace()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+        arg_names.Add("toReplace");
+        arg_names.Add("replaceWith");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_stringToList(Context exec_ctx)
+    {
+        object value = exec_ctx.symbol_table.get("value");
+
+        if (value.GetType() == typeof(StringValue))
+        {
+            List<object> elements = new List<object>();
+
+            foreach (char c in ((StringValue) value).value.ToCharArray())
+            {
+                elements.Add(new StringValue(c.ToString()));
+            }
+
+            return new RuntimeResult().success(new ListValue(elements));
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a string", exec_ctx));
+    }
+
+    public List<string> get_stringToList()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_getStringLength(Context exec_ctx)
+    {
+        object value = exec_ctx.symbol_table.get("value");
+
+        if (value.GetType() == typeof(StringValue))
+        {
+            return new RuntimeResult().success(new NumberValue(((StringValue)value).value.Length));
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a string", exec_ctx));
+    }
+
+    public List<string> get_getStringLength()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_stringSubstring(Context exec_ctx)
+    {
+        object value = exec_ctx.symbol_table.get("value");
+        object startIndex = exec_ctx.symbol_table.get("startIndex");
+        object count = exec_ctx.symbol_table.get("count");
+
+        if (value.GetType() == typeof(StringValue))
+        {
+            if (startIndex.GetType() == typeof(NumberValue))
+            {
+                if (count.GetType() == typeof(NumberValue))
+                {
+                    if ((int) ((NumberValue) startIndex).value < 0)
+                    {
+                        return new RuntimeResult().failure(new RuntimeError(null, null, "Start index must be greater or equal than zero", exec_ctx));
+                    }
+
+                    if ((int)((NumberValue)count).value < 0)
+                    {
+                        return new RuntimeResult().failure(new RuntimeError(null, null, "Count must be greater or equal than zero", exec_ctx));
+                    }
+
+                    if ((int)((NumberValue)count).value > ((StringValue)value).value.Length)
+                    {
+                        return new RuntimeResult().failure(new RuntimeError(null, null, "Count must not be greater than the string length", exec_ctx));
+                    }
+
+                    try
+                    {
+                        return new RuntimeResult().success(new StringValue(((StringValue)value).value.Substring((int)((NumberValue)startIndex).value, (int)((NumberValue)count).value)));
+                    }
+                    catch
+                    {
+                        return new RuntimeResult().failure(new RuntimeError(null, null, "Count must be a number between the start index and the length of the string", exec_ctx));
+                    }
+                }
+                else
+                {
+                    return new RuntimeResult().failure(new RuntimeError(null, null, "Count must be a number", exec_ctx));
+                }
+            }
+            else
+            {
+                return new RuntimeResult().failure(new RuntimeError(null, null, "Start index must be a number", exec_ctx));
+            }
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a string", exec_ctx));
+    }
+
+    public List<string> get_stringSubstring()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+        arg_names.Add("startIndex");
+        arg_names.Add("count");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_stringGetChar(Context exec_ctx)
+    {
+        object value = exec_ctx.symbol_table.get("value");
+        object index = exec_ctx.symbol_table.get("index");
+
+        if (value.GetType() == typeof(StringValue))
+        {
+            if (index.GetType() == typeof(NumberValue))
+            {
+                if ((int)((NumberValue)index).value < 0)
+                {
+                    return new RuntimeResult().failure(new RuntimeError(null, null, "Index must be greater or equal than zero", exec_ctx));
+                }
+
+                if ((int)((NumberValue)index).value >= ((StringValue)value).value.Length)
+                {
+                    return new RuntimeResult().failure(new RuntimeError(null, null, "Index must not be greater than the string length", exec_ctx));
+                }
+
+                return new RuntimeResult().success(new StringValue(((StringValue)value).value[(int)((NumberValue)index).value].ToString()));
+            }
+            else
+            {
+                return new RuntimeResult().failure(new RuntimeError(null, null, "Index must be a number", exec_ctx));
+            }
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a string", exec_ctx));
+    }
+
+    public List<string> get_stringGetChar()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+        arg_names.Add("index");
+        return arg_names;
+    }
+
+    public static string Base64Encode(string plainText)
+    {
+        var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+        return System.Convert.ToBase64String(plainTextBytes);
+    }
+
+    public static string Base64Decode(string base64EncodedData)
+    {
+        var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
+        return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+    }
+
+    public RuntimeResult execute_stringToBase64(Context exec_ctx)
+    {
+        object value = exec_ctx.symbol_table.get("value");
+
+        if (value.GetType() == typeof(StringValue))
+        {
+            return new RuntimeResult().success(new StringValue(Base64Encode(((StringValue)value).value)));
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a string", exec_ctx));
+    }
+
+    public List<string> get_stringToBase64()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_stringFromBase64(Context exec_ctx)
+    {
+        object value = exec_ctx.symbol_table.get("value");
+
+        if (value.GetType() == typeof(StringValue))
+        {
+            return new RuntimeResult().success(new StringValue(Base64Decode(((StringValue)value).value)));
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a string", exec_ctx));
+    }
+
+    public List<string> get_stringFromBase64()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_stringSplit(Context exec_ctx)
+    {
+        object value = exec_ctx.symbol_table.get("value");
+        object valueToSplit = exec_ctx.symbol_table.get("valueToSplit");
+
+        if (value.GetType() == typeof(StringValue))
+        {
+            if (valueToSplit.GetType() == typeof(StringValue))
+            {
+                List<object> elements = new List<object>();
+
+                foreach (string element in ((StringValue)value).value.Split(new[] { ((StringValue)valueToSplit).value }, StringSplitOptions.None))
+                {
+                    elements.Add(new StringValue(element));
+                }
+
+                return new RuntimeResult().success(new ListValue(elements));
+            }
+            else
+            {
+                return new RuntimeResult().failure(new RuntimeError(null, null, "Value to split must be a string", exec_ctx));
+            }    
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a string", exec_ctx));
+    }
+
+    public List<string> get_stringSplit()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+        arg_names.Add("valueToSplit");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_stringPadLeft(Context exec_ctx)
+    {
+        object value = exec_ctx.symbol_table.get("value");
+        object width = exec_ctx.symbol_table.get("width");
+
+        if (value.GetType() == typeof(StringValue))
+        {
+            return new RuntimeResult().success(new StringValue(Base64Decode(((StringValue)value).value.PadLeft((int)((NumberValue) width).value))));
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a string", exec_ctx));
+    }
+
+    public List<string> get_stringPadLeft()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+        arg_names.Add("width");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_stringPadRight(Context exec_ctx)
+    {
+        object value = exec_ctx.symbol_table.get("value");
+        object width = exec_ctx.symbol_table.get("width");
+
+        if (value.GetType() == typeof(StringValue))
+        {
+            return new RuntimeResult().success(new StringValue(Base64Decode(((StringValue)value).value.PadRight((int)((NumberValue)width).value))));
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a string", exec_ctx));
+    }
+
+    public List<string> get_stringPadRight()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+        arg_names.Add("width");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_stringSpace(Context exec_ctx)
+    {
+        object numberOfSpaces = exec_ctx.symbol_table.get("numberOfSpaces");
+
+        if (numberOfSpaces.GetType() == typeof(NumberValue))
+        {
+            return new RuntimeResult().success(new StringValue("".PadLeft((int)((NumberValue)numberOfSpaces).value)));
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Number of spaces must be a number", exec_ctx));
+    }
+
+    public List<string> get_stringSpace()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("numberOfSpaces");
         return arg_names;
     }
 }

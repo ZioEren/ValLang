@@ -33,4 +33,26 @@
     public static BuiltInFunction println = new BuiltInFunction("println");
     public static BuiltInFunction use = new BuiltInFunction("use");
     public static BuiltInFunction eval = new BuiltInFunction("eval");
+    public static BuiltInFunction equals = new BuiltInFunction("equals");
+    public static BuiltInFunction stringStartsWith = new BuiltInFunction("stringStartsWith");
+    public static BuiltInFunction stringEndsWith = new BuiltInFunction("stringEndsWith");
+    public static BuiltInFunction stringToUpper = new BuiltInFunction("stringToUpper");
+    public static BuiltInFunction stringToLower = new BuiltInFunction("stringToLower");
+    public static BuiltInFunction stringTrim = new BuiltInFunction("stringTrim");
+    public static BuiltInFunction stringLength = new BuiltInFunction("stringLength");
+    public static BuiltInFunction stringReplace = new BuiltInFunction("stringReplace");
+    public static BuiltInFunction stringContains = new BuiltInFunction("stringContains");
+    public static BuiltInFunction stringToUpperInvariant = new BuiltInFunction("stringToUpperInvariant");
+    public static BuiltInFunction stringToLowerInvariant = new BuiltInFunction("stringToLowerInvariant");
+    public static BuiltInFunction stringPadLeft = new BuiltInFunction("stringPadLeft");
+    public static BuiltInFunction stringPadRight = new BuiltInFunction("stringPadRight");
+    public static BuiltInFunction stringToList = new BuiltInFunction("stringToList");
+    public static BuiltInFunction stringReverse = new BuiltInFunction("stringReverse");
+    public static BuiltInFunction stringSplit = new BuiltInFunction("stringSplit");
+    public static BuiltInFunction stringSpace = new BuiltInFunction("stringSpace");
+    public static BuiltInFunction stringToBase64 = new BuiltInFunction("stringToBase64");
+    public static BuiltInFunction stringFromBase64 = new BuiltInFunction("stringFromBase64");
+    public static BuiltInFunction getStringLength = new BuiltInFunction("getStringLength");
+    public static BuiltInFunction stringSubstring = new BuiltInFunction("stringSubstring");
+    public static BuiltInFunction stringGetChar = new BuiltInFunction("stringGetChar");
 }
