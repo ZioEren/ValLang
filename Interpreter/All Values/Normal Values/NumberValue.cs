@@ -77,12 +77,9 @@ public class NumberValue
     {
         if (other.GetType() == typeof(StringValue))
         {
-            foreach (char c in ((StringValue)other).value)
+            if (((StringValue) other).value.Contains(this.as_string()))
             {
-                if (c.ToString() == this.as_string())
-                {
-                    return new Tuple<object, Error>(Values.TRUE, null);
-                }
+                return new Tuple<object, Error>(Values.TRUE, null);
             }
 
             return new Tuple<object, Error>(Values.FALSE, null);

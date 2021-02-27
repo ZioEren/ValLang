@@ -78,12 +78,9 @@ public class StringValue
     {
         if (other.GetType() == typeof(StringValue))
         {
-            foreach (char c in ((StringValue) other).value)
+            if (((StringValue)other).value.Contains(this.value))
             {
-                if (c.ToString() == this.value)
-                {
-                    return new Tuple<object, Error>(Values.TRUE, null);
-                }
+                return new Tuple<object, Error>(Values.TRUE, null);
             }
 
             return new Tuple<object, Error>(Values.FALSE, null);
