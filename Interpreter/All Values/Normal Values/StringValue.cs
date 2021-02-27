@@ -74,6 +74,48 @@ public class StringValue
         return new Tuple<object, Error>(null, this.illegal_operation(other));
     }
 
+    public Tuple<object, Error> ined_by(object other)
+    {
+        if (other.GetType() == typeof(StringValue))
+        {
+            foreach (char c in ((StringValue) other).value)
+            {
+                if (c.ToString() == this.value)
+                {
+                    return new Tuple<object, Error>(Values.TRUE, null);
+                }
+            }
+
+            return new Tuple<object, Error>(Values.FALSE, null);
+        }
+        else if (other.GetType() == typeof(ListValue))
+        {
+            foreach (object element in ((ListValue)other).elements)
+            {
+                if ((string)element.GetType().GetMethod("as_string").Invoke(element, new object[] { }) == this.value && element.GetType() == typeof(StringValue))
+                {
+                    return new Tuple<object, Error>(Values.TRUE, null);
+                }
+            }
+
+            return new Tuple<object, Error>(Values.FALSE, null);
+        }
+        else if (other.GetType() == typeof(SetValue))
+        {
+            foreach (object element in ((SetValue)other).elements)
+            {
+                if ((string)element.GetType().GetMethod("as_string").Invoke(element, new object[] { }) == this.value && element.GetType() == typeof(StringValue))
+                {
+                    return new Tuple<object, Error>(Values.TRUE, null);
+                }
+            }
+
+            return new Tuple<object, Error>(Values.FALSE, null);
+        }
+
+        return new Tuple<object, Error>(null, this.illegal_operation(other));
+    }
+
     public Tuple<object, Error> get_comparison_ee(object other)
     {
         if (other.GetType() == typeof(StringValue))

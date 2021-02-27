@@ -1652,7 +1652,7 @@ public class Parser
             return res;
         }
 
-        while (this.current_tok.type == "EE" || this.current_tok.type == "NE" || this.current_tok.type == "LT" || this.current_tok.type == "GT" || this.current_tok.type == "LTE" || this.current_tok.type == "GTE")
+        while (this.current_tok.type == "EE" || this.current_tok.type == "NE" || this.current_tok.type == "LT" || this.current_tok.type == "GT" || this.current_tok.type == "LTE" || this.current_tok.type == "GTE" || (this.current_tok.type == "KEYWORD" && this.current_tok.value.ToString() == "in"))
         {
             Token op_tok = this.current_tok;
 
