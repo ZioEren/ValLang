@@ -14,7 +14,7 @@ class Program
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool SetProcessWorkingSetSize(IntPtr process, UIntPtr minimumWorkingSetSize, UIntPtr maximumWorkingSetSize);
 
-    public static bool debugErrors, noClose;
+    public static bool noClose;
 
     static void Main(string[] args)
     {
@@ -97,7 +97,6 @@ class Program
                     Console.WriteLine("[+] --help - Get the list of all commands");
                     Console.WriteLine("[+] --clear - Clear all the console lines.");
                     Console.WriteLine("[+] --run <file> - Load and run a Val Language source code file from disk.");
-                    Console.WriteLine("[+] --debugErrors - Enable/disable interpreter error debugging.\r\n");
                 }
                 else if (text.StartsWith("--run "))
                 {
@@ -128,19 +127,6 @@ class Program
                 else if (text == "--clear")
                 {
                     Console.Clear();
-                }
-                else if (text == "--debugErrors")
-                {
-                    debugErrors = !debugErrors;
-
-                    if (debugErrors)
-                    {
-                        Console.WriteLine("[+] Succesfully enabled the debug errors option.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("[+] Succesfully disabled the debug errors option.");
-                    }
                 }
                 else
                 {
@@ -218,12 +204,9 @@ class Program
 
             return new Tuple<object, Error>(result.value, result.error);
         }
-        catch (Exception ex)
+        catch
         {
-            if (debugErrors)
-            {
-                Console.WriteLine("Error trace:\r\n\r\n" + ex.Message.ToString() + "\r\n\r\n" + ex.StackTrace.ToString() + "\r\n\r\n");
-            }
+
         }
 
         return new Tuple<object, Error>(null, new Error(new Position(0, 0, 0, fn, text), new Position(0, 0, 0, fn, text), "Generic Error", "Failed to progress the runtime"));
@@ -265,12 +248,9 @@ class Program
 
             return new Tuple<object, Error>(result.value, result.error);
         }
-        catch (Exception ex)
+        catch
         {
-            if (debugErrors)
-            {
-                Console.WriteLine("Error trace:\r\n\r\n" + ex.Message.ToString() + "\r\n\r\n" + ex.StackTrace.ToString() + "\r\n\r\n");
-            }
+
         }
 
         return new Tuple<object, Error>(null, new Error(new Position(0, 0, 0, fn, text), new Position(0, 0, 0, fn, text), "Generic Error", "Failed to progress the runtime"));

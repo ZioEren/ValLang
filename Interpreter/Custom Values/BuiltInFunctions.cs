@@ -8,6 +8,7 @@
     public static BuiltInFunction isNumber = new BuiltInFunction("isNumber");
     public static BuiltInFunction isString = new BuiltInFunction("isString");
     public static BuiltInFunction isList = new BuiltInFunction("isList");
+    public static BuiltInFunction isSet = new BuiltInFunction("isSet");
     public static BuiltInFunction isFunction = new BuiltInFunction("isFunction");
     public static BuiltInFunction isStruct = new BuiltInFunction("isStruct");
     public static BuiltInFunction isNamespace = new BuiltInFunction("isNamespace");
@@ -21,8 +22,9 @@
     public static BuiltInFunction listClear = new BuiltInFunction("listClear");
     public static BuiltInFunction listSort = new BuiltInFunction("listSort");
     public static BuiltInFunction listContains = new BuiltInFunction("listContains");
-    public static BuiltInFunction run = new BuiltInFunction("run");
+    public static BuiltInFunction listGet = new BuiltInFunction("listGet");
     public static BuiltInFunction getListLength = new BuiltInFunction("getListLength");
+    public static BuiltInFunction run = new BuiltInFunction("run");
     public static BuiltInFunction import = new BuiltInFunction("import");
     public static BuiltInFunction exit = new BuiltInFunction("exit");
     public static BuiltInFunction end = new BuiltInFunction("end");
@@ -55,4 +57,13 @@
     public static BuiltInFunction getStringLength = new BuiltInFunction("getStringLength");
     public static BuiltInFunction stringSubstring = new BuiltInFunction("stringSubstring");
     public static BuiltInFunction stringGetChar = new BuiltInFunction("stringGetChar");
+    public static BuiltInFunction setAppend = new BuiltInFunction("setAppend");
+    public static BuiltInFunction setPop = new BuiltInFunction("setPop");
+    public static BuiltInFunction setExtend = new BuiltInFunction("setExtend");
+    public static BuiltInFunction setReverse = new BuiltInFunction("setReverse");
+    public static BuiltInFunction setClear = new BuiltInFunction("setClear");
+    public static BuiltInFunction setSort = new BuiltInFunction("setSort");
+    public static BuiltInFunction setContains = new BuiltInFunction("setContains");
+    public static BuiltInFunction setGet = new BuiltInFunction("setGet");
+    public static BuiltInFunction getSetLength = new BuiltInFunction("getSetLength");
 }

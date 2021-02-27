@@ -64,6 +64,54 @@ public class Parser
 
             return res.success(new StringNode(tok));
         }
+        else if (tok.type == "LBRACE")
+        {
+            List<object> elements = new List<object>();
+            Position pos_start = this.current_tok.pos_start;
+
+            res.register_advancement();
+            this.advance();
+
+            res.register_advancement();
+            this.advance();
+
+            if (this.current_tok.type == "RBRACE")
+            {
+                goto rbrace;
+            }
+
+            object value = res.register(this.expr());
+
+            if (res.error != null)
+            {
+                return res;
+            }
+
+            elements.Add(value);
+
+            while (this.current_tok.type == "COMMA")
+            {
+                res.register_advancement();
+                this.advance();
+
+                value = res.register(this.expr());
+
+                elements.Add(value);
+            }
+
+            if (this.current_tok.type != "RBRACE")
+            {
+                return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '}'"));
+            }
+
+            rbrace:  res.register_advancement();
+            this.advance();
+
+            res.register_advancement();
+            this.advance();
+
+            return res.success(new SetNode(elements, pos_start, this.current_tok.pos_start));
+        }
         else if (tok.type == "IDENTIFIER")
         {
             res.register_advancement();

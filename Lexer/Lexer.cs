@@ -474,7 +474,7 @@ public class Lexer
                 {
                     str += escape_characters[this.current_char];
                 }
-                catch (Exception)
+                catch 
                 {
                     str += this.current_char;
                 }

@@ -292,6 +292,43 @@ public class BuiltInFunction
         return arg_names;
     }
 
+    public RuntimeResult execute_listGet(Context exec_ctx)
+    {
+        object list = exec_ctx.symbol_table.get("list");
+        object index = exec_ctx.symbol_table.get("index");
+
+        if (list.GetType() != typeof(ListValue))
+        {
+            return new RuntimeResult().failure(new RuntimeError(this.pos_start, this.pos_end, "First argument must be list", exec_ctx));
+        }
+
+        if (index.GetType() != typeof(NumberValue))
+        {
+            return new RuntimeResult().failure(new RuntimeError(this.pos_start, this.pos_end, "Second argument must be list", exec_ctx));
+        }
+
+        object element = Values.NULL;
+
+        try
+        {
+            element = ((ListValue)list).elements[(int)((NumberValue)index).value];
+        }
+        catch (Exception)
+        {
+            return new RuntimeResult().failure(new RuntimeError(this.pos_start, this.pos_end, "Element at this index could not be removed from list because index is out of range", exec_ctx));
+        }
+
+        return new RuntimeResult().success(element);
+    }
+
+    public List<string> get_listGet()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("list");
+        arg_names.Add("index");
+        return arg_names;
+    }
+
     public RuntimeResult execute_listPop(Context exec_ctx)
     {
         object list = exec_ctx.symbol_table.get("list");
@@ -1388,6 +1425,193 @@ public class BuiltInFunction
     {
         List<string> arg_names = new List<string>();
         arg_names.Add("numberOfSpaces");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_isSet(Context exec_ctx)
+    {
+        return new RuntimeResult().success(exec_ctx.symbol_table.get("value").GetType() == typeof(SetValue) ? Values.TRUE : Values.FALSE);
+    }
+
+    public List<string> get_isSet()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("value");
+        return arg_names;
+    }
+
+
+
+
+    public RuntimeResult execute_setAppend(Context exec_ctx)
+    {
+        object list = exec_ctx.symbol_table.get("set");
+        object value = exec_ctx.symbol_table.get("value");
+
+        if (list.GetType() != typeof(SetValue))
+        {
+            return new RuntimeResult().failure(new RuntimeError(this.pos_start, this.pos_end, "First argument must be a set", exec_ctx));
+        }
+
+    ((SetValue)list).elements.Add(value);
+        return new RuntimeResult().success(Values.NULL);
+    }
+
+    public List<string> get_setAppend()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("set");
+        arg_names.Add("value");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_setGet(Context exec_ctx)
+    {
+        object set = exec_ctx.symbol_table.get("set");
+        object index = exec_ctx.symbol_table.get("index");
+
+        if (set.GetType() != typeof(SetValue))
+        {
+            return new RuntimeResult().failure(new RuntimeError(this.pos_start, this.pos_end, "First argument must be a set", exec_ctx));
+        }
+
+        if (index.GetType() != typeof(NumberValue))
+        {
+            return new RuntimeResult().failure(new RuntimeError(this.pos_start, this.pos_end, "Second argument must be a set", exec_ctx));
+        }
+
+        object element = Values.NULL;
+
+        try
+        {
+            element = ((SetValue)set).elements[(int)((NumberValue)index).value];
+        }
+        catch (Exception)
+        {
+            return new RuntimeResult().failure(new RuntimeError(this.pos_start, this.pos_end, "Element at this index could not be removed from the set because index is out of range", exec_ctx));
+        }
+
+        return new RuntimeResult().success(element);
+    }
+
+    public List<string> get_setGet()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("set");
+        arg_names.Add("index");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_setPop(Context exec_ctx)
+    {
+        object set = exec_ctx.symbol_table.get("set");
+        object index = exec_ctx.symbol_table.get("index");
+
+        if (set.GetType() != typeof(SetValue))
+        {
+            return new RuntimeResult().failure(new RuntimeError(this.pos_start, this.pos_end, "First argument must be a set", exec_ctx));
+        }
+
+        if (index.GetType() != typeof(NumberValue))
+        {
+            return new RuntimeResult().failure(new RuntimeError(this.pos_start, this.pos_end, "Second argument must be a set", exec_ctx));
+        }
+
+        object element = null;
+
+        try
+        {
+            element = ((SetValue)set).elements[(int)((NumberValue)index).value];
+            ((SetValue)set).elements.RemoveAt((int)((NumberValue)index).value);
+        }
+        catch (Exception)
+        {
+            return new RuntimeResult().failure(new RuntimeError(this.pos_start, this.pos_end, "Element at this index could not be removed from a set because index is out of range", exec_ctx));
+        }
+
+        return new RuntimeResult().success(element);
+    }
+
+    public List<string> get_setPop()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("set");
+        arg_names.Add("index");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_setExtend(Context exec_ctx)
+    {
+        object setA = exec_ctx.symbol_table.get("setA");
+        object setB = exec_ctx.symbol_table.get("setB");
+
+        if (setA.GetType() != typeof(SetValue))
+        {
+            return new RuntimeResult().failure(new RuntimeError(this.pos_start, this.pos_end, "First argument must be a set", exec_ctx));
+        }
+
+        if (setB.GetType() != typeof(SetValue))
+        {
+            return new RuntimeResult().failure(new RuntimeError(this.pos_start, this.pos_end, "First argument must be a set", exec_ctx));
+        }
+
+        ((SetValue)setA).elements.AddRange(((SetValue)setB).elements);
+        return new RuntimeResult().success(Values.NULL);
+    }
+
+    public List<string> get_setExtend()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("setA");
+        arg_names.Add("setB");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_getSetLength(Context exec_ctx)
+    {
+        object list = exec_ctx.symbol_table.get("set");
+
+        if (list.GetType() != typeof(SetValue))
+        {
+            return new RuntimeResult().failure(new RuntimeError(this.pos_start, this.pos_end, "Argument must be a set", exec_ctx));
+        }
+
+        return new RuntimeResult().success(new NumberValue(((SetValue)list).elements.Count));
+    }
+
+    public List<string> get_getSetLength()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("set");
+        return arg_names;
+    }
+
+    public RuntimeResult execute_setContains(Context exec_ctx)
+    {
+        object set = exec_ctx.symbol_table.get("set");
+        object value = exec_ctx.symbol_table.get("value");
+
+        if (set.GetType() == typeof(SetValue))
+        {
+            foreach (object element in ((SetValue)set).elements)
+            {
+                if ((string)element.GetType().GetMethod("as_string").Invoke(element, new object[] { }) == (string)(value.GetType().GetMethod("as_string").Invoke(value, new object[] { })) && element.GetType() == value.GetType())
+                {
+                    return new RuntimeResult().success(Values.TRUE);
+                }
+            }
+
+            return new RuntimeResult().success(Values.FALSE);
+        }
+
+        return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a set", exec_ctx));
+    }
+
+    public List<string> get_setContains()
+    {
+        List<string> arg_names = new List<string>();
+        arg_names.Add("set");
+        arg_names.Add("value");
         return arg_names;
     }
 }

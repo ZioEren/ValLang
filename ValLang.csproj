@@ -42,6 +42,7 @@
     <Compile Include="Errors\Errors\IllegalCharError.cs" />
     <Compile Include="Errors\Errors\InvalidSyntaxError.cs" />
     <Compile Include="Errors\Errors\RuntimeError.cs" />
+    <Compile Include="Interpreter\All Values\Normal Values\SetValue.cs" />
     <Compile Include="Interpreter\Custom Values\BuiltInFunctions.cs" />
     <Compile Include="Interpreter\Custom Values\BuiltInNamespaces.cs" />
     <Compile Include="Interpreter\Custom Values\BuiltInStructs.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="Parser\Nodes\Value Nodes\ListNode.cs" />
     <Compile Include="Parser\Nodes\Value Nodes\NumberNode.cs" />
     <Compile Include="Parser\Nodes\Jump Nodes\ReturnNode.cs" />
+    <Compile Include="Parser\Nodes\Value Nodes\SetNode.cs" />
     <Compile Include="Parser\Nodes\Value Nodes\StringNode.cs" />
     <Compile Include="Parser\Nodes\Operation Nodes\UnaryOpNode.cs" />
     <Compile Include="Parser\Nodes\Variable Nodes\VarAccessNode.cs" />

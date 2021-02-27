@@ -53,7 +53,7 @@ public class BuiltInStruct
             Importer.add(exec_ctx.symbol_table, 1);
         }
 
-        if (Importer.imported.Contains("lists"))
+        if (Importer.imported.Contains("collections"))
         {
             Importer.add(exec_ctx.symbol_table, 2);
         }

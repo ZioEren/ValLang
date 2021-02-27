@@ -12,7 +12,7 @@ public static class Importer
         {
             add(ctx.symbol_table, 1);
         }
-        else if (fn == "lists")
+        else if (fn == "collections")
         {
             add(ctx.symbol_table, 2);
         }
@@ -50,6 +50,7 @@ public static class Importer
             table.set("isNumber", BuiltInFunctions.isNumber);
             table.set("isString", BuiltInFunctions.isString);
             table.set("isList", BuiltInFunctions.isList);
+            table.set("isSet", BuiltInFunctions.isSet);
             table.set("isFunction", BuiltInFunctions.isFunction);
             table.set("isStruct", BuiltInFunctions.isStruct);
             table.set("isNamespace", BuiltInFunctions.isNamespace);
@@ -88,6 +89,16 @@ public static class Importer
             table.set("listSort", BuiltInFunctions.listSort);
             table.set("listReverse", BuiltInFunctions.listReverse);
             table.set("listContains", BuiltInFunctions.listContains);
+            table.set("listGet", BuiltInFunctions.listGet);
+            table.set("setAppend", BuiltInFunctions.setAppend);
+            table.set("setPop", BuiltInFunctions.setPop);
+            table.set("setExtend", BuiltInFunctions.setExtend);
+            table.set("getSetLength", BuiltInFunctions.getSetLength);
+            table.set("setClear", BuiltInFunctions.setClear);
+            table.set("setSort", BuiltInFunctions.setSort);
+            table.set("setReverse", BuiltInFunctions.setReverse);
+            table.set("setContains", BuiltInFunctions.setContains);
+            table.set("setGet", BuiltInFunctions.setGet);
         }
         else if (toImport == 3)
         {

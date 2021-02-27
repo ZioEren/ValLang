@@ -1,6 +1,6 @@
 // Script written in Val Language by ZioEren.
 import("console");
-import("lists");
+import("collections");
 
 var list = [], num = 0;
 

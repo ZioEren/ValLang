@@ -690,38 +690,120 @@ public class Interpreter
             return res;
         }
 
-        ListValue theList = (ListValue)toVisit;
-
-        foreach (object element in theList.elements)
+        if (toVisit.GetType() == typeof(ListValue))
         {
-            if (res.loop_should_continue)
+            ListValue theList = (ListValue)toVisit;
+
+            foreach (object element in theList.elements)
             {
-                continue;
+                if (res.loop_should_continue)
+                {
+                    continue;
+                }
+
+                if (res.loop_should_break)
+                {
+                    break;
+                }
+
+                context.symbol_table.set(node.element_var_name.value, element);
+                res.register(this.visit(node.body_node, context));
+
+                if (res.should_return())
+                {
+                    return res;
+                }
+
+                if (res.loop_should_continue)
+                {
+                    continue;
+                }
+
+                if (res.loop_should_break)
+                {
+                    break;
+                }
+            }
+        }
+        else if (toVisit.GetType() == typeof(SetValue))
+        {
+            SetValue theSet = (SetValue)toVisit;
+
+            foreach (object element in theSet.elements)
+            {
+                if (res.loop_should_continue)
+                {
+                    continue;
+                }
+
+                if (res.loop_should_break)
+                {
+                    break;
+                }
+
+                context.symbol_table.set(node.element_var_name.value, element);
+                res.register(this.visit(node.body_node, context));
+
+                if (res.should_return())
+                {
+                    return res;
+                }
+
+                if (res.loop_should_continue)
+                {
+                    continue;
+                }
+
+                if (res.loop_should_break)
+                {
+                    break;
+                }
+            }
+        }
+        else if (toVisit.GetType() == typeof(StringValue))
+        {
+            StringValue theString = (StringValue)toVisit;
+            List<object> elements = new List<object>();
+
+            foreach (char c in theString.value.ToCharArray())
+            {
+                elements.Add(new StringValue(c.ToString()));
             }
 
-            if (res.loop_should_break)
+            foreach (object element in elements)
             {
-                break;
+                if (res.loop_should_continue)
+                {
+                    continue;
+                }
+
+                if (res.loop_should_break)
+                {
+                    break;
+                }
+
+                context.symbol_table.set(node.element_var_name.value, element);
+                res.register(this.visit(node.body_node, context));
+
+                if (res.should_return())
+                {
+                    return res;
+                }
+
+                if (res.loop_should_continue)
+                {
+                    continue;
+                }
+
+                if (res.loop_should_break)
+                {
+                    break;
+                }
             }
-
-            context.symbol_table.set(node.element_var_name.value, element);
-            res.register(this.visit(node.body_node, context));
-
-            if (res.should_return())
-            {
-                return res;
-            }
-
-            if (res.loop_should_continue)
-            {
-                continue;
-            }
-
-            if (res.loop_should_break)
-            {
-                break;
-            }
-
+        }
+        else
+        {
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "The specified value is not a list, a set or a string", context));
         }
 
         return res.success(Values.NULL);
@@ -819,7 +901,7 @@ public class Interpreter
 
             return res.success(value);
         }
-        catch (Exception)
+        catch 
         {
             BuiltInStruct theStruct = (BuiltInStruct)context.symbol_table.get(node.var_name_tok.value);
 
@@ -886,7 +968,7 @@ public class Interpreter
                 return res.success(value);
             }
         }
-        catch (Exception)
+        catch 
         {
             BuiltInStruct theStruct = (BuiltInStruct)context.symbol_table.get(node.var_name_tok.value);
             object value = null;
@@ -1084,7 +1166,7 @@ public class Interpreter
                 return res.success(return_value);
             }
         }
-        catch (Exception)
+        catch 
         {
             BuiltInStruct theStruct = (BuiltInStruct)context.symbol_table.get(node.struct_var_name_tok.value);
 
@@ -1197,7 +1279,7 @@ public class Interpreter
 
             return res.success(value);
         }
-        catch (Exception)
+        catch 
         {
             BuiltInNamespace theNamespace = (BuiltInNamespace)context.symbol_table.get(node.var_name_tok.value);
 
@@ -1264,7 +1346,7 @@ public class Interpreter
                 return res.success(value);
             }
         }
-        catch (Exception)
+        catch 
         {
             BuiltInNamespace theNamespace = (BuiltInNamespace)context.symbol_table.get(node.var_name_tok.value);
             object value = null;
@@ -1461,7 +1543,7 @@ public class Interpreter
                 return res.success(return_value);
             }
         }
-        catch (Exception)
+        catch 
         {
             BuiltInNamespace theNamespace = (BuiltInNamespace)context.symbol_table.get(node.struct_var_name_tok.value);
 
@@ -1504,12 +1586,12 @@ public class Interpreter
 
         if (!context.symbol_table.present(node.var_name_tok.value))
         {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "This list is not present in the memory", context));
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "This list/set/string is not present in the memory", context));
         }
 
-        if (context.symbol_table.get(node.var_name_tok.value).GetType() != typeof(ListValue))
+        if (context.symbol_table.get(node.var_name_tok.value).GetType() != typeof(ListValue) && context.symbol_table.get(node.var_name_tok.value).GetType() != typeof(SetValue) && context.symbol_table.get(node.var_name_tok.value).GetType() != typeof(StringValue))
         {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "The specified variable is not a list", context));
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "The specified variable is not a list/set/string", context));
         }
 
         object indexValue = res.register(this.visit(node.access_node, context));
@@ -1526,7 +1608,26 @@ public class Interpreter
 
         if ((int) ((NumberValue) indexValue).value < 0)
         {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Index value needs to be greater than zero", context));
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Index value needs to be greater or equal than zero", context));
+        }
+
+        if (context.symbol_table.get(node.var_name_tok.value).GetType() == typeof(SetValue))
+        {
+            if ((int)((NumberValue)indexValue).value >= ((SetValue)context.symbol_table.get(node.var_name_tok.value)).elements.Count)
+            {
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Index value can not be greater than the number of the elements of the set", context));
+            }
+
+            return res.success(((SetValue)context.symbol_table.get(node.var_name_tok.value)).elements[(int)((NumberValue)indexValue).value]);
+        }
+        else if (context.symbol_table.get(node.var_name_tok.value).GetType() == typeof(StringValue))
+        {
+            if ((int)((NumberValue)indexValue).value >= ((StringValue)context.symbol_table.get(node.var_name_tok.value)).value.Length)
+            {
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Index value can not be greater than the number of the elements of the string", context));
+            }
+
+            return res.success(new StringValue(((StringValue)context.symbol_table.get(node.var_name_tok.value)).value[(int)((NumberValue)indexValue).value].ToString()));
         }
 
         if ((int)((NumberValue)indexValue).value >= ((ListValue)context.symbol_table.get(node.var_name_tok.value)).elements.Count)
@@ -1535,5 +1636,24 @@ public class Interpreter
         }
 
         return res.success(((ListValue)context.symbol_table.get(node.var_name_tok.value)).elements[(int)((NumberValue)indexValue).value]);
+    }
+
+    public RuntimeResult visit_SetNode(SetNode node, Context context)
+    {
+        RuntimeResult res = new RuntimeResult();
+
+        List<object> elements = new List<object>();
+
+        foreach (object element_node in node.element_nodes)
+        {
+            elements.Add(res.register(this.visit(element_node, context)));
+
+            if (res.should_return())
+            {
+                return res;
+            }
+        }
+
+        return res.success(new SetValue(elements).set_context(context).set_pos(node.pos_start, node.pos_end).fix());
     }
 }
