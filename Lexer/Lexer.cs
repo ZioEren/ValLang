@@ -39,31 +39,31 @@ public class Lexer
             }
             else if (this.current_char == '↩' || this.current_char == ';')
             {
-                tokens.Add(new Token("NEWLINE", pos_start: this.pos));
+                tokens.Add(new Token(TokenType.NEWLINE, pos_start: this.pos));
                 this.advance();
             }
             else if (this.current_char == '+')
             {
                 Position pos_start = this.pos.copy();
                 this.advance();
-                string tok_type = "PLUS";
 
                 if (this.current_char == '=')
                 {
-                    tok_type += "_EQ";
+                    tokens.Add(new Token(TokenType.PLUS_EQ, pos_start: this.pos, pos_end: this.pos));
                     this.advance();
                 }
                 else if (this.current_char == '+')
                 {
-                    tok_type = "DOUBLE_PLUS";
+                    tokens.Add(new Token(TokenType.DOUBLE_PLUS, pos_start: this.pos, pos_end: this.pos));
                     this.advance();
                 }
-
-                tokens.Add(new Token(tok_type, pos_start: this.pos, pos_end: this.pos));
+                else
+                {
+                    tokens.Add(new Token(TokenType.PLUS, pos_start: this.pos, pos_end: this.pos));
+                }      
             }
             else if (this.current_char == '-')
             {
-                string tok_type = "MINUS";
                 Position pos_start = this.pos.copy();
 
                 this.advance();
@@ -71,44 +71,46 @@ public class Lexer
                 if (this.current_char == '>')
                 {
                     this.advance();
-                    tok_type = "ARROW";
+                    tokens.Add(new Token(TokenType.ARROW, pos_start: pos_start, pos_end: this.pos));
                 }
                 else if (this.current_char == '=')
                 {
                     this.advance();
-                    tok_type += "_EQ";
+                    tokens.Add(new Token(TokenType.MINUS_EQ, pos_start: pos_start, pos_end: this.pos));
                 }
                 else if (this.current_char == '-')
                 {
-                    tok_type = "DOUBLE_MINUS";
+                    tokens.Add(new Token(TokenType.DOUBLE_MINUS, pos_start: pos_start, pos_end: this.pos));
                     this.advance();
                 }
-
-                tokens.Add(new Token(tok_type, pos_start: pos_start, pos_end: this.pos));
+                else
+                {
+                    tokens.Add(new Token(TokenType.MINUS, pos_start: pos_start, pos_end: this.pos));
+                }          
             }
             else if (this.current_char == '*')
             {
                 Position pos_start = this.pos.copy();
                 this.advance();
-                string tok_type = "MUL";
 
                 if (this.current_char == '=')
                 {
-                    tok_type += "_EQ";
+                    tokens.Add(new Token(TokenType.MUL_EQ, pos_start: this.pos, pos_end: this.pos));
                     this.advance();
                 }
-
-                tokens.Add(new Token(tok_type, pos_start: this.pos, pos_end: this.pos));
+                else
+                {
+                    tokens.Add(new Token(TokenType.MUL, pos_start: this.pos, pos_end: this.pos));
+                }     
             }
             else if (this.current_char == '/')
             {
                 Position pos_start = this.pos.copy();
                 this.advance();
-                string tok_type = "DIV";
 
                 if (this.current_char == '=')
                 {
-                    tok_type += "_EQ";
+                    tokens.Add(new Token(TokenType.DIV_EQ, pos_start: this.pos, pos_end: this.pos));
                     this.advance();
                 }
                 else if (this.current_char == '/')
@@ -146,46 +148,47 @@ public class Lexer
                     this.advance();
                     continue;
                 }
-
-                tokens.Add(new Token(tok_type, pos_start: this.pos, pos_end: this.pos));
+                else
+                {
+                    tokens.Add(new Token(TokenType.DIV, pos_start: this.pos, pos_end: this.pos));
+                }
             }
             else if (this.current_char == '^')
             {
                 Position pos_start = this.pos.copy();
                 this.advance();
-                string tok_type = "POW";
 
                 if (this.current_char == '=')
                 {
-                    tok_type += "_EQ";
+                    tokens.Add(new Token(TokenType.POW_EQ, pos_start: this.pos, pos_end: this.pos));
                     this.advance();
                 }
 
-                tokens.Add(new Token(tok_type, pos_start: this.pos, pos_end: this.pos));
+                tokens.Add(new Token(TokenType.POW, pos_start: this.pos, pos_end: this.pos));
             }
             else if (this.current_char == '(')
             {
-                tokens.Add(new Token("LPAREN", pos_start: this.pos));
+                tokens.Add(new Token(TokenType.LPAREN, pos_start: this.pos));
                 this.advance();
             }
             else if (this.current_char == ':')
             {
-                tokens.Add(new Token("COLON", pos_start: this.pos));
+                tokens.Add(new Token(TokenType.COLON, pos_start: this.pos));
                 this.advance();
             }
             else if (this.current_char == ')')
             {
-                tokens.Add(new Token("RPAREN", pos_start: this.pos));
+                tokens.Add(new Token(TokenType.RPAREN, pos_start: this.pos));
                 this.advance();
             }
             else if (this.current_char == '[')
             {
-                tokens.Add(new Token("LSQUARE", pos_start: this.pos));
+                tokens.Add(new Token(TokenType.LSQUARE, pos_start: this.pos));
                 this.advance();
             }
             else if (this.current_char == ']')
             {
-                tokens.Add(new Token("RSQUARE", pos_start: this.pos));
+                tokens.Add(new Token(TokenType.RSQUARE, pos_start: this.pos));
                 this.advance();
             }
             else if ("0123456789".Contains(this.current_char.ToString()))
@@ -216,17 +219,18 @@ public class Lexer
 
                 if (dot_count == 0)
                 {
-                    tokens.Add(new Token("INT", int.Parse(num_str), pos_start, this.pos));
+                    tokens.Add(new Token(TokenType.INT, int.Parse(num_str), pos_start, this.pos));
                 }
                 else
                 {
-                    tokens.Add(new Token("FLOAT", float.Parse(num_str.Replace(".", ",")), pos_start, this.pos));
+                    tokens.Add(new Token(TokenType.FLOAT, float.Parse(num_str.Replace(".", ",")), pos_start, this.pos));
                 }
             }
             else if ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".Contains(this.current_char.ToString()))
             {
                 string id_str = "";
                 Position pos_start = this.pos.copy();
+                bool key = false;
 
                 while (this.current_char != default(char) && ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_").Contains(this.current_char.ToString()))
                 {
@@ -234,18 +238,20 @@ public class Lexer
                     this.advance();
                 }
 
-                string tok_type = "IDENTIFIER";
-
                 foreach (string keyword in new string[] { "var", "and", "or", "not", "if", "then", "elif", "else", "for", "to", "step", "while", "fun", "end", "return", "continue", "break", "del", "do", "foreach", "in", "switch", "case", "default", "const", "struct", "goto", "namespace" })
                 {
                     if (id_str == keyword)
                     {
-                        tok_type = "KEYWORD";
+                        tokens.Add(new Token(TokenType.KEYWORD, id_str, pos_start, this.pos));
+                        key = true;
                         break;
                     }
                 }
 
-                tokens.Add(new Token(tok_type, id_str, pos_start, this.pos));
+                if (!key)
+                {
+                    tokens.Add(new Token(TokenType.IDENTIFIER, id_str, pos_start, this.pos));
+                }
             }
             else if (this.current_char == '!')
             {
@@ -256,15 +262,14 @@ public class Lexer
                 {
                     this.advance();
 
-                    tokens.Add(new Token("NE", pos_start: pos_start, pos_end: this.pos));
+                    tokens.Add(new Token(TokenType.NE, pos_start: pos_start, pos_end: this.pos));
                     continue;
                 }
 
-                tokens.Add(new Token("KEYWORD", "not", pos_start, this.pos));
+                tokens.Add(new Token(TokenType.KEYWORD, "not", pos_start, this.pos));
             }
             else if (this.current_char == '=')
             {
-                string tok_type = "EQ";
                 Position pos_start = this.pos.copy();
 
                 this.advance();
@@ -272,14 +277,15 @@ public class Lexer
                 if (this.current_char == '=')
                 {
                     this.advance();
-                    tok_type = "EE";
+                    tokens.Add(new Token(TokenType.EE, pos_start: pos_start, pos_end: this.pos));
                 }
-
-                tokens.Add(new Token(tok_type, pos_start: pos_start, pos_end: this.pos));
+                else
+                {
+                    tokens.Add(new Token(TokenType.EQ, pos_start: pos_start, pos_end: this.pos));
+                }        
             }
             else if (this.current_char == '<')
             {
-                string tok_type = "LT";
                 Position pos_start = this.pos.copy();
 
                 this.advance();
@@ -287,25 +293,29 @@ public class Lexer
                 if (this.current_char == '=')
                 {
                     this.advance();
-                    tok_type += "E";
+                    tokens.Add(new Token(TokenType.LTE, pos_start: pos_start, pos_end: this.pos));
                 }
                 else if (this.current_char == '<')
                 {
                     this.advance();
-                    tok_type = "LEFT_SHIFT";
 
                     if (this.current_char == '=')
                     {
                         this.advance();
-                        tok_type += "_EQ";
+                        tokens.Add(new Token(TokenType.LEFT_SHIFT_EQ, pos_start: pos_start, pos_end: this.pos));
+                    }
+                    else
+                    {
+                        tokens.Add(new Token(TokenType.LEFT_SHIFT, pos_start: pos_start, pos_end: this.pos));
                     }
                 }
-
-                tokens.Add(new Token(tok_type, pos_start: pos_start, pos_end: this.pos));
+                else
+                {
+                    tokens.Add(new Token(TokenType.LT, pos_start: pos_start, pos_end: this.pos));
+                }
             }
             else if (this.current_char == '>')
             {
-                string tok_type = "GT";
                 Position pos_start = this.pos.copy();
 
                 this.advance();
@@ -313,25 +323,30 @@ public class Lexer
                 if (this.current_char == '=')
                 {
                     this.advance();
-                    tok_type += "E";
+                    tokens.Add(new Token(TokenType.GTE, pos_start: pos_start, pos_end: this.pos));
                 }
                 else if (this.current_char == '>')
                 {
                     this.advance();
-                    tok_type = "RIGHT_SHIFT";
 
                     if (this.current_char == '=')
                     {
                         this.advance();
-                        tok_type += "_EQ";
+                        tokens.Add(new Token(TokenType.RIGHT_SHIFT_EQ, pos_start: pos_start, pos_end: this.pos));
+                    }
+                    else
+                    {
+                        tokens.Add(new Token(TokenType.RIGHT_SHIFT, pos_start: pos_start, pos_end: this.pos));
                     }
                 }
-
-                tokens.Add(new Token(tok_type, pos_start: pos_start, pos_end: this.pos));
+                else
+                {
+                    tokens.Add(new Token(TokenType.GT, pos_start: pos_start, pos_end: this.pos));
+                }
             }
             else if (this.current_char == ',')
             {
-                tokens.Add(new Token("COMMA", pos_start: this.pos));
+                tokens.Add(new Token(TokenType.COMMA, pos_start: this.pos));
                 this.advance();
             }
             else if (this.current_char == '"')
@@ -350,16 +365,16 @@ public class Lexer
                 if (this.current_char == '&')
                 {
                     this.advance();
-                    tokens.Add(new Token("KEYWORD", "and", pos_start, this.pos));
+                    tokens.Add(new Token(TokenType.KEYWORD, "and", pos_start, this.pos));
                 }
                 else if (this.current_char == '=')
                 {
                     this.advance();
-                    tokens.Add(new Token("LOGIC_AND_EQ", pos_start: pos_start, pos_end: this.pos));
+                    tokens.Add(new Token(TokenType.LOGIC_AND_EQ, pos_start: pos_start, pos_end: this.pos));
                 }
                 else
                 {
-                    tokens.Add(new Token("LOGIC_AND", pos_start: pos_start, pos_end: this.pos));
+                    tokens.Add(new Token(TokenType.LOGIC_AND, pos_start: pos_start, pos_end: this.pos));
                 }
             }
             else if (this.current_char == '|')
@@ -370,45 +385,46 @@ public class Lexer
                 if (this.current_char == '|')
                 {
                     this.advance();
-                    tokens.Add(new Token("KEYWORD", "or", pos_start, this.pos));
+                    tokens.Add(new Token(TokenType.KEYWORD, "or", pos_start, this.pos));
                 }
                 else if (this.current_char == '=')
                 {
                     this.advance();
-                    tokens.Add(new Token("LOGIC_OR_EQ", pos_start: pos_start, pos_end: this.pos));
+                    tokens.Add(new Token(TokenType.LOGIC_OR_EQ, pos_start: pos_start, pos_end: this.pos));
                 }
                 else
                 {
-                    tokens.Add(new Token("LOGIC_OR", pos_start: pos_start, pos_end: this.pos));
+                    tokens.Add(new Token(TokenType.LOGIC_OR, pos_start: pos_start, pos_end: this.pos));
                 }
             }
             else if (this.current_char == '{')
             {
-                tokens.Add(new Token("LBRACE", pos_start: this.pos));
-                tokens.Add(new Token("NEWLINE", pos_start: this.pos));
+                tokens.Add(new Token(TokenType.LBRACE, pos_start: this.pos));
+                tokens.Add(new Token(TokenType.NEWLINE, pos_start: this.pos));
 
                 this.advance();
             }
             else if (this.current_char == '}')
             {
-                tokens.Add(new Token("RBRACE", pos_start: this.pos));
-                tokens.Add(new Token("NEWLINE", pos_start: this.pos));
-
+                tokens.Add(new Token(TokenType.RBRACE, pos_start: this.pos));
+                tokens.Add(new Token(TokenType.NEWLINE, pos_start: this.pos));
+                
                 this.advance();
             }
             else if (this.current_char == '~')
             {
                 Position pos_start = this.pos.copy();
                 this.advance();
-                string tok_type = "LOGIC_NOT";
 
                 if (this.current_char == '=')
                 {
-                    tok_type += "_EQ";
+                    tokens.Add(new Token(TokenType.LOGIC_NOT_EQ, pos_start: this.pos, pos_end: this.pos));
                     this.advance();
                 }
-
-                tokens.Add(new Token(tok_type, pos_start: this.pos, pos_end: this.pos));
+                else
+                {
+                    tokens.Add(new Token(TokenType.LOGIC_NOT, pos_start: this.pos, pos_end: this.pos));
+                }            
             }
             else if (this.current_char == '%')
             {
@@ -418,15 +434,17 @@ public class Lexer
 
                 if (this.current_char == '=')
                 {
-                    tok_type += "_EQ";
+                    tokens.Add(new Token(TokenType.MODULO_EQ, pos_start: this.pos, pos_end: this.pos));
                     this.advance();
                 }
-
-                tokens.Add(new Token(tok_type, pos_start: this.pos, pos_end: this.pos));
+                else
+                {
+                    tokens.Add(new Token(TokenType.MODULO, pos_start: this.pos, pos_end: this.pos));
+                }        
             }
             else if (this.current_char == '.')
             {
-                tokens.Add(new Token("DOT", pos_start: this.pos));
+                tokens.Add(new Token(TokenType.DOT, pos_start: this.pos));
                 this.advance();
             }
             else
@@ -440,7 +458,7 @@ public class Lexer
             }
         }
 
-        tokens.Add(new Token("EOF", pos_start: this.pos));
+        tokens.Add(new Token(TokenType.EOF, pos_start: this.pos));
 
         return new Tuple<List<Token>, Error>(tokens, null);
     }
@@ -499,7 +517,7 @@ public class Lexer
 
         this.advance();
 
-        return new Token("STRING", str, pos_start, this.pos);
+        return new Token(TokenType.STRING, str, pos_start, this.pos);
     }
 
     public void skip_comment()

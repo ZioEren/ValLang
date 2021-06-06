@@ -17,7 +17,7 @@ public class Parser
     {
         ParseResult res = this.statements();
 
-        if (res.error == null && this.current_tok.type != "EOF")
+        if (res.error == null && !this.current_tok.type.Equals(TokenType.EOF))
         {
             return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Token cannot appear after previous tokens"));
         }
@@ -50,21 +50,21 @@ public class Parser
         ParseResult res = new ParseResult();
         Token tok = this.current_tok;
 
-        if (tok.type == "INT" || tok.type == "FLOAT")
+        if (tok.type.Equals(TokenType.INT) || tok.type.Equals(TokenType.FLOAT))
         {
             res.register_advancement();
             this.advance();
 
             return res.success(new NumberNode(tok));
         }
-        else if (tok.type == "STRING")
+        else if (tok.type.Equals(TokenType.STRING))
         {
             res.register_advancement();
             this.advance();
 
             return res.success(new StringNode(tok));
         }
-        else if (tok.type == "LBRACE")
+        else if (tok.type.Equals(TokenType.LBRACE))
         {
             List<object> elements = new List<object>();
             Position pos_start = this.current_tok.pos_start;
@@ -75,7 +75,7 @@ public class Parser
             res.register_advancement();
             this.advance();
 
-            if (this.current_tok.type == "RBRACE")
+            if (this.current_tok.type.Equals(TokenType.RBRACE))
             {
                 goto rbrace;
             }
@@ -89,7 +89,7 @@ public class Parser
 
             elements.Add(value);
 
-            while (this.current_tok.type == "COMMA")
+            while (this.current_tok.type.Equals(TokenType.COMMA))
             {
                 res.register_advancement();
                 this.advance();
@@ -99,7 +99,7 @@ public class Parser
                 elements.Add(value);
             }
 
-            if (this.current_tok.type != "RBRACE")
+            if (!this.current_tok.type.Equals(TokenType.RBRACE))
             {
                 return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '}'"));
             }
@@ -112,30 +112,30 @@ public class Parser
 
             return res.success(new SetNode(elements, pos_start, this.current_tok.pos_start));
         }
-        else if (tok.type == "IDENTIFIER")
+        else if (tok.type.Equals(TokenType.IDENTIFIER))
         {
             res.register_advancement();
             this.advance();
 
-            if (this.current_tok.type == "DOT")
+            if (this.current_tok.type.Equals(TokenType.DOT))
             {
                 res.register_advancement();
                 this.advance();
 
-                if (this.current_tok.type == "IDENTIFIER")
+                if (this.current_tok.type.Equals(TokenType.IDENTIFIER))
                 {
                     Token var_name_tok = this.current_tok;
                     res.register_advancement();
                     this.advance();
 
-                    if (this.current_tok.type == "LPAREN")
+                    if (this.current_tok.type.Equals(TokenType.LPAREN))
                     {
                         res.register_advancement();
                         this.advance();
 
                         List<object> arg_nodes = new List<object>();
 
-                        if (this.current_tok.type == "RPAREN")
+                        if (this.current_tok.type.Equals(TokenType.RPAREN))
                         {
                             res.register_advancement();
                             this.advance();
@@ -149,7 +149,7 @@ public class Parser
                                 return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ')', ']', 'var', 'if', 'for', 'while', 'fun', int, float, identifier, '+', '-' or '("));
                             }
 
-                            while (this.current_tok.type == "COMMA")
+                            while (this.current_tok.type.Equals(TokenType.COMMA))
                             {
                                 res.register_advancement();
                                 this.advance();
@@ -162,7 +162,7 @@ public class Parser
                                 }
                             }
 
-                            if (this.current_tok.type != "RPAREN")
+                            if (!this.current_tok.type.Equals(TokenType.RPAREN))
                             {
                                 return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ',', ')' or ']'"));
                             }
@@ -174,7 +174,7 @@ public class Parser
                         return res.success(new StructCallNode(tok, var_name_tok, arg_nodes));
                     }
 
-                    if (this.current_tok.type != "EQ" && !this.current_tok.type.EndsWith("_EQ"))
+                    if (!this.current_tok.type.Equals(TokenType.EQ) && !this.current_tok.get_string_type().EndsWith("_EQ"))
                     {
                         return res.success(new StructAccessNode(tok, var_name_tok));
                     }
@@ -194,7 +194,7 @@ public class Parser
                     return res.success(new StructReAssignNode(tok, var_name_tok, operator_token, expression));
                 }
             }
-            else if (this.current_tok.type == "LSQUARE")
+            else if (this.current_tok.type.Equals(TokenType.LSQUARE))
             {
                 res.register_advancement();
                 this.advance();
@@ -206,7 +206,7 @@ public class Parser
                     return res;
                 }
 
-                if (this.current_tok.type != "RSQUARE")
+                if (!this.current_tok.type.Equals(TokenType.RSQUARE))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ']'"));
                 }
@@ -216,30 +216,30 @@ public class Parser
 
                 return res.success(new VarListAccessNode(tok, accessExpr));
             }
-            else if (this.current_tok.type == "COLON")
+            else if (this.current_tok.type.Equals(TokenType.COLON))
             {
                 res.register_advancement();
                 this.advance();
 
-                if (this.current_tok.type == "COLON")
+                if (this.current_tok.type.Equals(TokenType.COLON))
                 {
                     res.register_advancement();
                     this.advance();
 
-                    if (this.current_tok.type == "IDENTIFIER")
+                    if (this.current_tok.type.Equals(TokenType.IDENTIFIER))
                     {
                         Token var_name_tok = this.current_tok;
                         res.register_advancement();
                         this.advance();
 
-                        if (this.current_tok.type == "LPAREN")
+                        if (this.current_tok.type.Equals(TokenType.LPAREN))
                         {
                             res.register_advancement();
                             this.advance();
 
                             List<object> arg_nodes = new List<object>();
 
-                            if (this.current_tok.type == "RPAREN")
+                            if (this.current_tok.type.Equals(TokenType.RPAREN))
                             {
                                 res.register_advancement();
                                 this.advance();
@@ -253,7 +253,7 @@ public class Parser
                                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ')', ']', 'var', 'if', 'for', 'while', 'fun', int, float, identifier, '+', '-' or '("));
                                 }
 
-                                while (this.current_tok.type == "COMMA")
+                                while (this.current_tok.type.Equals(TokenType.COMMA))
                                 {
                                     res.register_advancement();
                                     this.advance();
@@ -266,7 +266,7 @@ public class Parser
                                     }
                                 }
 
-                                if (this.current_tok.type != "RPAREN")
+                                if (!this.current_tok.type.Equals(TokenType.RPAREN))
                                 {
                                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ',', ')' or ']'"));
                                 }
@@ -278,7 +278,7 @@ public class Parser
                             return res.success(new NamespaceCallNode(tok, var_name_tok, arg_nodes));
                         }
 
-                        if (this.current_tok.type != "EQ" && !this.current_tok.type.EndsWith("_EQ"))
+                        if (!this.current_tok.type.Equals(TokenType.EQ) && !this.current_tok.get_string_type().EndsWith("_EQ"))
                         {
                             return res.success(new NamespaceAccessNode(tok, var_name_tok));
                         }
@@ -304,7 +304,7 @@ public class Parser
                 }
             }
 
-            if (this.current_tok.type != "EQ" && !this.current_tok.type.EndsWith("_EQ"))
+            if (!this.current_tok.type.Equals(TokenType.EQ) && !this.current_tok.get_string_type().EndsWith("_EQ"))
             {
                 return res.success(new VarAccessNode(tok));
             }
@@ -323,12 +323,12 @@ public class Parser
 
             return res.success(new VarReAssignNode(tok, op_tok, expr));
         }
-        else if (tok.type == "LSQUARE")
+        else if (tok.type.Equals(TokenType.LSQUARE))
         {
             List<object> element_nodes = new List<object>();
             Position pos_start = this.current_tok.pos_start.copy();
 
-            if (this.current_tok.type != "LSQUARE")
+            if (!this.current_tok.type.Equals(TokenType.LSQUARE))
             {
                 return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '['"));
             }
@@ -336,7 +336,7 @@ public class Parser
             res.register_advancement();
             this.advance();
 
-            if (this.current_tok.type == "RSQUARE")
+            if (this.current_tok.type.Equals(TokenType.RSQUARE))
             {
                 res.register_advancement();
                 this.advance();
@@ -350,7 +350,7 @@ public class Parser
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ']', 'var', 'if', 'for', 'while', 'fun', int, float, identifier, '+', '-', '(', '[' or 'not'"));
                 }
 
-                while (this.current_tok.type == "COMMA")
+                while (this.current_tok.type.Equals(TokenType.COMMA))
                 {
                     res.register_advancement();
                     this.advance();
@@ -363,7 +363,7 @@ public class Parser
                     }
                 }
 
-                if (this.current_tok.type != "RSQUARE")
+                if (!this.current_tok.type.Equals(TokenType.RSQUARE))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ',' or ']'"));
                 }
@@ -374,7 +374,7 @@ public class Parser
 
             return res.success(new ListNode(element_nodes, pos_start, this.current_tok.pos_end.copy()));
         }
-        else if (tok.type == "LPAREN")
+        else if (tok.type.Equals(TokenType.LPAREN))
         {
             res.register_advancement();
             this.advance();
@@ -386,7 +386,7 @@ public class Parser
                 return res;
             }
 
-            if (this.current_tok.type == "RPAREN")
+            if (this.current_tok.type.Equals(TokenType.RPAREN))
             {
                 res.register_advancement();
                 this.advance();
@@ -398,7 +398,7 @@ public class Parser
                 return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ')'"));
             }
         }
-        else if (tok.type == "KEYWORD")
+        else if (tok.type.Equals(TokenType.KEYWORD))
         {
             if (tok.value.ToString() == "if")
             {
@@ -416,7 +416,7 @@ public class Parser
             }
             else if (tok.value.ToString() == "for")
             {
-                if (this.current_tok.type != "KEYWORD" && this.current_tok.value.ToString() != "for")
+                if (!this.current_tok.type.Equals(TokenType.KEYWORD) && this.current_tok.value.ToString() != "for")
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected 'for'"));
                 }
@@ -426,7 +426,7 @@ public class Parser
 
                 int lparens = 0;
 
-                while (this.current_tok.type == "LPAREN")
+                while (this.current_tok.type.Equals(TokenType.LPAREN))
                 {
                     lparens++;
 
@@ -434,7 +434,7 @@ public class Parser
                     this.advance();
                 }
 
-                if (this.current_tok.type != "IDENTIFIER")
+                if (!this.current_tok.type.Equals(TokenType.IDENTIFIER))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected identifier"));
                 }
@@ -444,7 +444,7 @@ public class Parser
                 res.register_advancement();
                 this.advance();
 
-                if (this.current_tok.type != "EQ")
+                if (!this.current_tok.type.Equals(TokenType.EQ))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '='"));
                 }
@@ -459,7 +459,7 @@ public class Parser
                     return res;
                 }
 
-                if (this.current_tok.type != "KEYWORD" && this.current_tok.value.ToString() != "to")
+                if (!this.current_tok.type.Equals(TokenType.KEYWORD) && this.current_tok.value.ToString() != "to")
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected 'to'"));
                 }
@@ -476,7 +476,7 @@ public class Parser
 
                 object step_value = null;
 
-                if (this.current_tok.type == "KEYWORD" && this.current_tok.value.ToString() == "step")
+                if (this.current_tok.type.Equals(TokenType.KEYWORD) && this.current_tok.value.ToString() == "step")
                 {
                     res.register_advancement();
                     this.advance();
@@ -491,7 +491,7 @@ public class Parser
 
                 for (int i = 0; i < lparens; i++)
                 {
-                    if (this.current_tok.type != "RPAREN")
+                    if (!this.current_tok.type.Equals(TokenType.RPAREN))
                     {
                         return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ')'"));
                     }
@@ -500,13 +500,13 @@ public class Parser
                     this.advance();
                 }
 
-                while (this.current_tok.type == "NEWLINE")
+                while (this.current_tok.type.Equals(TokenType.NEWLINE))
                 {
                     res.register_advancement();
                     this.advance();
                 }
 
-                if (this.current_tok.type != "LBRACE" && this.current_tok.type != "COLON")
+                if (!this.current_tok.type.Equals(TokenType.LBRACE) && !this.current_tok.type.Equals(TokenType.COLON))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '{' or ':'"));
                 }
@@ -516,9 +516,9 @@ public class Parser
                 res.register_advancement();
                 this.advance();
 
-                if (this.current_tok.type == "NEWLINE")
+                if (this.current_tok.type.Equals(TokenType.NEWLINE))
                 {
-                    if (real_separator.type != "LBRACE")
+                    if (!real_separator.type.Equals(TokenType.LBRACE))
                     {
                         return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '{'"));
                     }
@@ -533,7 +533,7 @@ public class Parser
                         return res;
                     }
 
-                    if (this.current_tok.type != "RBRACE")
+                    if (!this.current_tok.type.Equals(TokenType.RBRACE))
                     {
                         return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '}'"));
                     }
@@ -544,7 +544,7 @@ public class Parser
                     return res.success(new ForNode(var_name, start_value, end_value, step_value, new_body, true));
                 }
 
-                if (real_separator.type != "COLON")
+                if (!real_separator.type.Equals(TokenType.COLON))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ':'"));
                 }
@@ -570,13 +570,13 @@ public class Parser
                     return res;
                 }
 
-                while (this.current_tok.type == "NEWLINE")
+                while (this.current_tok.type.Equals(TokenType.NEWLINE))
                 {
                     res.register_advancement();
                     this.advance();
                 }
 
-                if (this.current_tok.type != "LBRACE" && this.current_tok.type != "COLON")
+                if (!this.current_tok.type.Equals(TokenType.LBRACE) && !this.current_tok.type.Equals(TokenType.COLON))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '{' or ':'"));
                 }
@@ -586,9 +586,9 @@ public class Parser
                 res.register_advancement();
                 this.advance();
 
-                if (this.current_tok.type == "NEWLINE")
+                if (this.current_tok.type.Equals(TokenType.NEWLINE))
                 {
-                    if (real_separator.type != "LBRACE")
+                    if (!real_separator.type.Equals(TokenType.LBRACE))
                     {
                         return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '{'"));
                     }
@@ -603,7 +603,7 @@ public class Parser
                         return res;
                     }
 
-                    if (this.current_tok.type != "RBRACE")
+                    if (!this.current_tok.type.Equals(TokenType.RBRACE))
                     {
                         return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '}'"));
                     }
@@ -614,7 +614,7 @@ public class Parser
                     return res.success(new WhileNode(condition, new_body, true));
                 }
 
-                if (real_separator.type != "COLON")
+                if (!real_separator.type.Equals(TokenType.COLON))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ':'"));
                 }
@@ -637,14 +637,14 @@ public class Parser
 
                 Token var_name_tok = null;
 
-                if (this.current_tok.type == "IDENTIFIER")
+                if (this.current_tok.type.Equals(TokenType.IDENTIFIER))
                 {
                     var_name_tok = this.current_tok;
 
                     res.register_advancement();
                     this.advance();
 
-                    if (this.current_tok.type != "LPAREN")
+                    if (!this.current_tok.type.Equals(TokenType.LPAREN))
                     {
                         return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '('"));
                     }
@@ -653,7 +653,7 @@ public class Parser
                 {
                     var_name_tok = null;
 
-                    if (this.current_tok.type != "LPAREN")
+                    if (!this.current_tok.type.Equals(TokenType.LPAREN))
                     {
                         return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected identifier or '('"));
                     }
@@ -664,15 +664,15 @@ public class Parser
 
                 List<Tuple<Token, object>> arg_name_toks = new List<Tuple<Token, object>>();
 
-                if (this.current_tok.type == "IDENTIFIER")
+                if (this.current_tok.type.Equals(TokenType.IDENTIFIER))
                 {
                     Token arg_name_tok = this.current_tok;
                     object arg_value = null;
 
                     res.register_advancement();
                     this.advance();
-
-                    if (this.current_tok.type == "EQ")
+                    
+                    if (this.current_tok.type.Equals(TokenType.EQ))
                     {
                         optionalParams = true;
                         res.register_advancement();
@@ -692,12 +692,12 @@ public class Parser
 
                     arg_name_toks.Add(new Tuple<Token, object>(arg_name_tok, arg_value));
 
-                    while (this.current_tok.type == "COMMA")
+                    while (this.current_tok.type.Equals(TokenType.COMMA))
                     {
                         res.register_advancement();
                         this.advance();
 
-                        if (this.current_tok.type != "IDENTIFIER")
+                        if (!this.current_tok.type.Equals(TokenType.IDENTIFIER))
                         {
                             return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected identifier"));
                         }
@@ -708,7 +708,7 @@ public class Parser
                         res.register_advancement();
                         this.advance();
 
-                        if (this.current_tok.type == "EQ")
+                        if (this.current_tok.type.Equals(TokenType.EQ))
                         {
                             optionalParams = true;
                             res.register_advancement();
@@ -729,14 +729,14 @@ public class Parser
                         arg_name_toks.Add(new Tuple<Token, object>(arg_tok, arg_val));
                     }
 
-                    if (this.current_tok.type != "RPAREN")
+                    if (!this.current_tok.type.Equals(TokenType.RPAREN))
                     {
                         return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ',' or ')'"));
                     }
                 }
                 else
                 {
-                    if (this.current_tok.type != "RPAREN")
+                    if (!this.current_tok.type.Equals(TokenType.RPAREN))
                     {
                         return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected identifier or ')'"));
                     }
@@ -745,7 +745,7 @@ public class Parser
                 res.register_advancement();
                 this.advance();
 
-                if (this.current_tok.type == "ARROW")
+                if (this.current_tok.type.Equals(TokenType.ARROW))
                 {
                     res.register_advancement();
                     this.advance();
@@ -760,13 +760,13 @@ public class Parser
                     return res.success(new FuncDefNode(var_name_tok, arg_name_toks, node_to_return, true));
                 }
 
-                while (this.current_tok.type == "NEWLINE")
+                while (this.current_tok.type.Equals(TokenType.NEWLINE))
                 {
                     res.register_advancement();
                     this.advance();
                 }
 
-                if (this.current_tok.type != "LBRACE")
+                if (!this.current_tok.type.Equals(TokenType.LBRACE))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '{'"));
                 }
@@ -774,7 +774,7 @@ public class Parser
                 res.register_advancement();
                 this.advance();
 
-                if (this.current_tok.type != "NEWLINE")
+                if (!this.current_tok.type.Equals(TokenType.NEWLINE))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '->' or a new line"));
                 }
@@ -784,7 +784,7 @@ public class Parser
 
                 object body = res.register(this.statements());
 
-                if (this.current_tok.type != "RBRACE")
+                if (!this.current_tok.type.Equals(TokenType.RBRACE))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '}'"));
                 }
@@ -799,13 +799,13 @@ public class Parser
                 res.register_advancement();
                 this.advance();
 
-                while (this.current_tok.type == "NEWLINE")
+                while (this.current_tok.type.Equals(TokenType.NEWLINE))
                 {
                     res.register_advancement();
                     this.advance();
                 }
 
-                if (this.current_tok.type != "LBRACE" && this.current_tok.type != "COLON")
+                if (!this.current_tok.type.Equals(TokenType.LBRACE) && !this.current_tok.type.Equals(TokenType.COLON))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '{' or ':'"));
                 }
@@ -815,9 +815,9 @@ public class Parser
                 res.register_advancement();
                 this.advance();
 
-                if (this.current_tok.type == "NEWLINE")
+                if (this.current_tok.type.Equals(TokenType.NEWLINE))
                 {
-                    if (real_separator.type != "LBRACE")
+                    if (!real_separator.type.Equals(TokenType.LBRACE))
                     {
                         return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '{'"));
                     }
@@ -831,20 +831,22 @@ public class Parser
                     {
                         return res;
                     }
-                    if (this.current_tok.type != "RBRACE")
+
+                    if (!this.current_tok.type.Equals(TokenType.RBRACE))
                     {
                         return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '}'"));
                     }
+
                     res.register_advancement();
                     this.advance();
 
-                    while (this.current_tok.type == "NEWLINE")
+                    while (this.current_tok.type.Equals(TokenType.NEWLINE))
                     {
                         res.register_advancement();
                         this.advance();
                     }
 
-                    if (this.current_tok.type == "KEYWORD")
+                    if (this.current_tok.type.Equals(TokenType.KEYWORD))
                     {
                         if (this.current_tok.value.ToString() != "while")
                         {
@@ -869,7 +871,7 @@ public class Parser
                     }
                 }
 
-                if (real_separator.type != "COLON")
+                if (!real_separator.type.Equals(TokenType.COLON))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ':'"));
                 }
@@ -881,7 +883,7 @@ public class Parser
                     return res;
                 }
 
-                if (this.current_tok.type == "KEYWORD")
+                if (this.current_tok.type.Equals(TokenType.KEYWORD))
                 {
                     if (this.current_tok.value.ToString() != "while")
                     {
@@ -910,7 +912,7 @@ public class Parser
 
                 int lparens = 0;
 
-                while (this.current_tok.type == "LPAREN")
+                while (this.current_tok.type.Equals(TokenType.LPAREN))
                 {
                     lparens++;
 
@@ -918,7 +920,7 @@ public class Parser
                     this.advance();
                 }
 
-                if (this.current_tok.type != "IDENTIFIER")
+                if (!this.current_tok.type.Equals(TokenType.IDENTIFIER))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected identifier"));
                 }
@@ -928,7 +930,7 @@ public class Parser
                 res.register_advancement();
                 this.advance();
 
-                if (this.current_tok.type != "KEYWORD" && this.current_tok.value.ToString() != "in")
+                if (!this.current_tok.type.Equals(TokenType.KEYWORD) && this.current_tok.value.ToString() != "in")
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected 'in'"));
                 }
@@ -945,7 +947,7 @@ public class Parser
 
                 for (int i = 0; i < lparens; i++)
                 {
-                    if (this.current_tok.type != "RPAREN")
+                    if (!this.current_tok.type.Equals(TokenType.RPAREN))
                     {
                         return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ')'"));
                     }
@@ -954,13 +956,13 @@ public class Parser
                     this.advance();
                 }
 
-                while (this.current_tok.type == "NEWLINE")
+                while (this.current_tok.type.Equals(TokenType.NEWLINE))
                 {
                     res.register_advancement();
                     this.advance();
                 }
 
-                if (this.current_tok.type != "LBRACE" && this.current_tok.type != "COLON")
+                if (!this.current_tok.type.Equals(TokenType.LBRACE) && !this.current_tok.type.Equals(TokenType.COLON))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '{' or ':'"));
                 }
@@ -970,9 +972,9 @@ public class Parser
                 res.register_advancement();
                 this.advance();
 
-                if (this.current_tok.type == "NEWLINE")
+                if (this.current_tok.type.Equals(TokenType.NEWLINE))
                 {
-                    if (real_separator.type != "LBRACE")
+                    if (!real_separator.type.Equals(TokenType.LBRACE))
                     {
                         return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '{'"));
                     }
@@ -987,7 +989,7 @@ public class Parser
                         return res;
                     }
 
-                    if (this.current_tok.type != "RBRACE")
+                    if (!this.current_tok.type.Equals(TokenType.RBRACE))
                     {
                         return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '}'"));
                     }
@@ -998,7 +1000,7 @@ public class Parser
                     return res.success(new ForEachNode(element_var_name, expr, new_body, true));
                 }
 
-                if (real_separator.type != "COLON")
+                if (!real_separator.type.Equals(TokenType.COLON))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ':'"));
                 }
@@ -1022,7 +1024,7 @@ public class Parser
 
                 int lparens = 0;
 
-                while (this.current_tok.type == "LPAREN")
+                while (this.current_tok.type.Equals(TokenType.LPAREN))
                 {
                     lparens++;
 
@@ -1039,7 +1041,7 @@ public class Parser
 
                 for (int i = 0; i < lparens; i++)
                 {
-                    if (this.current_tok.type != "RPAREN")
+                    if (!this.current_tok.type.Equals(TokenType.RPAREN))
                     {
                         return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ')'"));
                     }
@@ -1048,13 +1050,13 @@ public class Parser
                     this.advance();
                 }
 
-                while (this.current_tok.type == "NEWLINE")
+                while (this.current_tok.type.Equals(TokenType.NEWLINE))
                 {
                     res.register_advancement();
                     this.advance();
                 }
 
-                if (this.current_tok.type != "LBRACE" && this.current_tok.type != "COLON")
+                if (!this.current_tok.type.Equals(TokenType.LBRACE) && !this.current_tok.type.Equals(TokenType.COLON))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '{'"));
                 }
@@ -1062,18 +1064,18 @@ public class Parser
                 res.register_advancement();
                 this.advance();
 
-                if (this.current_tok.type == "NEWLINE")
+                if (this.current_tok.type.Equals(TokenType.NEWLINE))
                 {
                     res.register_advancement();
                     this.advance();
 
-                    while (this.current_tok.type == "NEWLINE")
+                    while (this.current_tok.type.Equals(TokenType.NEWLINE))
                     {
                         res.register_advancement();
                         this.advance();
                     }
 
-                    while (this.current_tok.type == "KEYWORD" && this.current_tok.value.ToString() == "case")
+                    while (this.current_tok.type.Equals(TokenType.KEYWORD) && this.current_tok.value.ToString() == "case")
                     {
                         res.register_advancement();
                         this.advance();
@@ -1085,7 +1087,7 @@ public class Parser
                             return res;
                         }
 
-                        if (this.current_tok.type != "COLON")
+                        if (!this.current_tok.type.Equals(TokenType.COLON))
                         {
                             return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ':'"));
                         }
@@ -1103,12 +1105,12 @@ public class Parser
                         cases.Add(new Tuple<object, object>(expr, statements));
                     }
 
-                    if (this.current_tok.type == "KEYWORD" && this.current_tok.value.ToString() == "default")
+                    if (this.current_tok.type.Equals(TokenType.KEYWORD) && this.current_tok.value.ToString() == "default")
                     {
                         res.register_advancement();
                         this.advance();
 
-                        if (this.current_tok.type != "COLON")
+                        if (!this.current_tok.type.Equals(TokenType.COLON))
                         {
                             return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ':'"));
                         }
@@ -1126,13 +1128,13 @@ public class Parser
                         default_case = statements;
                     }
 
-                    while (this.current_tok.type == "NEWLINE")
+                    while (this.current_tok.type.Equals(TokenType.NEWLINE))
                     {
                         res.register_advancement();
                         this.advance();
                     }
 
-                    if (this.current_tok.type != "RBRACE")
+                    if (!this.current_tok.type.Equals(TokenType.RBRACE))
                     {
                         return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '}'"));
                     }
@@ -1152,7 +1154,7 @@ public class Parser
                 res.register_advancement();
                 this.advance();
 
-                if (this.current_tok.type != "IDENTIFIER")
+                if (!this.current_tok.type.Equals(TokenType.IDENTIFIER))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected identifier"));
                 }
@@ -1162,13 +1164,13 @@ public class Parser
                 res.register_advancement();
                 this.advance();
 
-                while (this.current_tok.type == "NEWLINE")
+                while (this.current_tok.type.Equals(TokenType.NEWLINE))
                 {
                     res.register_advancement();
                     this.advance();
                 }
 
-                if (this.current_tok.type != "LBRACE")
+                if (!this.current_tok.type.Equals(TokenType.LBRACE))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '{'"));
                 }
@@ -1183,13 +1185,13 @@ public class Parser
                     return res;
                 }
 
-                while (this.current_tok.type == "NEWLINE")
+                while (this.current_tok.type.Equals(TokenType.NEWLINE))
                 {
                     res.register_advancement();
                     this.advance();
                 }
 
-                if (this.current_tok.type != "RBRACE")
+                if (!this.current_tok.type.Equals(TokenType.RBRACE))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '}'"));
                 }
@@ -1204,7 +1206,7 @@ public class Parser
                 res.register_advancement();
                 this.advance();
 
-                if (this.current_tok.type == "IDENTIFIER")
+                if (this.current_tok.type.Equals(TokenType.IDENTIFIER))
                 {
                     Token theTok = this.current_tok;
 
@@ -1221,7 +1223,7 @@ public class Parser
                 res.register_advancement();
                 this.advance();
 
-                if (this.current_tok.type == "IDENTIFIER")
+                if (this.current_tok.type.Equals(TokenType.IDENTIFIER))
                 {
                     Token var_name_tok = this.current_tok;
 
@@ -1236,7 +1238,7 @@ public class Parser
                 res.register_advancement();
                 this.advance();
 
-                if (this.current_tok.type != "IDENTIFIER")
+                if (!this.current_tok.type.Equals(TokenType.IDENTIFIER))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected identifier"));
                 }
@@ -1246,13 +1248,13 @@ public class Parser
                 res.register_advancement();
                 this.advance();
 
-                while (this.current_tok.type == "NEWLINE")
+                while (this.current_tok.type.Equals(TokenType.NEWLINE))
                 {
                     res.register_advancement();
                     this.advance();
                 }
 
-                if (this.current_tok.type != "LBRACE")
+                if (!this.current_tok.type.Equals(TokenType.LBRACE))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '{'"));
                 }
@@ -1267,13 +1269,13 @@ public class Parser
                     return res;
                 }
 
-                while (this.current_tok.type == "NEWLINE")
+                while (this.current_tok.type.Equals(TokenType.NEWLINE))
                 {
                     res.register_advancement();
                     this.advance();
                 }
 
-                if (this.current_tok.type != "RBRACE")
+                if (!this.current_tok.type.Equals(TokenType.RBRACE))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '}'"));
                 }
@@ -1290,7 +1292,7 @@ public class Parser
 
     public ParseResult power()
     {
-        return bin_op("call", "POW", "MODULO", "factor");
+        return bin_op("call", TokenType.POW, TokenType.MODULO, "factor");
     }
 
     public ParseResult call()
@@ -1304,14 +1306,14 @@ public class Parser
             return res;
         }
 
-        if (this.current_tok.type == "LPAREN")
+        if (this.current_tok.type.Equals(TokenType.LPAREN))
         {
             res.register_advancement();
             this.advance();
 
             List<object> arg_nodes = new List<object>();
 
-            if (this.current_tok.type == "RPAREN")
+            if (this.current_tok.type.Equals(TokenType.RPAREN))
             {
                 res.register_advancement();
                 this.advance();
@@ -1325,7 +1327,7 @@ public class Parser
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ')', ']', 'var', 'if', 'for', 'while', 'fun', int, float, identifier, '+', '-' or '("));
                 }
 
-                while (this.current_tok.type == "COMMA")
+                while (this.current_tok.type.Equals(TokenType.COMMA))
                 {
                     res.register_advancement();
                     this.advance();
@@ -1338,7 +1340,7 @@ public class Parser
                     }
                 }
 
-                if (this.current_tok.type != "RPAREN")
+                if (!this.current_tok.type.Equals(TokenType.RPAREN))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ',', ')' or ']'"));
                 }
@@ -1358,7 +1360,7 @@ public class Parser
         ParseResult res = new ParseResult();
         Token tok = this.current_tok;
 
-        if (tok.type == "PLUS" || tok.type == "MINUS")
+        if (tok.type.Equals(TokenType.PLUS) || tok.type.Equals(TokenType.MINUS))
         {
             res.register_advancement();
             this.advance();
@@ -1378,14 +1380,14 @@ public class Parser
 
     public ParseResult term()
     {
-        return this.bin_op("factor", "MUL", "DIV");
+        return this.bin_op("factor", TokenType.MUL, TokenType.DIV);
     }
 
     public ParseResult comp_expr()
     {
         ParseResult res = new ParseResult();
 
-        if (this.current_tok.type == "KEYWORD" && this.current_tok.value.ToString() == "not")
+        if (this.current_tok.type.Equals(TokenType.KEYWORD) && this.current_tok.value.ToString() == "not")
         {
             Token op_tok = this.current_tok;
 
@@ -1401,7 +1403,7 @@ public class Parser
 
             return res.success(new UnaryOpNode(op_tok, node));
         }
-        else if (this.current_tok.type == "LOGIC_NOT")
+        else if (this.current_tok.type.Equals(TokenType.LOGIC_NOT))
         {
             Token op_tok = this.current_tok;
 
@@ -1430,7 +1432,7 @@ public class Parser
 
     public ParseResult arith_expr()
     {
-        return this.bin_op("term", "PLUS", "MINUS");
+        return this.bin_op("term", TokenType.PLUS, TokenType.MINUS);
     }
 
     public ParseResult expr()
@@ -1438,26 +1440,26 @@ public class Parser
         ParseResult res = new ParseResult();
         bool beConstant = false;
 
-        if (this.current_tok.type == "KEYWORD" && this.current_tok.value.ToString() == "const")
+        if (this.current_tok.type.Equals(TokenType.KEYWORD) && this.current_tok.value.ToString() == "const")
         {
             beConstant = true;
             res.register_advancement();
             this.advance();
         }
 
-        if (beConstant && !(this.current_tok.type == "KEYWORD" && this.current_tok.value.ToString() == "var"))
+        if (beConstant && !(this.current_tok.type.Equals(TokenType.KEYWORD) && this.current_tok.value.ToString() == "var"))
         {
             return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected 'var'"));
         }
 
-        if (this.current_tok.type == "KEYWORD" && this.current_tok.value.ToString() == "var")
+        if (this.current_tok.type.Equals(TokenType.KEYWORD) && this.current_tok.value.ToString() == "var")
         {
             List<object> variables = new List<object>();
 
             res.register_advancement();
             this.advance();
 
-            if (this.current_tok.type != "IDENTIFIER")
+            if (!this.current_tok.type.Equals(TokenType.IDENTIFIER))
             {
                 return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected identifier"));
             }
@@ -1467,9 +1469,9 @@ public class Parser
             res.register_advancement();
             this.advance();
 
-            if (this.current_tok.type != "EQ")
+            if (!this.current_tok.type.Equals(TokenType.EQ))
             {
-                variables.Add(new VarAssignNode(var_name, new NumberNode(new Token("INT", (int)0, var_name.pos_start, var_name.pos_end)), !beConstant));
+                variables.Add(new VarAssignNode(var_name, new NumberNode(new Token(TokenType.INT, (int)0, var_name.pos_start, var_name.pos_end)), !beConstant));
             }
             else
             {
@@ -1486,12 +1488,12 @@ public class Parser
                 variables.Add(new VarAssignNode(var_name, expr, !beConstant));
             }
 
-            while (this.current_tok.type == "COMMA")
+            while (this.current_tok.type.Equals(TokenType.COMMA))
             {
                 res.register_advancement();
                 this.advance();
 
-                if (this.current_tok.type != "IDENTIFIER")
+                if (!this.current_tok.type.Equals(TokenType.IDENTIFIER))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected identifier"));
                 }
@@ -1501,9 +1503,9 @@ public class Parser
                 res.register_advancement();
                 this.advance();
 
-                if (this.current_tok.type != "EQ")
+                if (!this.current_tok.type.Equals(TokenType.EQ))
                 {
-                    variables.Add(new VarAssignNode(new_var_name, new NumberNode(new Token("INT", (int)0, new_var_name.pos_start, new_var_name.pos_end)), !beConstant));
+                    variables.Add(new VarAssignNode(new_var_name, new NumberNode(new Token(TokenType.INT, (int)0, new_var_name.pos_start, new_var_name.pos_end)), !beConstant));
                     continue;
                 }
 
@@ -1533,7 +1535,7 @@ public class Parser
         return res.success(node);
     }
 
-    public ParseResult bin_op(string func_a, string op1, string op2, string func_b = null)
+    public ParseResult bin_op(string func_a, TokenType op1, TokenType op2, string func_b = null)
     {
         if (func_b == null)
         {
@@ -1583,7 +1585,7 @@ public class Parser
             return res;
         }
 
-        while (this.current_tok.type == "KEYWORD" && (this.current_tok.value.ToString() == op1 || this.current_tok.value.ToString() == op2))
+        while (this.current_tok.type.Equals(TokenType.KEYWORD) && (this.current_tok.value.ToString() == op1 || this.current_tok.value.ToString() == op2))
         {
             Token op_tok = this.current_tok;
 
@@ -1600,7 +1602,7 @@ public class Parser
             left = new BinOpNode(left, op_tok, right);
         }
 
-        while (this.current_tok.type == "LOGIC_AND" || this.current_tok.type == "LOGIC_OR")
+        while (this.current_tok.type.Equals(TokenType.LOGIC_AND) || this.current_tok.type.Equals(TokenType.LOGIC_OR))
         {
             Token op_tok = this.current_tok;
 
@@ -1617,7 +1619,7 @@ public class Parser
             left = new BinOpNode(left, op_tok, right);
         }
 
-        while (this.current_tok.type == "LEFT_SHIFT" || this.current_tok.type == "RIGHT_SHIFT")
+        while (this.current_tok.type.Equals(TokenType.LEFT_SHIFT) || this.current_tok.type.Equals(TokenType.RIGHT_SHIFT))
         {
             Token op_tok = this.current_tok;
 
@@ -1652,7 +1654,7 @@ public class Parser
             return res;
         }
 
-        while (this.current_tok.type == "EE" || this.current_tok.type == "NE" || this.current_tok.type == "LT" || this.current_tok.type == "GT" || this.current_tok.type == "LTE" || this.current_tok.type == "GTE" || (this.current_tok.type == "KEYWORD" && this.current_tok.value.ToString() == "in"))
+        while (this.current_tok.type.Equals(TokenType.EE) || this.current_tok.type.Equals(TokenType.NE) || this.current_tok.type.Equals(TokenType.LT) || this.current_tok.type.Equals(TokenType.GT) || this.current_tok.type.Equals(TokenType.LTE) || this.current_tok.type.Equals(TokenType.GTE) || (this.current_tok.type.Equals(TokenType.KEYWORD) && this.current_tok.value.ToString() == "in"))
         {
             Token op_tok = this.current_tok;
 
@@ -1678,7 +1680,7 @@ public class Parser
         List<Tuple<object, object, bool>> cases = new List<Tuple<object, object, bool>>();
         Tuple<object, bool> else_case = null;
 
-        if (this.current_tok.type != "KEYWORD" && this.current_tok.value.ToString() != case_keyword)
+        if (!this.current_tok.type.Equals(TokenType.KEYWORD) && this.current_tok.value.ToString() != case_keyword)
         {
             return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '" + case_keyword + "'"));
         }
@@ -1693,13 +1695,13 @@ public class Parser
             return res;
         }
 
-        while (this.current_tok.type == "NEWLINE")
+        while (this.current_tok.type.Equals(TokenType.NEWLINE))
         {
             res.register_advancement();
             this.advance();
         }
 
-        if (this.current_tok.type != "LBRACE" && this.current_tok.type != "COLON")
+        if (!this.current_tok.type.Equals(TokenType.LBRACE) && !this.current_tok.type.Equals(TokenType.COLON))
         {
             return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '{' or ':'"));
         }
@@ -1709,9 +1711,9 @@ public class Parser
         res.register_advancement();
         this.advance();
 
-        if (this.current_tok.type == "NEWLINE")
+        if (this.current_tok.type.Equals(TokenType.NEWLINE))
         {
-            if (separator_token.type != "LBRACE")
+            if (!separator_token.type.Equals(TokenType.LBRACE))
             {
                 return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '{'"));
             }
@@ -1728,7 +1730,7 @@ public class Parser
 
             cases.Add(new Tuple<object, object, bool>(condition, statements, true));
 
-            if (this.current_tok.type == "RBRACE")
+            if (this.current_tok.type.Equals(TokenType.RBRACE))
             {
                 res.register_advancement();
                 this.advance();
@@ -1736,7 +1738,7 @@ public class Parser
 
             int to_reverse_count = 0;
 
-            while (this.current_tok.type == "NEWLINE")
+            while (this.current_tok.type.Equals(TokenType.NEWLINE))
             {
                 to_reverse_count++;
 
@@ -1744,7 +1746,7 @@ public class Parser
                 this.advance();
             }
 
-            if (this.current_tok.type == "KEYWORD" && (this.current_tok.value.ToString() == "else" || this.current_tok.value.ToString() == "elif"))
+            if (this.current_tok.type.Equals(TokenType.KEYWORD) && (this.current_tok.value.ToString() == "else" || this.current_tok.value.ToString() == "elif"))
             {
                 Tuple<List<Tuple<object, object, bool>>, Tuple<object, bool>> all_cases = (Tuple<List<Tuple<object, object, bool>>, Tuple<object, bool>>)res.register(this.if_expr_b_or_c());
 
@@ -1800,18 +1802,18 @@ public class Parser
         ParseResult res = new ParseResult();
         Tuple<object, bool> else_case = null;
 
-        if (this.current_tok.type == "KEYWORD" && this.current_tok.value.ToString() == "else")
+        if (this.current_tok.type.Equals(TokenType.KEYWORD) && this.current_tok.value.ToString() == "else")
         {
             res.register_advancement();
             this.advance();
 
-            while (this.current_tok.type == "NEWLINE")
+            while (this.current_tok.type.Equals(TokenType.NEWLINE))
             {
                 res.register_advancement();
                 this.advance();
             }
 
-            if (this.current_tok.type != "LBRACE" && this.current_tok.type != "COLON")
+            if (!this.current_tok.type.Equals(TokenType.LBRACE) && !this.current_tok.type.Equals(TokenType.COLON))
             {
                 return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '{' or ':'"));
             }
@@ -1821,9 +1823,9 @@ public class Parser
             res.register_advancement();
             this.advance();
 
-            if (this.current_tok.type == "NEWLINE")
+            if (this.current_tok.type.Equals(TokenType.NEWLINE))
             {
-                if (separator_token.type != "LBRACE")
+                if (!separator_token.type.Equals(TokenType.LBRACE))
                 {
                     return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected '{'"));
                 }
@@ -1840,7 +1842,7 @@ public class Parser
 
                 else_case = new Tuple<object, bool>(statements, true);
 
-                if (this.current_tok.type == "RBRACE")
+                if (this.current_tok.type.Equals(TokenType.RBRACE))
                 {
                     res.register_advancement();
                     this.advance();
@@ -1872,7 +1874,7 @@ public class Parser
         List<Tuple<object, object, bool>> cases = new List<Tuple<object, object, bool>>();
         Tuple<object, bool> else_case = null;
 
-        if (this.current_tok.type == "KEYWORD" && this.current_tok.value.ToString() == "elif")
+        if (this.current_tok.type.Equals(TokenType.KEYWORD) && this.current_tok.value.ToString() == "elif")
         {
             Tuple<List<Tuple<object, object, bool>>, Tuple<object, bool>> all_cases = (Tuple<List<Tuple<object, object, bool>>, Tuple<object, bool>>)res.register(this.if_expr_b());
 
@@ -1903,7 +1905,7 @@ public class Parser
         List<object> statements = new List<object>();
         Position pos_start = this.current_tok.pos_start.copy();
 
-        while (this.current_tok.type == "NEWLINE")
+        while (this.current_tok.type.Equals(TokenType.NEWLINE))
         {
             res.register_advancement();
             this.advance();
@@ -1923,7 +1925,7 @@ public class Parser
         {
             int newline_count = 0;
 
-            while (this.current_tok.type == "NEWLINE")
+            while (this.current_tok.type.Equals(TokenType.NEWLINE))
             {
                 res.register_advancement();
                 this.advance();
@@ -1961,7 +1963,7 @@ public class Parser
         ParseResult res = new ParseResult();
         Position pos_start = this.current_tok.pos_start.copy();
 
-        if (this.current_tok.type == "KEYWORD" && this.current_tok.value.ToString() == "return")
+        if (this.current_tok.type.Equals(TokenType.KEYWORD) && this.current_tok.value.ToString() == "return")
         {
             res.register_advancement();
             this.advance();
@@ -1975,7 +1977,8 @@ public class Parser
 
             return res.success(new ReturnNode(theExpr, pos_start, this.current_tok.pos_start.copy()));
         }
-        if (this.current_tok.type == "KEYWORD" && this.current_tok.value.ToString() == "continue")
+
+        if (this.current_tok.type.Equals(TokenType.KEYWORD) && this.current_tok.value.ToString() == "continue")
         {
             res.register_advancement();
             this.advance();
@@ -1983,7 +1986,7 @@ public class Parser
             return res.success(new ContinueNode(pos_start, this.current_tok.pos_start.copy()));
         }
 
-        if (this.current_tok.type == "KEYWORD" && this.current_tok.value.ToString() == "break")
+        if (this.current_tok.type.Equals(TokenType.KEYWORD) && this.current_tok.value.ToString() == "break")
         {
             res.register_advancement();
             this.advance();
@@ -1991,9 +1994,9 @@ public class Parser
             return res.success(new BreakNode(pos_start, this.current_tok.pos_start.copy()));
         }
 
-        if (this.current_tok.type == "IDENTIFIER")
+        if (this.current_tok.type.Equals(TokenType.IDENTIFIER))
         {
-            if (this.tokens[this.tok_idx + 1].type == "DOUBLE_PLUS" || this.tokens[this.tok_idx + 1].type == "DOUBLE_MINUS")
+            if (this.tokens[this.tok_idx + 1].type.Equals(TokenType.DOUBLE_PLUS) || this.tokens[this.tok_idx + 1].type.Equals(TokenType.DOUBLE_MINUS))
             {
                 Token var_name_tok = this.current_tok;
 
@@ -2007,7 +2010,7 @@ public class Parser
 
                 return res.success(new VarReAssignNode(var_name_tok, op_tok, null));
             }
-            else if (this.tokens[this.tok_idx + 1].type == "COLON")
+            else if (this.tokens[this.tok_idx + 1].type.Equals(TokenType.COLON))
             {
                 Token var_name_tok = this.current_tok;
 
@@ -2033,7 +2036,7 @@ public class Parser
         if (res.error != null)
         {
             res.error = null;
-            return res.success(new NumberNode(new Token("INT", 0, this.current_tok.pos_start, this.current_tok.pos_end)));
+            return res.success(new NumberNode(new Token(TokenType.INT, 0, this.current_tok.pos_start, this.current_tok.pos_end)));
         }
 
         return res.success(expr);

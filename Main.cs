@@ -18,11 +18,12 @@ class Program
 
     static void Main(string[] args)
     {
-        Process.GetCurrentProcess().PriorityClass = System.Diagnostics.ProcessPriorityClass.RealTime;
-        new Thread(clearRam).Start();
-        EmptyWorkingSet(Process.GetCurrentProcess().Handle);
-        SetProcessWorkingSetSize(Process.GetCurrentProcess().Handle, (UIntPtr)0xFFFFFFFF, (UIntPtr)0xFFFFFFFF);
-        GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+        Console.Title = "Val Language - Interpreter";
+        Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime;
+
+        Thread ramClear = new Thread(clearRam);
+        ramClear.Priority = ThreadPriority.Highest;
+        ramClear.Start();
 
         string text, allString = "";
 
@@ -80,7 +81,7 @@ class Program
 ");
 
             Console.WriteLine("[*] Welcome to Val Language Interpreter! A free and open source interpreted programming language.");
-            Console.WriteLine("[*] Made, developed and constructed by: ZioEren (ZioEren#1337, https://www.github.com/ZioEren/)");
+            Console.WriteLine("[*] Made, developed and constructed by: ZioEren (ZioEren#2291, https://www.github.com/ZioEren/)");
             Console.WriteLine("\r\n[*] Here is the list of all commands that you can use:");
             Console.WriteLine("[+] --help - Get the list of all commands");
             Console.WriteLine("[+] --clear - Clear all the console lines.");
@@ -216,9 +217,12 @@ class Program
     {
         while (true)
         {
-            Thread.Sleep(3000);
+            Thread.Sleep(100);
+            EmptyWorkingSet(Process.GetCurrentProcess().Handle);
+            GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
             GC.Collect(GC.MaxGeneration);
             GC.WaitForPendingFinalizers();
+            SetProcessWorkingSetSize(Process.GetCurrentProcess().Handle, (UIntPtr)0xFFFFFFFF, (UIntPtr)0xFFFFFFFF);
         }
     }
 

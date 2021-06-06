@@ -32,17 +32,17 @@ public class Interpreter
 
         Tuple<object, Error> result = null;
 
-        if (node.op_tok.type == "KEYWORD")
+        if (node.op_tok.type.Equals(TokenType.KEYWORD))
         {
             result = (Tuple<object, Error>)left.GetType().GetMethod(node.op_tok.value.ToString().ToLower() + "ed_by").Invoke(left, new object[] { right });
         }
-        else if (left.GetType().GetMethod("get_comparison_" + node.op_tok.type.ToLower()) != null)
+        else if (left.GetType().GetMethod("get_comparison_" + node.op_tok.get_string_type().ToLower()) != null)
         {
-            result = (Tuple<object, Error>)left.GetType().GetMethod("get_comparison_" + node.op_tok.type.ToLower()).Invoke(left, new object[] { right });
+            result = (Tuple<object, Error>)left.GetType().GetMethod("get_comparison_" + node.op_tok.get_string_type().ToLower()).Invoke(left, new object[] { right });
         }
         else
         {
-            result = (Tuple<object, Error>)left.GetType().GetMethod(node.op_tok.type.ToLower() + "ed_by").Invoke(left, new object[] { right });
+            result = (Tuple<object, Error>)left.GetType().GetMethod(node.op_tok.get_string_type().ToLower() + "ed_by").Invoke(left, new object[] { right });
         }
 
         if (result.Item2 != null)
@@ -65,19 +65,19 @@ public class Interpreter
 
         Error error = null;
 
-        if (node.op_tok.type == "MINUS")
+        if (node.op_tok.type.Equals(TokenType.MINUS))
         {
             number = (Tuple<object, Error>) number.GetType().GetMethod("muled_by").Invoke(number, new object[] { new NumberValue(-1) });
         }
-        else if (node.op_tok.type == "PLUS")
+        else if (node.op_tok.type.Equals(TokenType.PLUS))
         {
             number = (Tuple<object, Error>)number.GetType().GetMethod("muled_by").Invoke(number, new object[] { new NumberValue(1) });
         }
-        else if (node.op_tok.type == "KEYWORD" && node.op_tok.value.ToString() == "not")
+        else if (node.op_tok.type.Equals(TokenType.KEYWORD) && node.op_tok.value.ToString() == "not")
         {
             number = (Tuple<object, Error>)number.GetType().GetMethod("notted").Invoke(number, new object[] { });
         }
-        else if (node.op_tok.type == "LOGIC_NOT")
+        else if (node.op_tok.type.Equals(TokenType.LOGIC_NOT))
         {
             number = (Tuple<object, Error>)number.GetType().GetMethod("logic_notted").Invoke(number, new object[] { });
         }
@@ -176,19 +176,19 @@ public class Interpreter
 
             object actualValue = context.symbol_table.get(var_name);
 
-            if (node.op_tok.type == "EQ")
+            if (node.op_tok.type.Equals(TokenType.EQ))
             {
                 context.symbol_table.set(var_name, value);
             }
-            else if (node.op_tok.type.StartsWith("DOUBLE"))
+            else if (node.op_tok.get_string_type().StartsWith("DOUBLE"))
             {
-                Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.type.ToLower().Replace("double_", "") + "ed_by").Invoke(actualValue, new object[] { new NumberValue(1) });
+                Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.get_string_type().ToLower().Replace("double_", "") + "ed_by").Invoke(actualValue, new object[] { new NumberValue(1) });
                 value = result.Item1;
                 context.symbol_table.set(var_name, value);
             }
             else
             {
-                Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.type.ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
+                Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.get_string_type().ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
                 value = result.Item1;
                 context.symbol_table.set(var_name, value);
             }
@@ -951,13 +951,13 @@ public class Interpreter
 
                 object actualValue = theStruct.context.symbol_table.get(node.access_var_name_tok.value);
 
-                if (node.op_tok.type == "EQ")
+                if (node.op_tok.type.Equals(TokenType.EQ))
                 {
                     theStruct.context.symbol_table.set(node.access_var_name_tok.value, value);
                 }
                 else
                 {
-                    Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.type.ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
+                    Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.get_string_type().ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
                     value = result.Item1;
                     theStruct.context.symbol_table.set(node.access_var_name_tok.value, value);
                 }
@@ -992,13 +992,13 @@ public class Interpreter
 
                 object actualValue = theStruct.context.symbol_table.get(node.access_var_name_tok.value);
 
-                if (node.op_tok.type == "EQ")
+                if (node.op_tok.type.Equals(TokenType.EQ))
                 {
                     theStruct.context.symbol_table.set(node.access_var_name_tok.value, value);
                 }
                 else
                 {
-                    Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.type.ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
+                    Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.get_string_type().ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
                     value = result.Item1;
                     theStruct.context.symbol_table.set(node.access_var_name_tok.value, value);
                 }
@@ -1329,13 +1329,13 @@ public class Interpreter
 
                 object actualValue = theNamespace.context.symbol_table.get(node.access_var_name_tok.value);
 
-                if (node.op_tok.type == "EQ")
+                if (node.op_tok.type.Equals(TokenType.EQ))
                 {
                     theNamespace.context.symbol_table.set(node.access_var_name_tok.value, value);
                 }
                 else
                 {
-                    Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.type.ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
+                    Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.get_string_type().ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
                     value = result.Item1;
                     theNamespace.context.symbol_table.set(node.access_var_name_tok.value, value);
                 }
@@ -1370,13 +1370,13 @@ public class Interpreter
 
                 object actualValue = theNamespace.context.symbol_table.get(node.access_var_name_tok.value);
 
-                if (node.op_tok.type == "EQ")
+                if (node.op_tok.type.Equals(TokenType.EQ))
                 {
                     theNamespace.context.symbol_table.set(node.access_var_name_tok.value, value);
                 }
                 else
                 {
-                    Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.type.ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
+                    Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.get_string_type().ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
                     value = result.Item1;
                     theNamespace.context.symbol_table.set(node.access_var_name_tok.value, value);
                 }

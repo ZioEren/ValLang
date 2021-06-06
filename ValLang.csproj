@@ -24,6 +24,7 @@
     <ErrorReport>none</ErrorReport>
     <WarningLevel>0</WarningLevel>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -36,6 +37,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Errors\Error.cs" />
@@ -67,6 +71,7 @@
     <Compile Include="Lexer\Lexer.cs" />
     <Compile Include="Lexer\Position.cs" />
     <Compile Include="Lexer\Token.cs" />
+    <Compile Include="Lexer\TokenType.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Parser\Nodes\Comparison Nodes\SwitchNode.cs" />
     <Compile Include="Parser\Nodes\Iteration Nodes\DoWhileNode.cs" />
@@ -117,4 +122,10 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if exist "$(DevEnvDir)..\tools\vsvars32.bat" (
+   call "$(DevEnvDir)..\tools\vsvars32.bat"
+   editbin /largeaddressaware "$(TargetPath)"
+)</PostBuildEvent>
+  </PropertyGroup>
 </Project>

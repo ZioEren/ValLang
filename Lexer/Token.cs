@@ -1,10 +1,12 @@
-﻿public class Token
+﻿using System;
+
+public class Token
 {
-    public string type;
+    public TokenType type;
     public object value;
     public Position pos_start, pos_end;
 
-    public Token(string type, object value = null, Position pos_start = null, Position pos_end = null)
+    public Token(TokenType type, object value = null, Position pos_start = null, Position pos_end = null)
     {
         this.type = type;
         this.value = value;
@@ -25,9 +27,14 @@
     {
         if (this.value != null)
         {
-            return this.type + ":" + this.value.ToString();
+            return get_string_type() + ":" + this.value.ToString();
         }
 
-        return this.type;
+        return get_string_type();
+    }
+
+    public string get_string_type()
+    {
+        return Enum.GetName(typeof(TokenType), this.type);
     }
 }
