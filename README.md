@@ -92,8 +92,11 @@ for (elemento: lista)
 ```c#
 var x = 0;
 
-x = 0D; // DECIMAL
-x = 0d; // DECIMAL
+x = 0D; // DECIMAL (INTEGER)
+x = 0d; // DECIMAL (INTEGER)
+
+x = 0.0F // DECIMAL (FLOAT)
+x = 0.0f // DECIMAL (FLOAT)
 
 x = 0H; // HEXADECIMAL
 x = 0h; // HEXADECIMAL
