@@ -86,7 +86,7 @@ for (elemento: lista)
 }
 ```
 
-**16)** Add hexadecimal values, like '0x0' (0 in decimal) and '0x5' (5 in decimal) or '0xA' (10 in decimal).
+**16)** Add hexadecimal values, like '0x0' (0 in decimal) and '0x5' (5 in decimal) or '0xA' (10 in decimal).<br/>
 **17)** Add a feature to write the numbers in different base:
 
 ```c#
