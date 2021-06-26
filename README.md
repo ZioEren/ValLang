@@ -43,3 +43,7 @@ pos.z = c;
 
 println("The sum of all coordinates is: " + pos.getSum());
 ```
+
+# TODO
+
+**1)** Add enums.
