@@ -6,8 +6,10 @@ The objective of that language is to combine the advantages of languages to make
 
 # What is implemented in Val Language?
 
-In Val Language there are global variables, constant variables, if/else/elif statements, switch statements, do while statements, while statements, for statements, foreach statements, structs, functions and lots lots more.<br/>
-Also, there are no types in this language. Every variable can be an integer/float, a string, a list or a struct.
+In Val Language there are global variables, constant variables, if/else/elif statements, switch statements, do while statements, while statements, for statements, foreach statements, structs, functions and lots lots more.<br/><br/>
+Also, this language is not strictly-typed so every variable that you declare can immediately become a variable with another type & value at the same time, also this language does not need to specify the type but probably I'll add that feature in the future to facilitate the work to some developers.<br/><br/>
+I want to make this programming language as more accessible to developers as I can, so I am trying to implement different implementations of structures and objects similar to the other common languages like Python, Java, C++, C# & more.<br/><br/>
+I hope that you appreciate this work and if you have any issue with the language, do not hesitate to open an issue. And if you want to know more or give suggestions, you can DM me on Discord: ZioEren#5517.
 
 # Example of script
 
