@@ -44,18 +44,18 @@ switch (favourite_food)
 
 # TODO
 
-**1)** Add enums.
-**2)** Add pointers and address references with symbols like '&' or '@'.
-**3)** Add the feature to sum two functions into a unique function.
-**4)** Add error management with the data structure 'try', adding also 'catch' and 'finally'.
-**5)** Add 'this' operator for the actual global context.
-**6)** Add object type 'class' with constructor and initialization. So this mean adding a new keyword 'new'.
-**7)** Add the common semplification of the 'if' structure, using '?' and ':'.
-**8)** Add the 'elif' keyword that semplifies the 'else if' expression.
-**9)** Add static methods to classes.
-**10)** Add ereditariety and polimorphism to classes.
-**11)** Add "unlimited" parameters possibility to a function by using '...'.
-**12)** Add boolean value type, 'true' and 'false' that are replacing the common '1' and '0' (integers).
+**1)** Add enums.<br/>
+**2)** Add pointers and address references with symbols like '&' or '@'.<br/>
+**3)** Add the feature to sum two functions into a unique function.<br/>
+**4)** Add error management with the data structure 'try', adding also 'catch' and 'finally'.<br/>
+**5)** Add 'this' operator for the actual global context.<br/>
+**6)** Add object type 'class' with constructor and initialization. So this mean adding a new keyword 'new'.<br/>
+**7)** Add the common semplification of the 'if' structure, using '?' and ':'.<br/>
+**8)** Add the 'elif' keyword that semplifies the 'else if' expression.<br/>
+**9)** Add static methods to classes.<br/>
+**10)** Add ereditariety and polimorphism to classes.<br/>
+**11)** Add "unlimited" parameters possibility to a function by using '...'.<br/>
+**12)** Add boolean value type, 'true' and 'false' that are replacing the common '1' and '0' (integers).<br/>
 **13)** Add dictionaries:
 
 
