@@ -112,7 +112,7 @@ public class BuiltInNamespace
 
     public string as_string()
     {
-        return "<built-in struct " + this.name + ">";
+        return "<built-in namespace " + this.name + ">";
     }
 
     public RuntimeResult exec_func(string name, List<object> args)

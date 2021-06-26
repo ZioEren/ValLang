@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
 public class Interpreter
 {
@@ -448,7 +449,7 @@ public class Interpreter
             }
         }
 
-        FunctionValue func_value = new FunctionValue(func_name, body_node, arg_names, node.should_auto_return);
+        FunctionValue func_value = new FunctionValue(func_name, body_node, arg_names, node.should_auto_return, node.async);
         func_value.set_context(context).set_pos(node.pos_start, node.pos_end);
 
         if (node.var_name_tok != null && node.var_name_tok.value.ToString() != "")
@@ -585,17 +586,27 @@ public class Interpreter
                 }
             }
 
-            object return_value = res.register(((FunctionValue)value_to_call).execute(args));
-
-            if (res.should_return())
+            if (((FunctionValue)value_to_call).async)
             {
-                return res;
+                Thread thread = new Thread(() => ((FunctionValue)value_to_call).execute(args));
+                thread.Priority = ThreadPriority.Highest;
+                thread.Start();
             }
+            else
+            {
+                object return_value = res.register(((FunctionValue)value_to_call).execute(args));
 
-            return_value = return_value.GetType().GetMethod("copy").Invoke(return_value, new object[] { });
-            return_value = return_value.GetType().GetMethod("set_pos").Invoke(return_value, new object[] { node.pos_start, node.pos_end });
-            return_value = return_value.GetType().GetMethod("set_context").Invoke(return_value, new object[] { context });
-            return res.success(return_value);
+                if (res.should_return())
+                {
+                    return res;
+                }
+
+                return_value = return_value.GetType().GetMethod("copy").Invoke(return_value, new object[] { });
+                return_value = return_value.GetType().GetMethod("set_pos").Invoke(return_value, new object[] { node.pos_start, node.pos_end });
+                return_value = return_value.GetType().GetMethod("set_context").Invoke(return_value, new object[] { context });
+
+                return res.success(return_value);
+            }
         }
         else
         {
@@ -879,141 +890,259 @@ public class Interpreter
         return res.success(value);
     }
 
-    public RuntimeResult visit_StructAccessNode(StructAccessNode node, Context context)
+    public RuntimeResult visit_LabelNode(LabelNode node, Context context)
+    {
+        RuntimeResult res = new RuntimeResult();
+
+        context.symbol_table.set(node.var_name_tok.value, new LabelValue(node.var_name_tok.value.ToString(), node.statements), false);
+
+        res.register(this.visit(node.statements, context));
+
+        if (res.should_return())
+        {
+            return res;
+        }
+
+        return res.success(Values.NULL);
+    }
+    
+    public RuntimeResult visit_GotoNode(GotoNode node, Context context)
     {
         RuntimeResult res = new RuntimeResult();
 
         if (!context.symbol_table.present(node.var_name_tok.value))
         {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this struct", context));
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Label not found", context));
         }
 
-        try
+        object value = context.symbol_table.get(node.var_name_tok.value);
+
+        if (value.GetType() == typeof(LabelValue))
         {
-            StructValue theStruct = (StructValue)context.symbol_table.get(node.var_name_tok.value);
+            res.register(this.visit((((LabelValue)value)).statements, context));
 
-            if (!theStruct.context.symbol_table.present(node.access_var_name_tok.value))
+            if (res.should_return())
             {
-                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this variable", context));
+                return res;
             }
-
-            object value = theStruct.context.symbol_table.get(node.access_var_name_tok.value);
-
-            return res.success(value);
         }
-        catch 
+        else
         {
-            BuiltInStruct theStruct = (BuiltInStruct)context.symbol_table.get(node.var_name_tok.value);
-
-            if (!theStruct.context.symbol_table.present(node.access_var_name_tok.value))
-            {
-                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this variable", context));
-            }
-
-            object value = theStruct.context.symbol_table.get(node.access_var_name_tok.value);
-
-            return res.success(value);
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "This value is not a label", context));
         }
 
         return res.success(Values.NULL);
     }
 
-    public RuntimeResult visit_StructReAssignNode(StructReAssignNode node, Context context)
+    public RuntimeResult visit_NamespaceDefNode(NamespaceDefNode node, Context context)
+    {
+        RuntimeResult res = new RuntimeResult();
+        NamespaceValue value = new NamespaceValue(node.var_name_tok.value.ToString(), node.statements_node, this, node.pos_start, node.pos_end, context);
+
+        context.symbol_table.set(node.var_name_tok.value, value);
+
+        return res.success(value);
+    }
+
+    public RuntimeResult visit_VarListAccessNode(VarListAccessNode node, Context context)
     {
         RuntimeResult res = new RuntimeResult();
 
         if (!context.symbol_table.present(node.var_name_tok.value))
         {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this struct", context));
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "This list/set/string is not present in the memory", context));
         }
+
+        if (context.symbol_table.get(node.var_name_tok.value).GetType() != typeof(ListValue) && context.symbol_table.get(node.var_name_tok.value).GetType() != typeof(SetValue) && context.symbol_table.get(node.var_name_tok.value).GetType() != typeof(StringValue))
+        {
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "The specified variable is not a list/set/string", context));
+        }
+
+        object indexValue = res.register(this.visit(node.access_node, context));
+
+        if (res.should_return())
+        {
+            return res;
+        }
+
+        if (indexValue.GetType() != typeof(NumberValue))
+        {
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Index value needs to be a number", context));
+        }
+
+        if ((int) ((NumberValue) indexValue).value < 0)
+        {
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Index value needs to be greater or equal than zero", context));
+        }
+
+        if (context.symbol_table.get(node.var_name_tok.value).GetType() == typeof(SetValue))
+        {
+            if ((int)((NumberValue)indexValue).value >= ((SetValue)context.symbol_table.get(node.var_name_tok.value)).elements.Count)
+            {
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Index value can not be greater than the number of the elements of the set", context));
+            }
+
+            return res.success(((SetValue)context.symbol_table.get(node.var_name_tok.value)).elements[(int)((NumberValue)indexValue).value]);
+        }
+        else if (context.symbol_table.get(node.var_name_tok.value).GetType() == typeof(StringValue))
+        {
+            if ((int)((NumberValue)indexValue).value >= ((StringValue)context.symbol_table.get(node.var_name_tok.value)).value.Length)
+            {
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Index value can not be greater than the number of the elements of the string", context));
+            }
+
+            return res.success(new StringValue(((StringValue)context.symbol_table.get(node.var_name_tok.value)).value[(int)((NumberValue)indexValue).value].ToString()));
+        }
+
+        if ((int)((NumberValue)indexValue).value >= ((ListValue)context.symbol_table.get(node.var_name_tok.value)).elements.Count)
+        {
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Index value can not be greater than the number of the elements of the list", context));
+        }
+
+        return res.success(((ListValue)context.symbol_table.get(node.var_name_tok.value)).elements[(int)((NumberValue)indexValue).value]);
+    }
+
+    public RuntimeResult visit_SetNode(SetNode node, Context context)
+    {
+        RuntimeResult res = new RuntimeResult();
+
+        List<object> elements = new List<object>();
+
+        foreach (object element_node in node.element_nodes)
+        {
+            elements.Add(res.register(this.visit(element_node, context)));
+
+            if (res.should_return())
+            {
+                return res;
+            }
+        }
+
+        return res.success(new SetValue(elements).set_context(context).set_pos(node.pos_start, node.pos_end).fix());
+    }
+
+    public RuntimeResult visit_ImportNode(ImportNode node, Context context)
+    {
+        RuntimeResult res = new RuntimeResult();
+
+        string fn = node.string_tok.value.ToString();
+        string script = "";
+        bool found = true;
 
         try
         {
-            StructValue theStruct = (StructValue)context.symbol_table.get(node.var_name_tok.value);
-            object value = null;
-
-            if (node.node != null)
+            if (System.IO.File.Exists(fn))
             {
-                value = res.register(this.visit(node.node, context));
-
-                if (res.should_return())
-                {
-                    return res;
-                }
+                script = System.IO.File.ReadAllText(fn);
             }
-
-            if (theStruct.context.symbol_table.present(node.access_var_name_tok.value))
+            else if (System.IO.File.Exists(fn + ".v"))
             {
-                if (!theStruct.context.symbol_table.can_be_rewrite(node.access_var_name_tok.value))
-                {
-                    return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Can not access to constants variables", context));
-                }
-
-                object actualValue = theStruct.context.symbol_table.get(node.access_var_name_tok.value);
-
-                if (node.op_tok.type.Equals(TokenType.EQ))
-                {
-                    theStruct.context.symbol_table.set(node.access_var_name_tok.value, value);
-                }
-                else
-                {
-                    Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.get_string_type().ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
-                    value = result.Item1;
-                    theStruct.context.symbol_table.set(node.access_var_name_tok.value, value);
-                }
-
-                value = value.GetType().GetMethod("copy").Invoke(value, new object[] { });
-                value.GetType().GetMethod("set_pos").Invoke(value, new object[] { node.pos_start, node.pos_end });
-
-                return res.success(value);
+                script = System.IO.File.ReadAllText(fn + ".v");
+            }
+            else
+            {
+                found = false;
             }
         }
-        catch 
+        catch
         {
-            BuiltInStruct theStruct = (BuiltInStruct)context.symbol_table.get(node.var_name_tok.value);
-            object value = null;
-
-            if (node.node != null)
-            {
-                value = res.register(this.visit(node.node, context));
-
-                if (res.should_return())
-                {
-                    return res;
-                }
-            }
-
-            if (theStruct.context.symbol_table.present(node.access_var_name_tok.value))
-            {
-                if (!theStruct.context.symbol_table.can_be_rewrite(node.access_var_name_tok.value))
-                {
-                    return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Can not access to constants variables", context));
-                }
-
-                object actualValue = theStruct.context.symbol_table.get(node.access_var_name_tok.value);
-
-                if (node.op_tok.type.Equals(TokenType.EQ))
-                {
-                    theStruct.context.symbol_table.set(node.access_var_name_tok.value, value);
-                }
-                else
-                {
-                    Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.get_string_type().ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
-                    value = result.Item1;
-                    theStruct.context.symbol_table.set(node.access_var_name_tok.value, value);
-                }
-
-                value = value.GetType().GetMethod("copy").Invoke(value, new object[] { });
-                value.GetType().GetMethod("set_pos").Invoke(value, new object[] { node.pos_start, node.pos_end });
-
-                return res.success(value);
-            }
+            found = false;
         }
 
-        return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Variable is not created", context));
+        return res.success(Importer.import(fn, script, context, found, node.pos_start, node.pos_end));
     }
 
-    public RuntimeResult visit_StructCallNode(StructCallNode node, Context context)
+    public RuntimeResult visit_UseNode(UseNode node, Context context)
+    {
+        RuntimeResult res = new RuntimeResult();
+
+        if (!context.symbol_table.present(node.namespace_tok.value.ToString()))
+        {
+            return new RuntimeResult().failure(new RuntimeError(node.pos_start, node.pos_end, "Value '" + node.namespace_tok.value.ToString() + "is not defined.", context));
+        }
+
+        object value = context.symbol_table.get(node.namespace_tok.value.ToString());
+
+        if (value.GetType() == typeof(NamespaceValue))
+        {
+            NamespaceValue namespaceValue = (NamespaceValue)value;
+            Context ctx = context;
+
+            foreach (object element in namespaceValue.context.symbol_table.symbols.Keys)
+            {
+                Tuple<object, bool> other = null;
+                namespaceValue.context.symbol_table.symbols.TryGetValue(element, out other);
+                ctx.symbol_table.set(element, other.Item1, other.Item2);
+            }
+        }
+        else
+        {
+            return new RuntimeResult().failure(new RuntimeError(node.pos_start, node.pos_end, "Value must be a namespace", context));
+        }
+
+        return new RuntimeResult().success(Values.NULL);
+    }
+
+    public RuntimeResult visit_ObjectAccessNode(ObjectAccessNode node, Context context)
+    {
+        RuntimeResult res = new RuntimeResult();
+
+        if (!context.symbol_table.present(node.var_name_tok.value))
+        {
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this object", context));
+        }
+
+        object typeValue = context.symbol_table.get(node.var_name_tok.value);
+
+        if (typeValue.GetType() == typeof(StructValue))
+        {
+            StructValue theStruct = (StructValue)typeValue;
+
+            if (!theStruct.context.symbol_table.present(node.access_var_name_tok.value))
+            {
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find the variable in the object", context));
+            }
+
+            return res.success(theStruct.context.symbol_table.get(node.access_var_name_tok.value));
+        }
+        else if (typeValue.GetType() == typeof(BuiltInStruct))
+        {
+            BuiltInStruct theStruct = (BuiltInStruct)typeValue;
+
+            if (!theStruct.context.symbol_table.present(node.access_var_name_tok.value))
+            {
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find the variable in the object", context));
+            }
+
+            return res.success(theStruct.context.symbol_table.get(node.access_var_name_tok.value));
+        }
+        else if (typeValue.GetType() == typeof(NamespaceValue))
+        {
+            NamespaceValue theNamespace = (NamespaceValue)typeValue;
+
+            if (!theNamespace.context.symbol_table.present(node.access_var_name_tok.value))
+            {
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find the variable in the object", context));
+            }
+
+            return res.success(theNamespace.context.symbol_table.get(node.access_var_name_tok.value));
+        }
+        else if (typeValue.GetType() == typeof(BuiltInNamespace))
+        {
+            BuiltInNamespace theNamespace = (BuiltInNamespace)typeValue;
+
+            if (!theNamespace.context.symbol_table.present(node.access_var_name_tok.value))
+            {
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find the variable in the object", context));
+            }
+
+            return res.success(theNamespace.context.symbol_table.get(node.access_var_name_tok.value));
+        }
+
+        return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Invalid object type", context));
+    }
+
+    public RuntimeResult visit_ObjectCallNode(ObjectCallNode node, Context context)
     {
         RuntimeResult res = new RuntimeResult();
 
@@ -1022,10 +1151,12 @@ public class Interpreter
 
         if (!context.symbol_table.present(node.struct_var_name_tok.value))
         {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this struct", context));
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this object", context));
         }
 
-        try
+        object theValue = context.symbol_table.get(node.struct_var_name_tok.value);
+
+        if (theValue.GetType() == typeof(StructValue))
         {
             StructValue theStruct = (StructValue)context.symbol_table.get(node.struct_var_name_tok.value);
 
@@ -1166,7 +1297,7 @@ public class Interpreter
                 return res.success(return_value);
             }
         }
-        catch 
+        else if (theValue.GetType() == typeof(BuiltInStruct))
         {
             BuiltInStruct theStruct = (BuiltInStruct)context.symbol_table.get(node.struct_var_name_tok.value);
 
@@ -1199,210 +1330,7 @@ public class Interpreter
                 return res.success(return_value);
             }
         }
-
-        return res.success(Values.NULL);
-    }
-
-    public RuntimeResult visit_LabelNode(LabelNode node, Context context)
-    {
-        RuntimeResult res = new RuntimeResult();
-
-        context.symbol_table.set(node.var_name_tok.value, new LabelValue(node.var_name_tok.value.ToString(), node.statements), false);
-
-        res.register(this.visit(node.statements, context));
-
-        if (res.should_return())
-        {
-            return res;
-        }
-
-        return res.success(Values.NULL);
-    }
-    
-    public RuntimeResult visit_GotoNode(GotoNode node, Context context)
-    {
-        RuntimeResult res = new RuntimeResult();
-
-        if (!context.symbol_table.present(node.var_name_tok.value))
-        {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Label not found", context));
-        }
-
-        object value = context.symbol_table.get(node.var_name_tok.value);
-
-        if (value.GetType() == typeof(LabelValue))
-        {
-            res.register(this.visit((((LabelValue)value)).statements, context));
-
-            if (res.should_return())
-            {
-                return res;
-            }
-        }
-        else
-        {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "This value is not a label", context));
-        }
-
-        return res.success(Values.NULL);
-    }
-
-    public RuntimeResult visit_NamespaceDefNode(NamespaceDefNode node, Context context)
-    {
-        RuntimeResult res = new RuntimeResult();
-        NamespaceValue value = new NamespaceValue(node.var_name_tok.value.ToString(), node.statements_node, this, node.pos_start, node.pos_end, context);
-
-        context.symbol_table.set(node.var_name_tok.value, value);
-
-        return res.success(value);
-    }
-
-    public RuntimeResult visit_NamespaceAccessNode(NamespaceAccessNode node, Context context)
-    {
-        RuntimeResult res = new RuntimeResult();
-
-        if (!context.symbol_table.present(node.var_name_tok.value))
-        {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this namespace", context));
-        }
-
-        try
-        {
-            NamespaceValue theNamespace = (NamespaceValue)context.symbol_table.get(node.var_name_tok.value);
-
-            if (!theNamespace.context.symbol_table.present(node.access_var_name_tok.value))
-            {
-                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this variable", context));
-            }
-
-            object value = theNamespace.context.symbol_table.get(node.access_var_name_tok.value);
-
-            return res.success(value);
-        }
-        catch 
-        {
-            BuiltInNamespace theNamespace = (BuiltInNamespace)context.symbol_table.get(node.var_name_tok.value);
-
-            if (!theNamespace.context.symbol_table.present(node.access_var_name_tok.value))
-            {
-                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this variable", context));
-            }
-
-            object value = theNamespace.context.symbol_table.get(node.access_var_name_tok.value);
-
-            return res.success(value);
-        }
-
-        return res.success(Values.NULL);
-    }
-
-    public RuntimeResult visit_NamespaceReAssignNode(NamespaceReAssignNode node, Context context)
-    {
-        RuntimeResult res = new RuntimeResult();
-
-        if (!context.symbol_table.present(node.var_name_tok.value))
-        {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this namespace", context));
-        }
-
-        try
-        {
-            NamespaceValue theNamespace = (NamespaceValue)context.symbol_table.get(node.var_name_tok.value);
-            object value = null;
-
-            if (node.node != null)
-            {
-                value = res.register(this.visit(node.node, context));
-
-                if (res.should_return())
-                {
-                    return res;
-                }
-            }
-
-            if (theNamespace.context.symbol_table.present(node.access_var_name_tok.value))
-            {
-                if (!theNamespace.context.symbol_table.can_be_rewrite(node.access_var_name_tok.value))
-                {
-                    return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Can not access to constants variables", context));
-                }
-
-                object actualValue = theNamespace.context.symbol_table.get(node.access_var_name_tok.value);
-
-                if (node.op_tok.type.Equals(TokenType.EQ))
-                {
-                    theNamespace.context.symbol_table.set(node.access_var_name_tok.value, value);
-                }
-                else
-                {
-                    Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.get_string_type().ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
-                    value = result.Item1;
-                    theNamespace.context.symbol_table.set(node.access_var_name_tok.value, value);
-                }
-
-                value = value.GetType().GetMethod("copy").Invoke(value, new object[] { });
-                value.GetType().GetMethod("set_pos").Invoke(value, new object[] { node.pos_start, node.pos_end });
-
-                return res.success(value);
-            }
-        }
-        catch 
-        {
-            BuiltInNamespace theNamespace = (BuiltInNamespace)context.symbol_table.get(node.var_name_tok.value);
-            object value = null;
-
-            if (node.node != null)
-            {
-                value = res.register(this.visit(node.node, context));
-
-                if (res.should_return())
-                {
-                    return res;
-                }
-            }
-
-            if (theNamespace.context.symbol_table.present(node.access_var_name_tok.value))
-            {
-                if (!theNamespace.context.symbol_table.can_be_rewrite(node.access_var_name_tok.value))
-                {
-                    return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Can not access to constants variables", context));
-                }
-
-                object actualValue = theNamespace.context.symbol_table.get(node.access_var_name_tok.value);
-
-                if (node.op_tok.type.Equals(TokenType.EQ))
-                {
-                    theNamespace.context.symbol_table.set(node.access_var_name_tok.value, value);
-                }
-                else
-                {
-                    Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.get_string_type().ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
-                    value = result.Item1;
-                    theNamespace.context.symbol_table.set(node.access_var_name_tok.value, value);
-                }
-
-                value = value.GetType().GetMethod("copy").Invoke(value, new object[] { });
-                value.GetType().GetMethod("set_pos").Invoke(value, new object[] { node.pos_start, node.pos_end });
-
-                return res.success(value);
-            }
-        }
-
-        return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Variable is not created", context));
-    }
-
-    public RuntimeResult visit_NamespaceCallNode(NamespaceCallNode node, Context context)
-    {
-        RuntimeResult res = new RuntimeResult();
-
-        List<object> arg_nodes = node.arg_nodes, args = new List<object>();
-
-        if (!context.symbol_table.present(node.struct_var_name_tok.value))
-        {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this namespace", context));
-        }
-
-        try
+        else if (theValue.GetType() == typeof(NamespaceValue))
         {
             NamespaceValue theNamespace = (NamespaceValue)context.symbol_table.get(node.struct_var_name_tok.value);
 
@@ -1543,7 +1471,7 @@ public class Interpreter
                 return res.success(return_value);
             }
         }
-        catch 
+        else if (theValue.GetType() == typeof(BuiltInNamespace))
         {
             BuiltInNamespace theNamespace = (BuiltInNamespace)context.symbol_table.get(node.struct_var_name_tok.value);
 
@@ -1577,83 +1505,201 @@ public class Interpreter
             }
         }
 
-        return res.success(Values.NULL);
+        return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Invalid object type", context));
     }
 
-    public RuntimeResult visit_VarListAccessNode(VarListAccessNode node, Context context)
+    public RuntimeResult visit_ObjectReAssignNode(ObjectReAssignNode node, Context context)
     {
         RuntimeResult res = new RuntimeResult();
 
         if (!context.symbol_table.present(node.var_name_tok.value))
         {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "This list/set/string is not present in the memory", context));
+            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Could not find this object", context));
         }
 
-        if (context.symbol_table.get(node.var_name_tok.value).GetType() != typeof(ListValue) && context.symbol_table.get(node.var_name_tok.value).GetType() != typeof(SetValue) && context.symbol_table.get(node.var_name_tok.value).GetType() != typeof(StringValue))
-        {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "The specified variable is not a list/set/string", context));
-        }
+        object theValue = context.symbol_table.get(node.var_name_tok.value);
 
-        object indexValue = res.register(this.visit(node.access_node, context));
-
-        if (res.should_return())
+        if (theValue.GetType() == typeof(StructValue))
         {
-            return res;
-        }
+            StructValue theStruct = (StructValue)theValue;
+            object value = null;
 
-        if (indexValue.GetType() != typeof(NumberValue))
-        {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Index value needs to be a number", context));
-        }
-
-        if ((int) ((NumberValue) indexValue).value < 0)
-        {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Index value needs to be greater or equal than zero", context));
-        }
-
-        if (context.symbol_table.get(node.var_name_tok.value).GetType() == typeof(SetValue))
-        {
-            if ((int)((NumberValue)indexValue).value >= ((SetValue)context.symbol_table.get(node.var_name_tok.value)).elements.Count)
+            if (node.node != null)
             {
-                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Index value can not be greater than the number of the elements of the set", context));
+                value = res.register(this.visit(node.node, context));
+
+                if (res.should_return())
+                {
+                    return res;
+                }
             }
 
-            return res.success(((SetValue)context.symbol_table.get(node.var_name_tok.value)).elements[(int)((NumberValue)indexValue).value]);
-        }
-        else if (context.symbol_table.get(node.var_name_tok.value).GetType() == typeof(StringValue))
-        {
-            if ((int)((NumberValue)indexValue).value >= ((StringValue)context.symbol_table.get(node.var_name_tok.value)).value.Length)
+            if (theStruct.context.symbol_table.present(node.access_var_name_tok.value))
             {
-                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Index value can not be greater than the number of the elements of the string", context));
+                if (!theStruct.context.symbol_table.can_be_rewrite(node.access_var_name_tok.value))
+                {
+                    return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Can not access to constants variables", context));
+                }
+
+                object actualValue = theStruct.context.symbol_table.get(node.access_var_name_tok.value);
+
+                if (node.op_tok.type.Equals(TokenType.EQ))
+                {
+                    theStruct.context.symbol_table.set(node.access_var_name_tok.value, value);
+                }
+                else
+                {
+                    Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.get_string_type().ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
+                    value = result.Item1;
+                    theStruct.context.symbol_table.set(node.access_var_name_tok.value, value);
+                }
+
+                value = value.GetType().GetMethod("copy").Invoke(value, new object[] { });
+                value.GetType().GetMethod("set_pos").Invoke(value, new object[] { node.pos_start, node.pos_end });
+
+                return res.success(value);
             }
-
-            return res.success(new StringValue(((StringValue)context.symbol_table.get(node.var_name_tok.value)).value[(int)((NumberValue)indexValue).value].ToString()));
-        }
-
-        if ((int)((NumberValue)indexValue).value >= ((ListValue)context.symbol_table.get(node.var_name_tok.value)).elements.Count)
-        {
-            return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Index value can not be greater than the number of the elements of the list", context));
-        }
-
-        return res.success(((ListValue)context.symbol_table.get(node.var_name_tok.value)).elements[(int)((NumberValue)indexValue).value]);
-    }
-
-    public RuntimeResult visit_SetNode(SetNode node, Context context)
-    {
-        RuntimeResult res = new RuntimeResult();
-
-        List<object> elements = new List<object>();
-
-        foreach (object element_node in node.element_nodes)
-        {
-            elements.Add(res.register(this.visit(element_node, context)));
-
-            if (res.should_return())
+            else
             {
-                return res;
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Variable is not defined", context));
             }
         }
+        else if (theValue.GetType() == typeof(BuiltInStruct))
+        {
+            BuiltInStruct theStruct = (BuiltInStruct)theValue;
+            object value = null;
 
-        return res.success(new SetValue(elements).set_context(context).set_pos(node.pos_start, node.pos_end).fix());
+            if (node.node != null)
+            {
+                value = res.register(this.visit(node.node, context));
+
+                if (res.should_return())
+                {
+                    return res;
+                }
+            }
+
+            if (theStruct.context.symbol_table.present(node.access_var_name_tok.value))
+            {
+                if (!theStruct.context.symbol_table.can_be_rewrite(node.access_var_name_tok.value))
+                {
+                    return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Can not access to constants variables", context));
+                }
+
+                object actualValue = theStruct.context.symbol_table.get(node.access_var_name_tok.value);
+
+                if (node.op_tok.type.Equals(TokenType.EQ))
+                {
+                    theStruct.context.symbol_table.set(node.access_var_name_tok.value, value);
+                }
+                else
+                {
+                    Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.get_string_type().ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
+                    value = result.Item1;
+                    theStruct.context.symbol_table.set(node.access_var_name_tok.value, value);
+                }
+
+                value = value.GetType().GetMethod("copy").Invoke(value, new object[] { });
+                value.GetType().GetMethod("set_pos").Invoke(value, new object[] { node.pos_start, node.pos_end });
+
+                return res.success(value);
+            }
+            else
+            {
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Variable is not defined", context));
+            }
+        }
+        else if (theValue.GetType() == typeof(NamespaceValue))
+        {
+            NamespaceValue theNamespace = (NamespaceValue)theValue;
+            object value = null;
+
+            if (node.node != null)
+            {
+                value = res.register(this.visit(node.node, context));
+
+                if (res.should_return())
+                {
+                    return res;
+                }
+            }
+
+            if (theNamespace.context.symbol_table.present(node.access_var_name_tok.value))
+            {
+                if (!theNamespace.context.symbol_table.can_be_rewrite(node.access_var_name_tok.value))
+                {
+                    return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Can not access to constants variables", context));
+                }
+
+                object actualValue = theNamespace.context.symbol_table.get(node.access_var_name_tok.value);
+
+                if (node.op_tok.type.Equals(TokenType.EQ))
+                {
+                    theNamespace.context.symbol_table.set(node.access_var_name_tok.value, value);
+                }
+                else
+                {
+                    Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.get_string_type().ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
+                    value = result.Item1;
+                    theNamespace.context.symbol_table.set(node.access_var_name_tok.value, value);
+                }
+
+                value = value.GetType().GetMethod("copy").Invoke(value, new object[] { });
+                value.GetType().GetMethod("set_pos").Invoke(value, new object[] { node.pos_start, node.pos_end });
+
+                return res.success(value);
+            }
+            else
+            {
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Variable is not defined", context));
+            }
+        }
+        else if (theValue.GetType() == typeof(BuiltInNamespace))
+        {
+            BuiltInNamespace theNamespace = (BuiltInNamespace)theValue;
+            object value = null;
+
+            if (node.node != null)
+            {
+                value = res.register(this.visit(node.node, context));
+
+                if (res.should_return())
+                {
+                    return res;
+                }
+            }
+
+            if (theNamespace.context.symbol_table.present(node.access_var_name_tok.value))
+            {
+                if (!theNamespace.context.symbol_table.can_be_rewrite(node.access_var_name_tok.value))
+                {
+                    return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Can not access to constants variables", context));
+                }
+
+                object actualValue = theNamespace.context.symbol_table.get(node.access_var_name_tok.value);
+
+                if (node.op_tok.type.Equals(TokenType.EQ))
+                {
+                    theNamespace.context.symbol_table.set(node.access_var_name_tok.value, value);
+                }
+                else
+                {
+                    Tuple<object, Error> result = (Tuple<object, Error>)actualValue.GetType().GetMethod(node.op_tok.get_string_type().ToLower().Replace("_eq", "ed_by")).Invoke(actualValue, new object[] { value });
+                    value = result.Item1;
+                    theNamespace.context.symbol_table.set(node.access_var_name_tok.value, value);
+                }
+
+                value = value.GetType().GetMethod("copy").Invoke(value, new object[] { });
+                value.GetType().GetMethod("set_pos").Invoke(value, new object[] { node.pos_start, node.pos_end });
+
+                return res.success(value);
+            }
+            else
+            {
+                return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Variable is not defined", context));
+            }
+        }
+
+        return res.failure(new RuntimeError(node.pos_start, node.pos_end, "Invalid object type", context));
     }
 }

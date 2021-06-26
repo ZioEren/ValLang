@@ -8,14 +8,15 @@ public class FunctionValue
     public string name;
     public object body_node;
     public List<Tuple<string, object>> arg_names;
-    public bool should_auto_return;
+    public bool should_auto_return, async;
 
-    public FunctionValue(string name, object body_node, List<Tuple<string, object>> arg_names, bool should_auto_return)
+    public FunctionValue(string name, object body_node, List<Tuple<string, object>> arg_names, bool should_auto_return, bool async)
     {
         this.name = name == null || name == "" ? "<anonymous>" : name;
         this.body_node = body_node;
         this.arg_names = arg_names;
         this.should_auto_return = should_auto_return;
+        this.async = async;
         this.set_pos();
         this.set_context();
     }
@@ -115,7 +116,7 @@ public class FunctionValue
 
     public FunctionValue copy()
     {
-        FunctionValue copy = new FunctionValue(this.name, this.body_node, this.arg_names, this.should_auto_return);
+        FunctionValue copy = new FunctionValue(this.name, this.body_node, this.arg_names, this.should_auto_return, this.async);
 
         copy.set_pos(this.pos_start, this.pos_end);
         copy.set_context(this.context);

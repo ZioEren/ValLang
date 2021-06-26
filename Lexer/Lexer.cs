@@ -238,7 +238,7 @@ public class Lexer
                     this.advance();
                 }
 
-                foreach (string keyword in new string[] { "var", "and", "or", "not", "if", "then", "elif", "else", "for", "to", "step", "while", "fun", "end", "return", "continue", "break", "del", "do", "foreach", "in", "switch", "case", "default", "const", "struct", "goto", "namespace" })
+                foreach (string keyword in new string[] { "var", "and", "or", "not", "if", "then", "elif", "else", "for", "to", "step", "while", "fun", "end", "return", "continue", "break", "del", "do", "foreach", "in", "switch", "case", "default", "const", "struct", "goto", "namespace", "import", "use", "async" })
                 {
                     if (id_str == keyword)
                     {

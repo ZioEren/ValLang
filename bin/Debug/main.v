@@ -1,2 +1,1 @@
-import("console");
-
+import "console";

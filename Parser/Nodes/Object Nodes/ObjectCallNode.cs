@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
-public class StructCallNode
+
+public class ObjectCallNode
 {
     public Token struct_var_name_tok, access_var_name_tok;
     public List<object> arg_nodes;
     public Position pos_start, pos_end;
 
-    public StructCallNode(Token struct_var_name_tok, Token access_var_name_tok, List<object> arg_nodes)
+    public ObjectCallNode(Token struct_var_name_tok, Token access_var_name_tok, List<object> arg_nodes)
     {
         this.struct_var_name_tok = struct_var_name_tok;
         this.access_var_name_tok = access_var_name_tok;

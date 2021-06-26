@@ -25,7 +25,7 @@
     public static BuiltInFunction listGet = new BuiltInFunction("listGet");
     public static BuiltInFunction getListLength = new BuiltInFunction("getListLength");
     public static BuiltInFunction run = new BuiltInFunction("run");
-    public static BuiltInFunction import = new BuiltInFunction("import");
+    //public static BuiltInFunction import = new BuiltInFunction("import");
     public static BuiltInFunction exit = new BuiltInFunction("exit");
     public static BuiltInFunction end = new BuiltInFunction("end");
     public static BuiltInFunction close = new BuiltInFunction("close");
@@ -33,7 +33,7 @@
     public static BuiltInFunction inputFloat = new BuiltInFunction("inputFloat");
     public static BuiltInFunction inputNumber = new BuiltInFunction("inputNumber");
     public static BuiltInFunction println = new BuiltInFunction("println");
-    public static BuiltInFunction use = new BuiltInFunction("use");
+    //public static BuiltInFunction use = new BuiltInFunction("use");
     public static BuiltInFunction eval = new BuiltInFunction("eval");
     public static BuiltInFunction equals = new BuiltInFunction("equals");
     public static BuiltInFunction stringStartsWith = new BuiltInFunction("stringStartsWith");

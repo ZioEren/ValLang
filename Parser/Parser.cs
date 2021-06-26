@@ -171,12 +171,12 @@ public class Parser
                             this.advance();
                         }
 
-                        return res.success(new StructCallNode(tok, var_name_tok, arg_nodes));
+                        return res.success(new ObjectCallNode(tok, var_name_tok, arg_nodes));
                     }
 
                     if (!this.current_tok.type.Equals(TokenType.EQ) && !this.current_tok.get_string_type().EndsWith("_EQ"))
                     {
-                        return res.success(new StructAccessNode(tok, var_name_tok));
+                        return res.success(new ObjectAccessNode(tok, var_name_tok));
                     }
 
                     Token operator_token = this.current_tok;
@@ -191,7 +191,7 @@ public class Parser
                         return res;
                     }
 
-                    return res.success(new StructReAssignNode(tok, var_name_tok, operator_token, expression));
+                    return res.success(new ObjectReAssignNode(tok, var_name_tok, operator_token, expression));
                 }
             }
             else if (this.current_tok.type.Equals(TokenType.LSQUARE))
@@ -215,93 +215,6 @@ public class Parser
                 this.advance();
 
                 return res.success(new VarListAccessNode(tok, accessExpr));
-            }
-            else if (this.current_tok.type.Equals(TokenType.COLON))
-            {
-                res.register_advancement();
-                this.advance();
-
-                if (this.current_tok.type.Equals(TokenType.COLON))
-                {
-                    res.register_advancement();
-                    this.advance();
-
-                    if (this.current_tok.type.Equals(TokenType.IDENTIFIER))
-                    {
-                        Token var_name_tok = this.current_tok;
-                        res.register_advancement();
-                        this.advance();
-
-                        if (this.current_tok.type.Equals(TokenType.LPAREN))
-                        {
-                            res.register_advancement();
-                            this.advance();
-
-                            List<object> arg_nodes = new List<object>();
-
-                            if (this.current_tok.type.Equals(TokenType.RPAREN))
-                            {
-                                res.register_advancement();
-                                this.advance();
-                            }
-                            else
-                            {
-                                arg_nodes.Add(res.register(this.expr()));
-
-                                if (res.error != null)
-                                {
-                                    return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ')', ']', 'var', 'if', 'for', 'while', 'fun', int, float, identifier, '+', '-' or '("));
-                                }
-
-                                while (this.current_tok.type.Equals(TokenType.COMMA))
-                                {
-                                    res.register_advancement();
-                                    this.advance();
-
-                                    arg_nodes.Add(res.register(this.expr()));
-
-                                    if (res.error != null)
-                                    {
-                                        return res;
-                                    }
-                                }
-
-                                if (!this.current_tok.type.Equals(TokenType.RPAREN))
-                                {
-                                    return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ',', ')' or ']'"));
-                                }
-
-                                res.register_advancement();
-                                this.advance();
-                            }
-
-                            return res.success(new NamespaceCallNode(tok, var_name_tok, arg_nodes));
-                        }
-
-                        if (!this.current_tok.type.Equals(TokenType.EQ) && !this.current_tok.get_string_type().EndsWith("_EQ"))
-                        {
-                            return res.success(new NamespaceAccessNode(tok, var_name_tok));
-                        }
-
-                        Token operator_token = this.current_tok;
-
-                        res.register_advancement();
-                        this.advance();
-
-                        object expression = res.register(this.expr());
-
-                        if (res.error != null)
-                        {
-                            return res;
-                        }
-
-                        return res.success(new NamespaceReAssignNode(tok, var_name_tok, operator_token, expression));
-                    }
-                }
-                else
-                {
-                    return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected ':'"));
-                }
             }
 
             if (!this.current_tok.type.Equals(TokenType.EQ) && !this.current_tok.get_string_type().EndsWith("_EQ"))
@@ -628,8 +541,23 @@ public class Parser
 
                 return res.success(new WhileNode(condition, body, false));
             }
-            else if (tok.value.ToString() == "fun")
+            else if (tok.value.ToString() == "fun" || tok.value.ToString() == "async")
             {
+                bool async = false;
+
+                if (tok.value.ToString() == "async")
+                {
+                    res.register_advancement();
+                    this.advance();
+
+                    if (this.current_tok.value.ToString() != "fun")
+                    {
+                        return res.failure(new InvalidSyntaxError(this.current_tok.pos_start, this.current_tok.pos_end, "Expected 'fun'"));
+                    }
+
+                    async = true;
+                }
+
                 bool optionalParams = false;
 
                 res.register_advancement();
@@ -757,7 +685,7 @@ public class Parser
                         return res;
                     }
 
-                    return res.success(new FuncDefNode(var_name_tok, arg_name_toks, node_to_return, true));
+                    return res.success(new FuncDefNode(var_name_tok, arg_name_toks, node_to_return, true, async));
                 }
 
                 while (this.current_tok.type.Equals(TokenType.NEWLINE))
@@ -792,7 +720,7 @@ public class Parser
                 res.register_advancement();
                 this.advance();
 
-                return res.success(new FuncDefNode(var_name_tok, arg_name_toks, body, false));
+                return res.success(new FuncDefNode(var_name_tok, arg_name_toks, body, false, async));
             }
             else if (tok.value.ToString() == "do")
             {
@@ -1231,6 +1159,36 @@ public class Parser
                     this.advance();
 
                     return res.success(new GotoNode(var_name_tok));
+                }
+            }
+            else if (tok.value.ToString() == "import")
+            {
+                res.register_advancement();
+                this.advance();
+
+                if (this.current_tok.type.Equals(TokenType.STRING))
+                {
+                    Token string_tok = this.current_tok;
+
+                    res.register_advancement();
+                    this.advance();
+
+                    return res.success(new ImportNode(string_tok));
+                }
+            }
+            else if (tok.value.ToString() == "use")
+            {
+                res.register_advancement();
+                this.advance();
+
+                if (this.current_tok.type.Equals(TokenType.IDENTIFIER))
+                {
+                    Token var_name_tok = this.current_tok;
+
+                    res.register_advancement();
+                    this.advance();
+
+                    return res.success(new UseNode(var_name_tok));
                 }
             }
             else if (tok.value.ToString() == "namespace")

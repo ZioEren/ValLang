@@ -4,10 +4,8 @@ public static class Importer
 {
     public static List<string> imported = new List<string>();
 
-    public static RuntimeResult import(string fn, string ftxt, Context ctx, bool found)
+    public static RuntimeResult import(string fn, string ftxt, Context ctx, bool found, Position pos_start, Position pos_end)
     {
-        ctx = ctx.parent;
-
         if (fn == "console")
         {
             add(ctx.symbol_table, 1);
@@ -32,7 +30,7 @@ public static class Importer
             }
             else
             {
-                return new RuntimeResult().failure(new RuntimeError(new Position(0, 0, 0, fn, ftxt), new Position(0, 0, 0, fn, ftxt), "Could not find the specified file", ctx));
+                return new RuntimeResult().failure(new RuntimeError(pos_start, pos_end, "Could not find the specified file", ctx));
             }
         }
 
@@ -40,6 +38,7 @@ public static class Importer
 
         return new RuntimeResult().success(Values.NULL);
     }
+
     public static void add(SymbolTable table, int toImport)
     {
         if (toImport == 0)
@@ -58,13 +57,13 @@ public static class Importer
             table.set("isInteger", BuiltInFunctions.isInteger);
             table.set("isFloat", BuiltInFunctions.isFloat);
             table.set("run", BuiltInFunctions.run);
-            table.set("import", BuiltInFunctions.import);
+            //table.set("import", BuiltInFunctions.import);
             table.set("eval", BuiltInFunctions.eval);
             table.set("exit", BuiltInFunctions.exit);
             table.set("end", BuiltInFunctions.end);
             table.set("close", BuiltInFunctions.close);
             table.set("clearRam", BuiltInFunctions.clearRam);
-            table.set("use", BuiltInFunctions.use);
+            //table.set("use", BuiltInFunctions.use);
             table.set("Math", BuiltInNamespaces.Math);
             table.set("equals", BuiltInFunctions.equals);
         }

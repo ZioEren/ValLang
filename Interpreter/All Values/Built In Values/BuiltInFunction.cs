@@ -456,49 +456,6 @@ public class BuiltInFunction
         return arg_names;
     }
 
-    public RuntimeResult execute_import(Context exec_ctx)
-    {
-        object fileName = exec_ctx.symbol_table.get("fn");
-
-        if (fileName.GetType() != typeof(StringValue))
-        {
-            return new RuntimeResult().failure(new RuntimeError(this.pos_start, this.pos_end, "Argument must be string", exec_ctx));
-        }
-
-        string fn = ((StringValue)fileName).value;
-        string script = "";
-        bool found = true;
-
-        try
-        {
-            if (System.IO.File.Exists(fn))
-            {
-                script = System.IO.File.ReadAllText(fn);
-            }
-            else if (System.IO.File.Exists(fn + ".v"))
-            {
-                script = System.IO.File.ReadAllText(fn + ".v");
-            }
-            else
-            {
-                found = false;
-            }
-        }
-        catch (Exception)
-        {
-            found = false;
-        }
-
-        return Importer.import(fn, script, exec_ctx, found);
-    }
-
-    public List<string> get_import()
-    {
-        List<string> arg_names = new List<string>();
-        arg_names.Add("fn");
-        return arg_names;
-    }
-
     public RuntimeResult execute_exit(Context exec_ctx)
     {
         Process.GetCurrentProcess().Kill();
@@ -643,38 +600,6 @@ public class BuiltInFunction
     {
         List<string> arg_names = new List<string>();
         arg_names.Add("value");
-
-        return arg_names;
-    }
-
-    public RuntimeResult execute_use(Context exec_ctx)
-    {
-        object value = exec_ctx.symbol_table.get("namespace");
-
-        if (value.GetType() == typeof(NamespaceValue))
-        {
-            NamespaceValue namespaceValue = (NamespaceValue)value;
-            Context ctx = exec_ctx;
-
-            foreach (object element in namespaceValue.context.symbol_table.symbols.Keys)
-            {
-                Tuple<object, bool> other = null;
-                namespaceValue.context.symbol_table.symbols.TryGetValue(element, out other);
-                ctx.symbol_table.set(element, other.Item1, other.Item2);
-            }
-        }
-        else
-        {
-            return new RuntimeResult().failure(new RuntimeError(null, null, "Value must be a namespace", exec_ctx));
-        }
-
-        return new RuntimeResult().success(Values.NULL);
-    }
-
-    public List<string> get_use()
-    {
-        List<string> arg_names = new List<string>();
-        arg_names.Add("namespace");
 
         return arg_names;
     }
@@ -1439,9 +1364,6 @@ public class BuiltInFunction
         arg_names.Add("value");
         return arg_names;
     }
-
-
-
 
     public RuntimeResult execute_setAppend(Context exec_ctx)
     {
