@@ -1,4 +1,4 @@
-<center><img src="https://cdn.discordapp.com/attachments/851093660720300034/858446436055384084/Group_1.png" width="512" height="512"></center>
+<center><img src="https://cdn.discordapp.com/attachments/851093660720300034/858446436055384084/Group_1.png" width="800" height="800"></center>
 
 # ValLang - A new interpreted scripting programming language
 
