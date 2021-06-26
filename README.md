@@ -1,8 +1,8 @@
 # ValLang - A new interpreted scripting programming language
 
 Val Language is a high-level interpreted scripting object-oriented programming language made entirely in C#.<br/>
-This language has the fundamental statements and functionalities of every high-level language.<br/>
-The objective of that language is to combine the advantages of languages to make a simple, understandable, versatile, and fluid language.
+This language has the fundamental statements and functionalities of every common high-level language.<br/>
+The objective of that language is to combine the advantages of common languages to make a simple, understandable and versatile programming language.
 
 # What is implemented in Val Language?
 
