@@ -13,35 +13,33 @@ Also, there are no types in this language. Every variable can be an integer/floa
 
 ```c#
 // Script written in Val Language by ZioEren.
-import("console");
+import "console";
 
-struct Position
+var favourite_food;
+println("What's your favourite food?");
+favourite_food = inputString();
+
+switch (favourite_food)
 {
-    var x, y, z;
-	
-    fun getSum()
-    {
-        return x + y + z;
-    }
+    case "ananas":
+        println("I love that!");
+        break;
+    case "pizza":
+        println("The Italian food is the best in the world!");
+        break;
+    case "banana":
+        println("Mh... you like bananas :)")
+        break;
+    case "apple":
+        println("You're so smart!");
+        break;
+    case "sushi":
+        println("Bruh, you're surely the most loved person in the world.");
+        break;
+    default:
+        println("Why don't you eat good food?");
+        break;
 }
-
-var pos = Position; // Create a new istance of Position structure.
-var a, b, c;
-
-println("Insert x coordinate: ");
-a = inputNumber();
-
-println("Insert y coordinate: ");
-b = inputNumber();
-
-println("Insert z coordinate: ");
-c = inputNumber();
-
-pos.x = a;
-pos.y = b;
-pos.z = c;
-
-println("The sum of all coordinates is: " + pos.getSum());
 ```
 
 # TODO
