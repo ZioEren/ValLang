@@ -1,3 +1,5 @@
+<center><img src="https://cdn.discordapp.com/attachments/851093660720300034/858446436055384084/Group_1.png"></center>
+
 # ValLang - A new interpreted scripting programming language
 
 Val Language is a high-level interpreted scripting object-oriented programming language made entirely in C#.<br/>
