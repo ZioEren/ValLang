@@ -7,23 +7,11 @@ using System.Runtime.InteropServices;
 
 class Program
 {
-    [DllImport("psapi.dll")]
-    static extern int EmptyWorkingSet(IntPtr hwProc);
-
-    [DllImport("kernel32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SetProcessWorkingSetSize(IntPtr process, UIntPtr minimumWorkingSetSize, UIntPtr maximumWorkingSetSize);
-
     public static bool noClose;
 
     static void Main(string[] args)
     {
         Console.Title = "Val Language - Interpreter";
-        Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime;
-
-        Thread ramClear = new Thread(clearRam);
-        ramClear.Priority = ThreadPriority.Highest;
-        ramClear.Start();
 
         string text, allString = "";
 
@@ -211,19 +199,6 @@ class Program
         }
 
         return new Tuple<object, Error>(null, new Error(new Position(0, 0, 0, fn, text), new Position(0, 0, 0, fn, text), "Generic Error", "Failed to progress the runtime"));
-    }
-
-    public static void clearRam()
-    {
-        while (true)
-        {
-            Thread.Sleep(100);
-            EmptyWorkingSet(Process.GetCurrentProcess().Handle);
-            GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
-            GC.Collect(GC.MaxGeneration);
-            GC.WaitForPendingFinalizers();
-            SetProcessWorkingSetSize(Process.GetCurrentProcess().Handle, (UIntPtr)0xFFFFFFFF, (UIntPtr)0xFFFFFFFF);
-        }
     }
 
     public static Tuple<object, Error> import(string fn, string text, Context context)
