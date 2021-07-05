@@ -205,3 +205,5 @@ var x = ciao;
 println(x.x + " " + x.y + " " + x.z);
 x.printIt();
 ```
+<br>
+**23)** Implement name-spaces.
