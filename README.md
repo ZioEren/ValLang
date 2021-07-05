@@ -205,3 +205,4 @@ var x = ciao;
 println(x.x + " " + x.y + " " + x.z);
 x.printIt();
 ```
+**23)** Implement generics.
