@@ -195,3 +195,16 @@ println(x.x + " " + x.y + " " + x.z);
 x.printIt();
 ```
 **22)** Implement generics.
+**23)** Implement parameters specification:
+
+```c#
+import "console";
+
+fun exec(a = 3, b = 4, c = 5)
+{
+    println(a + b + c);
+}
+
+exec(b: 9, c: 15);
+
+```
