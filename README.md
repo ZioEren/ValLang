@@ -77,19 +77,8 @@ for (var i = 0, var j = 0; i < 10, j < 10; i++, j++)
 }
 ```
 
-**15)** Add a simplification of 'foreach' in the 'for' constructor like Java does:
-
-```c#
-var lista = [5, 3, 2];
-
-for (elemento: lista)
-{
-    println(elemento);
-}
-```
-
-**16)** Add hexadecimal values, like '0x0' (0 in decimal) and '0x5' (5 in decimal) or '0xA' (10 in decimal).<br/>
-**17)** Add a feature to write the numbers in different base:
+**15)** Add hexadecimal values, like '0x0' (0 in decimal) and '0x5' (5 in decimal) or '0xA' (10 in decimal).<br/>
+**16)** Add a feature to write the numbers in different base:
 
 ```c#
 var x = 0;
@@ -110,7 +99,7 @@ x = 0O; // OCTAL
 x = 0o; // OCTAL
 ```
 
-**18)** Actually to declare the instance of a 'struct' you need to assign the identifier name to a value to create new instance. Add so a new keyword called 'new' so for a struct you'll need to do this following:
+**17)** Actually to declare the instance of a 'struct' you need to assign the identifier name to a value to create new instance. Add so a new keyword called 'new' so for a struct you'll need to do this following:
 
 ```c#
 import "console";
@@ -129,7 +118,7 @@ var lol = new ciao();
 lol.printAll();
 ```
 
-**19)** Add multi-access to objects (structs, namespaces and classes). What I mean is the following example:
+**18)** Add multi-access to objects (structs, namespaces and classes). What I mean is the following example:
 
 ```c#
 import "console";
@@ -154,7 +143,7 @@ declared.printThings();
 println(declared.miao.x + " " + declared.miao.y + " " + declared.miao.z);
 ```
 
-**20)** Fix built-in namespace problem:
+**19)** Fix built-in namespace problem:
 
 ```c#
 import "console";
@@ -168,7 +157,7 @@ println(x.pi);
 x.sin(5);
 ```
 
-**21)** Also fix this problem of built-in namespaces:
+**20)** Also fix this problem of built-in namespaces:
 
 ```c#
 import "console";
@@ -181,7 +170,7 @@ println(Math.sin(5));
 println(sin(5));
 ```
 
-**22)** Fix namespaces:
+**21)** Fix namespaces:
 
 
 ```c#
@@ -205,4 +194,4 @@ var x = ciao;
 println(x.x + " " + x.y + " " + x.z);
 x.printIt();
 ```
-**23)** Implement generics.
+**22)** Implement generics.
